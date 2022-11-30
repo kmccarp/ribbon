@@ -63,7 +63,7 @@ public class SubsetFilterTest {
     
     @Test
     public void testSorting() {
-        ServerListSubsetFilter<Server> filter = new ServerListSubsetFilter<Server>();
+        ServerListSubsetFilter<Server> filter = new ServerListSubsetFilter<>();
         LoadBalancerStats stats = new LoadBalancerStats("default");
         filter.setLoadBalancerStats(stats);
         Object[][] serverStats = { 
@@ -86,7 +86,7 @@ public class SubsetFilterTest {
         DefaultClientConfigImpl config = new DefaultClientConfigImpl();
         config.loadProperties("SubsetFilerTest");
 
-        ServerListSubsetFilter<Server> filter = new ServerListSubsetFilter<Server>(config);
+        ServerListSubsetFilter<Server> filter = new ServerListSubsetFilter<>(config);
         LoadBalancerStats stats = new LoadBalancerStats("default");
         stats.initWithNiwsConfig(config);
         filter.setLoadBalancerStats(stats);

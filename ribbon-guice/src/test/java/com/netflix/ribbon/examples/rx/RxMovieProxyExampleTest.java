@@ -64,7 +64,7 @@ public class RxMovieProxyExampleTest extends RxMovieClientTestBase {
             new AbstractModule() {
                 @Override
                 protected void configure() {
-                    bind(MovieService.class).toProvider(new RibbonResourceProvider<MovieService>(MovieService.class)).asEagerSingleton();
+                    bind(MovieService.class).toProvider(new RibbonResourceProvider<>(MovieService.class)).asEagerSingleton();
                 }
             }
             );
@@ -91,7 +91,7 @@ public class RxMovieProxyExampleTest extends RxMovieClientTestBase {
                 new AbstractModule() {
                     @Override
                     protected void configure() {
-                        bind(MovieService.class).toProvider(new RibbonResourceProvider<MovieService>(MovieService.class)).asEagerSingleton();
+                        bind(MovieService.class).toProvider(new RibbonResourceProvider<>(MovieService.class)).asEagerSingleton();
                     }
                 }
         );

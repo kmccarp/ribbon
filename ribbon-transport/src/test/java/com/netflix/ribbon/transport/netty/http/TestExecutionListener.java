@@ -33,7 +33,7 @@ public class TestExecutionListener<I, O> implements ExecutionListener<HttpClient
     private volatile boolean checkExecutionInfo = true;
     private volatile Throwable finalThrowable;
     private HttpClientResponse<O> response;
-    private List<Throwable> errors = new CopyOnWriteArrayList<Throwable>();
+    private List<Throwable> errors = new CopyOnWriteArrayList<>();
     private AtomicInteger numAttemptsOnServer = new AtomicInteger();
     private AtomicInteger numServers = new AtomicInteger();
     private volatile Server lastServer;

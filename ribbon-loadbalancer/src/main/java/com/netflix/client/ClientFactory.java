@@ -40,9 +40,9 @@ import java.util.function.Supplier;
  */
 public class ClientFactory {
     
-    private static Map<String, IClient<?,?>> simpleClientMap = new ConcurrentHashMap<String, IClient<?,?>>();
-    private static Map<String, ILoadBalancer> namedLBMap = new ConcurrentHashMap<String, ILoadBalancer>();
-    private static ConcurrentHashMap<String, IClientConfig> namedConfig = new ConcurrentHashMap<String, IClientConfig>();
+    private static Map<String, IClient<?,?>> simpleClientMap = new ConcurrentHashMap<>();
+    private static Map<String, ILoadBalancer> namedLBMap = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String, IClientConfig> namedConfig = new ConcurrentHashMap<>();
     
     private static Logger logger = LoggerFactory.getLogger(ClientFactory.class);
 

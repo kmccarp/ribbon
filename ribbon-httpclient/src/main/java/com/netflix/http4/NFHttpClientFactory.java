@@ -33,9 +33,9 @@ import com.netflix.servo.monitor.Monitors;
  */
 public class NFHttpClientFactory {
 
-	private static Map<MultiKey,NFHttpClient> clientMap = new ConcurrentHashMap<MultiKey,NFHttpClient>();
+	private static Map<MultiKey,NFHttpClient> clientMap = new ConcurrentHashMap<>();
 	
-	private static Map<String,NFHttpClient> namedClientMap = new ConcurrentHashMap<String,NFHttpClient>();
+	private static Map<String,NFHttpClient> namedClientMap = new ConcurrentHashMap<>();
 	
 	private static NFHttpClient defaultClient = new NFHttpClient();	
 	

@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractSslContextFactory {
 
 	
-    private final static Logger LOGGER = LoggerFactory.getLogger(AbstractSslContextFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSslContextFactory.class);
 	
     /** The secure socket algorithm that is to be used. */
     public static final String SOCKET_ALGORITHM = "SSL";

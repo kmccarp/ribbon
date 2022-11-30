@@ -221,33 +221,33 @@ public class MockHttpServer implements TestRule {
     private static final String DELAY_QUERY_PARAM = "delay";
     
     private HttpServer server;
-    private int localHttpServerPort = 0;
+    private int localHttpServerPort;
     private ExecutorService service;
     private int threadCount = DEFAULT_THREAD_COUNT;
-    private LinkedHashMap<String, HttpHandler> handlers = new LinkedHashMap<String, HttpHandler>();
-    private boolean hasSsl = false;
+    private LinkedHashMap<String, HttpHandler> handlers = new LinkedHashMap<>();
+    private boolean hasSsl;
     private File keystore;
     private File truststore;
 
-    private String GENERIC_RESPONSE = "GenericTestHttpServer Response";
+    private String genericResponse = "GenericTestHttpServer Response";
     
     public MockHttpServer() {
         handlers.put(ROOT_PATH, new TestHttpHandler() {
             @Override
             protected void handle(RequestContext context) throws IOException {
-                context.response(200, GENERIC_RESPONSE);
+                context.response(200, genericResponse);
             }});
         
         handlers.put(OK_PATH, new TestHttpHandler() {
             @Override
             protected void handle(RequestContext context) throws IOException {
-                context.response(200, GENERIC_RESPONSE);
+                context.response(200, genericResponse);
             }});
         
         handlers.put(STATUS_PATH, new TestHttpHandler() {
             @Override
             protected void handle(RequestContext context) throws IOException {
-                context.response(Integer.parseInt(context.query("code")), GENERIC_RESPONSE);
+                context.response(Integer.parseInt(context.query("code")), genericResponse);
             }});
         
         handlers.put(NORESPONSE_PATH, new TestHttpHandler() {
@@ -302,7 +302,7 @@ public class MockHttpServer implements TestRule {
         String query(String key);
     }
     
-    private static abstract class TestHttpHandler implements HttpHandler {
+    private abstract static class TestHttpHandler implements HttpHandler {
         @Override
         public final void handle(final HttpExchange t) throws IOException {
             try {
@@ -351,10 +351,10 @@ public class MockHttpServer implements TestRule {
         
         private static Map<String, String> queryToMap(HttpExchange t) {
             String queryString = t.getRequestURI().getQuery();
-            Map<String, String> result = new HashMap<String, String>();
+            Map<String, String> result = new HashMap<>();
             if (queryString != null) {
                 for (String param : queryString.split("&")) {
-                    String pair[] = param.split("=");
+                    String[] pair = param.split("=");
                     if (pair.length>1) {
                         result.put(pair[0], pair[1]);
                     }

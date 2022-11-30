@@ -64,7 +64,7 @@ public class CompositePredicate extends AbstractServerPredicate {
 
         Builder(AbstractServerPredicate ...primaryPredicates) {
             toBuild = new CompositePredicate();
-            Predicate<PredicateKey> chain = Predicates.<PredicateKey>and(primaryPredicates);
+            Predicate<PredicateKey> chain = Predicates.and(primaryPredicates);
             toBuild.delegate =  AbstractServerPredicate.ofKeyPredicate(chain);                
         }
 

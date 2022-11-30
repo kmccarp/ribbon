@@ -30,7 +30,7 @@ public class RecommendationsTest {
 
     @Test
     public void testStringParsing() throws Exception {
-        List<Movie> movies = new ArrayList<Movie>();
+        List<Movie> movies = new ArrayList<>();
         movies.add(Movie.ORANGE_IS_THE_NEW_BLACK);
         movies.add(Movie.BREAKING_BAD);
         Recommendations recommendations = new Recommendations(movies);

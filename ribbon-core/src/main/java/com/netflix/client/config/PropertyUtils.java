@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class PropertyUtils {
-    private static Logger LOG = LoggerFactory.getLogger(PropertyUtils.class);
+public final class PropertyUtils {
+    private static Logger log = LoggerFactory.getLogger(PropertyUtils.class);
 
     private PropertyUtils() {}
 
@@ -25,7 +25,7 @@ public class PropertyUtils {
             } catch (NoSuchMethodException e) {
                 return Optional.empty();
             } catch (Exception e) {
-                LOG.warn("Unable to determine if type " + type + " has a valueOf() static method", e);
+                log.warn("Unable to determine if type " + type + " has a valueOf() static method", e);
                 return Optional.empty();
             }
         }).map(method -> {

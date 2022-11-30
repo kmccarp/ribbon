@@ -53,7 +53,7 @@ public class ServerStats {
     private static final double[] PERCENTS = makePercentValues();
     
     private DataDistribution dataDist = new DataDistribution(1, PERCENTS); // in case
-    private DataPublisher publisher = null;
+    private DataPublisher publisher;
     private final Distribution responseTimeDist = new Distribution();
     
     int bufferSize = DEFAULT_BUFFER_SIZE;
@@ -82,7 +82,7 @@ public class ServerStats {
     private volatile long lastActiveRequestsCountChangeTimestamp;
     private AtomicLong totalCircuitBreakerBlackOutPeriod = new AtomicLong(0);
     private volatile long lastAccessedTimestamp;
-    private volatile long firstConnectionTimestamp = 0;
+    private volatile long firstConnectionTimestamp;
 
     public ServerStats() {
         connectionFailureThreshold = new UnboxedIntProperty(Property.of(LoadBalancerStats.CONNECTION_FAILURE_COUNT_THRESHOLD.defaultValue()));
@@ -113,8 +113,9 @@ public class ServerStats {
     }
     
     public void close() {
-        if (publisher != null)
+        if (publisher != null) {
             publisher.stop();
+        }
     }
 
     public Server getServer() {
@@ -142,7 +143,7 @@ public class ServerStats {
      * These correspond to the various Monitor methods defined below.
      * No, this is not pretty, but that's the way it is.
      */
-    private static enum Percent {
+    private enum Percent {
 
         TEN(10), TWENTY_FIVE(25), FIFTY(50), SEVENTY_FIVE(75), NINETY(90),
         NINETY_FIVE(95), NINETY_EIGHT(98), NINETY_NINE(99), NINETY_NINE_POINT_FIVE(99.5);

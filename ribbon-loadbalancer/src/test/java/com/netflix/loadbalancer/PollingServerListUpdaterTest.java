@@ -22,12 +22,9 @@ public class PollingServerListUpdaterTest {
         try {
             final AtomicLong lastUpdateTimestamp = new AtomicLong();
             final CountDownLatch countDownLatch = new CountDownLatch(2);
-            serverListUpdater.start(new ServerListUpdater.UpdateAction() {
-                @Override
-                public void doUpdate() {
-                    countDownLatch.countDown();
-                    lastUpdateTimestamp.set(System.currentTimeMillis());
-                }
+            serverListUpdater.start(() -> {
+                countDownLatch.countDown();
+                lastUpdateTimestamp.set(System.currentTimeMillis());
             });
 
             assertTrue(countDownLatch.await(2, TimeUnit.SECONDS));
