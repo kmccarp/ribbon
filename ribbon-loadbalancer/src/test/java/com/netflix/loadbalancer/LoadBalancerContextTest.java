@@ -28,8 +28,8 @@ import com.netflix.client.config.IClientConfig;
 
 public class LoadBalancerContextTest {
     
-    final static Object httpKey = "http";
-    final static Object httpsKey = "https";
+    static final Object httpKey = "http";
+    static final Object httpsKey = "https";
 
     static BaseLoadBalancer lb = new BaseLoadBalancer() {
 

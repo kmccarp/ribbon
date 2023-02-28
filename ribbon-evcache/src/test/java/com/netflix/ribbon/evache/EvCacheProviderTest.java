@@ -31,7 +31,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import rx.Notification;
 import rx.Observable;
 import rx.Subscription;
-import rx.functions.Func0;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -76,7 +75,7 @@ public class EvCacheProviderTest {
         replayAll();
 
         EvCacheOptions options = new EvCacheOptions("testApp", "test-cache", true, 100, null, "test{id}");
-        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<Object>(options);
+        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<>(options);
         Observable<Object> cacheValue = cacheProvider.get("test1", null);
 
         assertEquals("value1", cacheValue.toBlocking().first());
@@ -92,7 +91,7 @@ public class EvCacheProviderTest {
         replayAll();
 
         EvCacheOptions options = new EvCacheOptions("testApp", "test-cache", true, 100, transcoderMock, "test{id}");
-        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<Object>(options);
+        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<>(options);
         Observable<Object> cacheValue = cacheProvider.get("test1", null);
 
         assertEquals("value1", cacheValue.toBlocking().first());
@@ -108,7 +107,7 @@ public class EvCacheProviderTest {
         replayAll();
 
         EvCacheOptions options = new EvCacheOptions("testApp", "test-cache", true, 100, null, "test{id}");
-        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<Object>(options);
+        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<>(options);
         Observable<Object> cacheValue = cacheProvider.get("test1", null);
 
         assertTrue(cacheValue.materialize().toBlocking().first().getThrowable() instanceof CacheMissException);
@@ -121,7 +120,7 @@ public class EvCacheProviderTest {
         replayAll();
 
         EvCacheOptions options = new EvCacheOptions("testApp", "test-cache", true, 100, null, "test{id}");
-        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<Object>(options);
+        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<>(options);
         Observable<Object> cacheValue = cacheProvider.get("test1", null);
 
         Notification<Object> notification = cacheValue.materialize().toBlocking().first();
@@ -137,7 +136,7 @@ public class EvCacheProviderTest {
         replayAll();
 
         EvCacheOptions options = new EvCacheOptions("testApp", "test-cache", true, 100, transcoderMock, "test{id}");
-        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<Object>(options);
+        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<>(options);
         Observable<Object> cacheValue = cacheProvider.get("test1", null);
 
         assertTrue(cacheValue.materialize().toBlocking().first().getThrowable() instanceof CacheFaultException);
@@ -153,7 +152,7 @@ public class EvCacheProviderTest {
         replayAll();
 
         EvCacheOptions options = new EvCacheOptions("testApp", "test-cache", true, 100, transcoderMock, "test{id}");
-        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<Object>(options);
+        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<>(options);
         Observable<Object> cacheValue = cacheProvider.get("test1", null);
 
         assertTrue(cacheValue.materialize().toBlocking().first().getThrowable() instanceof RuntimeException);
@@ -166,22 +165,19 @@ public class EvCacheProviderTest {
         replayAll();
 
         EvCacheOptions options = new EvCacheOptions("testApp", "test-cache", true, 100, transcoderMock, "test{id}");
-        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<Object>(options);
+        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<>(options);
         Observable<Object> cacheValue = cacheProvider.get("test1", null);
 
         Subscription subscription = cacheValue.subscribe();
         subscription.unsubscribe();
 
-        TestUtils.waitUntilTrueOrTimeout(10000, new Func0<Boolean>() {
-            @Override
-            public Boolean call() {
-                try {
-                    verifyAll();
-                    return true;
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                    return false;
-                }
+        TestUtils.waitUntilTrueOrTimeout(10000, () -> {
+            try {
+                verifyAll();
+                return true;
+            } catch (Throwable e) {
+                e.printStackTrace();
+                return false;
             }
         });
     }

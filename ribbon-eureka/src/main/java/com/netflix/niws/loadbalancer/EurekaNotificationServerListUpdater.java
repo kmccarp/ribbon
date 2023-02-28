@@ -6,7 +6,8 @@ import com.netflix.discovery.CacheRefreshedEvent;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.EurekaEvent;
 import com.netflix.discovery.EurekaEventListener;
-import com.netflix.loadbalancer.*;
+import com.netflix.loadbalancer.DynamicServerListLoadBalancer;
+import com.netflix.loadbalancer.ServerListUpdater;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,10 +33,10 @@ public class EurekaNotificationServerListUpdater implements ServerListUpdater {
 
     private static final Logger logger = LoggerFactory.getLogger(EurekaNotificationServerListUpdater.class);
 
-    private static class LazyHolder {
-        private final static String CORE_THREAD = "EurekaNotificationServerListUpdater.ThreadPoolSize";
-        private final static String QUEUE_SIZE = "EurekaNotificationServerListUpdater.queueSize";
-        private final static LazyHolder SINGLETON = new LazyHolder();
+    private static final class LazyHolder {
+        private static final String CORE_THREAD = "EurekaNotificationServerListUpdater.ThreadPoolSize";
+        private static final String QUEUE_SIZE = "EurekaNotificationServerListUpdater.queueSize";
+        private static final LazyHolder SINGLETON = new LazyHolder();
 
         private final DynamicIntProperty poolSizeProp = new DynamicIntProperty(CORE_THREAD, 2);
         private final DynamicIntProperty queueSizeProp = new DynamicIntProperty(QUEUE_SIZE, 1000);
@@ -65,16 +66,13 @@ public class EurekaNotificationServerListUpdater implements ServerListUpdater {
                 }
             });
 
-            shutdownThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    logger.info("Shutting down the Executor for EurekaNotificationServerListUpdater");
-                    try {
-                        defaultServerListUpdateExecutor.shutdown();
-                        Runtime.getRuntime().removeShutdownHook(shutdownThread);
-                    } catch (Exception e) {
-                        // this can happen in the middle of a real shutdown, and that's ok.
-                    }
+            shutdownThread = new Thread(() -> {
+                logger.info("Shutting down the Executor for EurekaNotificationServerListUpdater");
+                try {
+                    defaultServerListUpdateExecutor.shutdown();
+                    Runtime.getRuntime().removeShutdownHook(shutdownThread);
+                } catch (Exception e) {
+                    // this can happen in the middle of a real shutdown, and that's ok.
                 }
             });
 
@@ -119,39 +117,32 @@ public class EurekaNotificationServerListUpdater implements ServerListUpdater {
     @Override
     public synchronized void start(final UpdateAction updateAction) {
         if (isActive.compareAndSet(false, true)) {
-            this.updateListener = new EurekaEventListener() {
-                @Override
-                public void onEvent(EurekaEvent event) {
-                    if (event instanceof CacheRefreshedEvent) {
-                        if (!updateQueued.compareAndSet(false, true)) {  // if an update is already queued
-                            logger.info("an update action is already queued, returning as no-op");
-                            return;
-                        }
+            this.updateListener = event -> {
+                if (event instanceof CacheRefreshedEvent) {
+                    if (!updateQueued.compareAndSet(false, true)) {  // if an update is already queued
+                        logger.info("an update action is already queued, returning as no-op");
+                        return;
+                    }
 
-                        if (!refreshExecutor.isShutdown()) {
-                            try {
-                                refreshExecutor.submit(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            updateAction.doUpdate();
-                                            lastUpdated.set(System.currentTimeMillis());
-                                        } catch (Exception e) {
-                                            logger.warn("Failed to update serverList", e);
-                                        } finally {
-                                            updateQueued.set(false);
-                                        }
-                                    }
-                                });  // fire and forget
-                            } catch (Exception e) {
-                                logger.warn("Error submitting update task to executor, skipping one round of updates", e);
-                                updateQueued.set(false);  // if submit fails, need to reset updateQueued to false
-                            }
+                    if (!refreshExecutor.isShutdown()) {
+                        try {
+                            refreshExecutor.submit(() -> {
+                                try {
+                                    updateAction.doUpdate();
+                                    lastUpdated.set(System.currentTimeMillis());
+                                } catch (Exception e) {
+                                    logger.warn("Failed to update serverList", e);
+                                } finally {
+                                    updateQueued.set(false);
+                                }
+                            });  // fire and forget
+                        } catch (Exception e) {
+                            logger.warn("Error submitting update task to executor, skipping one round of updates", e);
+                            updateQueued.set(false);  // if submit fails, need to reset updateQueued to false
                         }
-                        else {
-                            logger.debug("stopping EurekaNotificationServerListUpdater, as refreshExecutor has been shut down");
-                            stop();
-                        }
+                    } else {
+                        logger.debug("stopping EurekaNotificationServerListUpdater, as refreshExecutor has been shut down");
+                        stop();
                     }
                 }
             };

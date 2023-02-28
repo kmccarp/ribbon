@@ -20,15 +20,12 @@ import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.AllOf.allOf;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Before;
@@ -57,12 +54,9 @@ public class ServerStatusChangeListenerTest {
     public void setupLoadbalancerAndListener() {
         lb = new NoPingTaskLoadBalancer();
         lb.setServersList(asList(server1, server2));
-        serversReceivedByListener = new AtomicReference<List<Server>>();
-        lb.addServerStatusChangeListener(new ServerStatusChangeListener() {
-            @Override
-            public void serverStatusChanged(final Collection<Server> servers) {
-                serversReceivedByListener.set(new ArrayList<Server>(servers));
-            }
+        serversReceivedByListener = new AtomicReference<>();
+        lb.addServerStatusChangeListener(servers -> {
+            serversReceivedByListener.set(new ArrayList<>(servers));
         });
     }
 

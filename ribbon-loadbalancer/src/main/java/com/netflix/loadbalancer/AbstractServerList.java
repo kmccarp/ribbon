@@ -44,10 +44,7 @@ public abstract class AbstractServerList<T extends Server> implements ServerList
             niwsServerListFilterClassName = niwsClientConfig.get(
                             CommonClientConfigKey.NIWSServerListFilterClassName,
                             ZoneAffinityServerListFilter.class.getName());
-
-            AbstractServerListFilter<T> abstractNIWSServerListFilter = 
-                    (AbstractServerListFilter<T>) ClientFactory.instantiateInstanceWithClientConfig(niwsServerListFilterClassName, niwsClientConfig);
-            return abstractNIWSServerListFilter;
+            return (AbstractServerListFilter<T>) ClientFactory.instantiateInstanceWithClientConfig(niwsServerListFilterClassName, niwsClientConfig);
         } catch (Throwable e) {
             throw new ClientException(
                     ClientException.ErrorType.CONFIGURATION,

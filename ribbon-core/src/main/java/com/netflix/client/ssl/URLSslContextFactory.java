@@ -40,7 +40,7 @@ import com.google.common.base.Strings;
  * @author Peter D. Stout
  */
 public class URLSslContextFactory extends AbstractSslContextFactory{
-    private final static Logger LOGGER = LoggerFactory.getLogger(URLSslContextFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(URLSslContextFactory.class);
 
     
     private final URL keyStoreUrl;

@@ -3,7 +3,6 @@ package com.netflix.client.config;
 import com.netflix.config.ConfigurationManager;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.event.ConfigurationEvent;
-import org.apache.commons.configuration.event.ConfigurationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
-public class ArchaiusPropertyResolver implements PropertyResolver {
+public final class ArchaiusPropertyResolver implements PropertyResolver {
     private static final Logger LOG = LoggerFactory.getLogger(ArchaiusPropertyResolver.class);
 
     public static final ArchaiusPropertyResolver INSTANCE = new ArchaiusPropertyResolver();
@@ -24,12 +23,9 @@ public class ArchaiusPropertyResolver implements PropertyResolver {
     private ArchaiusPropertyResolver() {
         this.config = ConfigurationManager.getConfigInstance();
 
-        ConfigurationManager.getConfigInstance().addConfigurationListener(new ConfigurationListener() {
-            @Override
-            public void configurationChanged(ConfigurationEvent event) {
-                if (!event.isBeforeUpdate()) {
-                    actions.forEach(ArchaiusPropertyResolver::invokeAction);
-                }
+        ConfigurationManager.getConfigInstance().addConfigurationListener(event -> {
+            if (!event.isBeforeUpdate()) {
+                actions.forEach(ArchaiusPropertyResolver::invokeAction);
             }
         });
     }

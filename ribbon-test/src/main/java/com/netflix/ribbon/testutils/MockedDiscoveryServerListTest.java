@@ -51,7 +51,7 @@ public abstract class MockedDiscoveryServerListTest {
 
     
     static List<InstanceInfo> getDummyInstanceInfo(String appName, List<Server> serverList){
-        List<InstanceInfo> list = new ArrayList<InstanceInfo>();
+        List<InstanceInfo> list = new ArrayList<>();
         for (Server server: serverList) {
             InstanceInfo info = InstanceInfo.Builder.newBuilder().setAppName(appName)
                     .setHostName(server.getHost())

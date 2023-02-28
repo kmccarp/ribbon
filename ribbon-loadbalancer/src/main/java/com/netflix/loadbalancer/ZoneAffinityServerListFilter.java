@@ -47,9 +47,9 @@ public class ZoneAffinityServerListFilter<T extends Server> extends
         AbstractServerListFilter<T> implements IClientConfigAware {
 
     private static IClientConfigKey<String> ZONE = new CommonClientConfigKey<String>("@zone", "") {};
-    private static IClientConfigKey<Double> MAX_LOAD_PER_SERVER = new CommonClientConfigKey<Double>("zoneAffinity.maxLoadPerServer", 0.6d) {};
-    private static IClientConfigKey<Double> MAX_BLACKOUT_SERVER_PERCENTAGE = new CommonClientConfigKey<Double>("zoneAffinity.maxBlackOutServesrPercentage", 0.8d) {};
-    private static IClientConfigKey<Integer> MIN_AVAILABLE_SERVERS = new CommonClientConfigKey<Integer>("zoneAffinity.minAvailableServers", 2) {};
+    private static IClientConfigKey<Double> maxLoadPerServer = new CommonClientConfigKey<Double>("zoneAffinity.maxLoadPerServer", 0.6d) {};
+    private static IClientConfigKey<Double> maxBlackoutServerPercentage = new CommonClientConfigKey<Double>("zoneAffinity.maxBlackOutServesrPercentage", 0.8d) {};
+    private static IClientConfigKey<Integer> minAvailableServers = new CommonClientConfigKey<Integer>("zoneAffinity.minAvailableServers", 2) {};
 
     private boolean zoneAffinity;
     private boolean zoneExclusive;
@@ -82,9 +82,9 @@ public class ZoneAffinityServerListFilter<T extends Server> extends
         zone = niwsClientConfig.getGlobalProperty(ZONE).getOrDefault();
         zoneAffinityPredicate = new ZoneAffinityPredicate(zone);
 
-        activeReqeustsPerServerThreshold = niwsClientConfig.getDynamicProperty(MAX_LOAD_PER_SERVER);
-        blackOutServerPercentageThreshold = niwsClientConfig.getDynamicProperty(MAX_BLACKOUT_SERVER_PERCENTAGE);
-        availableServersThreshold = niwsClientConfig.getDynamicProperty(MIN_AVAILABLE_SERVERS);
+        activeReqeustsPerServerThreshold = niwsClientConfig.getDynamicProperty(maxLoadPerServer);
+        blackOutServerPercentageThreshold = niwsClientConfig.getDynamicProperty(maxBlackoutServerPercentage);
+        availableServersThreshold = niwsClientConfig.getDynamicProperty(minAvailableServers);
 
         overrideCounter = Monitors.newCounter("ZoneAffinity_OverrideCounter");
 
@@ -122,7 +122,7 @@ public class ZoneAffinityServerListFilter<T extends Server> extends
         
     @Override
     public List<T> getFilteredListOfServers(List<T> servers) {
-        if (zone != null && (zoneAffinity || zoneExclusive) && servers !=null && servers.size() > 0){
+        if (zone != null && (zoneAffinity || zoneExclusive) && servers !=null && !servers.isEmpty()){
             List<T> filteredServers = Lists.newArrayList(Iterables.filter(
                     servers, this.zoneAffinityPredicate.getServerOnlyPredicate()));
             if (shouldEnableZoneAffinity(filteredServers)) {
