@@ -355,7 +355,7 @@ public class LoadBalancerContext implements IClientConfigAware {
         boolean isSecure = false;
         String scheme = uri.getScheme();
         if (scheme != null) {
-            isSecure =  scheme.equalsIgnoreCase("https");
+            isSecure =  "https".equalsIgnoreCase(scheme);
         }
         int port = uri.getPort();
         if (port < 0 && !isSecure){
@@ -370,7 +370,7 @@ public class LoadBalancerContext implements IClientConfigAware {
                 scheme = "http";
             }
         }
-        return new Pair<String, Integer>(scheme, port);
+        return new Pair<>(scheme, port);
     }
 
     /**
@@ -384,9 +384,9 @@ public class LoadBalancerContext implements IClientConfigAware {
         if (scheme == null) {
             return -1;
         }
-        if (scheme.equals("http")) {
+        if ("http".equals(scheme)) {
             return 80;
-        } else if (scheme.equals("https")) {
+        } else if ("https".equals(scheme)) {
             return 443;
         } else {
             return -1;
@@ -407,7 +407,7 @@ public class LoadBalancerContext implements IClientConfigAware {
      */
     protected  Pair<String, Integer> deriveHostAndPortFromVipAddress(String vipAddress) 
             throws URISyntaxException, ClientException {
-        Pair<String, Integer> hostAndPort = new Pair<String, Integer>(null, -1);
+        Pair<String, Integer> hostAndPort = new Pair<>(null, -1);
         URI uri = new URI(vipAddress);
         String scheme = uri.getScheme();
         if (scheme == null) {
@@ -602,8 +602,7 @@ public class LoadBalancerContext implements IClientConfigAware {
             if (!Strings.isNullOrEmpty(original.getRawFragment())) {
                 sb.append("#").append(original.getRawFragment());
             }
-            URI newURI = new URI(sb.toString());
-            return newURI;            
+            return new URI(sb.toString());            
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
