@@ -35,7 +35,7 @@ public abstract class ExampleAppWithLocalResource {
 
     public int port = (new Random()).nextInt(1000) + 4000; 
     public String SERVICE_URI = "http://localhost:" + port + "/";
-    HttpServer server = null;
+    HttpServer server;
     
     public abstract void run() throws Exception;
     

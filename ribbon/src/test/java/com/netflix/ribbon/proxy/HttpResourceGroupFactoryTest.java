@@ -37,7 +37,7 @@ public class HttpResourceGroupFactoryTest {
 
     @Test
     public void testResourceGroupAnnotationMissing() throws Exception {
-        ClassTemplate<SampleMovieService> classTemplate = new ClassTemplate<SampleMovieService>(SampleMovieService.class);
+        ClassTemplate<SampleMovieService> classTemplate = new ClassTemplate<>(SampleMovieService.class);
         new ProxyHttpResourceGroupFactory<SampleMovieService>(classTemplate, new DefaultResourceFactory(ClientConfigFactory.DEFAULT, RibbonTransportFactory.DEFAULT, AnnotationProcessorsProvider.DEFAULT),
                 AnnotationProcessorsProvider.DEFAULT).createResourceGroup();
     }

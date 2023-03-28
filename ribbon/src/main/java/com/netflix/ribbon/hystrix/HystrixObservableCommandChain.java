@@ -2,7 +2,6 @@ package com.netflix.ribbon.hystrix;
 
 import com.netflix.hystrix.HystrixObservableCommand;
 import rx.Observable;
-import rx.functions.Func1;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,19 +26,14 @@ public class HystrixObservableCommandChain<T> {
     }
 
     public HystrixObservableCommandChain(HystrixObservableCommand<T>... commands) {
-        hystrixCommands = new ArrayList<HystrixObservableCommand<T>>(commands.length);
+        hystrixCommands = new ArrayList<>(commands.length);
         Collections.addAll(hystrixCommands, commands);
     }
 
     public Observable<ResultCommandPair<T>> toResultCommandPairObservable() {
         Observable<ResultCommandPair<T>> rootObservable = null;
         for (final HystrixObservableCommand<T> command : hystrixCommands) {
-            Observable<ResultCommandPair<T>> observable = command.toObservable().map(new Func1<T, ResultCommandPair<T>>() {
-                @Override
-                public ResultCommandPair<T> call(T result) {
-                    return new ResultCommandPair<T>(result, command);
-                }
-            });
+            Observable<ResultCommandPair<T>> observable = command.toObservable().map(result -> new ResultCommandPair<>(result, command));
             rootObservable = rootObservable == null ? observable : rootObservable.onErrorResumeNext(observable);
         }
         return rootObservable;

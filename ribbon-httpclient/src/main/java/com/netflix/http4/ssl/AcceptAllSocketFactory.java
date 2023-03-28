@@ -21,14 +21,11 @@ import com.netflix.client.IClientConfigAware;
 import com.netflix.client.config.CommonClientConfigKey;
 import com.netflix.client.config.IClientConfig;
 import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.conn.ssl.TrustStrategy;
 
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 
 /**
  *
@@ -44,14 +41,7 @@ import java.security.cert.X509Certificate;
 public class AcceptAllSocketFactory extends SSLSocketFactory implements IClientConfigAware {
 
     public AcceptAllSocketFactory() throws KeyManagementException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException {
-        super(new TrustStrategy() {
-
-            @Override
-            public boolean isTrusted(final X509Certificate[] chain, String authType) throws CertificateException {
-                return true;
-            }
-
-        }, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+        super(([]chain, authType) -> true, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
     }
 
     /**

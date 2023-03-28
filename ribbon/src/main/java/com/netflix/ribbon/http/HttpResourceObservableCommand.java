@@ -79,31 +79,23 @@ public class HttpResourceObservableCommand<T> extends HystrixObservableCommand<T
     protected Observable<T> construct() {
         Observable<HttpClientResponse<ByteBuf>> httpResponseObservable = httpClient.submit(httpRequest);
         if (validator != null) {
-            httpResponseObservable = httpResponseObservable.map(new Func1<HttpClientResponse<ByteBuf>, HttpClientResponse<ByteBuf>>() {
-                @Override
-                public HttpClientResponse<ByteBuf> call(HttpClientResponse<ByteBuf> t1) {
-                    try {
-                        validator.validate(t1);
-                    } catch (UnsuccessfulResponseException e) {
-                        throw new HystrixBadRequestException("Unsuccessful response", e);
-                    } catch (ServerError e) {
-                        throw new RuntimeException(e);
-                    }
-                    return t1;
+            httpResponseObservable = httpResponseObservable.map(t1 -> {
+                try {
+                    validator.validate(t1);
+                } catch (UnsuccessfulResponseException e) {
+                    throw new HystrixBadRequestException("Unsuccessful response", e);
+                } catch (ServerError e) {
+                    throw new RuntimeException(e);
                 }
+                return t1;
             });
         }
-        return httpResponseObservable.flatMap(new Func1<HttpClientResponse<ByteBuf>, Observable<T>>() {
+        return httpResponseObservable.flatMap(t1 -> t1.getContent().map(new Func1<ByteBuf, T>() {
             @Override
-            public Observable<T> call(HttpClientResponse<ByteBuf> t1) {
-                return t1.getContent().map(new Func1<ByteBuf, T>() {
-                    @Override
-                    public T call(ByteBuf t1) {
-                        return classType.cast(t1);
-                    }
-
-                });
+            public T call(ByteBuf t1) {
+                return classType.cast(t1);
             }
-        });
+
+        }));
     }
 }

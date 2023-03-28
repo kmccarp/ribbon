@@ -1,6 +1,5 @@
 package com.netflix.loadbalancer;
 
-import org.awaitility.core.ThrowingRunnable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,12 +46,9 @@ public class WeightedResponseTimeRuleTest {
     }
 
     private void waitUntilWeightsAreCalculated() {
-        await().untilAsserted(new ThrowingRunnable() {
-            @Override
-            public void run() throws Throwable {
-                List<Double> weights = rule.getAccumulatedWeights();
-                assertNotEquals(weights.size(), 0);
-            }
+        await().untilAsserted(() -> {
+            List<Double> weights = rule.getAccumulatedWeights();
+            assertNotEquals(weights.size(), 0);
         });
     }
 

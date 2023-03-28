@@ -62,7 +62,7 @@ public abstract class AbstractDefaultClientConfigImpl extends ReloadableClientCo
     public static final Boolean DEFAULT_FOLLOW_REDIRECTS = CommonClientConfigKey.FollowRedirects.defaultValue();
 
     @Deprecated
-    public static final float DEFAULT_PERCENTAGE_NIWS_EVENT_LOGGED = 0.0f;
+    public static final float DEFAULT_PERCENTAGE_NIWS_EVENT_LOGGED = 0.0F;
 
     @Deprecated
     public static final int DEFAULT_MAX_AUTO_RETRIES_NEXT_SERVER = CommonClientConfigKey.MaxAutoRetriesNextServer.defaultValue();
@@ -148,7 +148,7 @@ public abstract class AbstractDefaultClientConfigImpl extends ReloadableClientCo
     @Deprecated
     public static final Boolean DEFAULT_IS_CLIENT_AUTH_REQUIRED = Boolean.FALSE;
 
-    private volatile VipAddressResolver vipResolver = null;
+    private volatile VipAddressResolver vipResolver;
 
     protected AbstractDefaultClientConfigImpl(PropertyResolver resolver) {
         super(resolver);

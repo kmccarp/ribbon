@@ -28,8 +28,8 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  */
 public final class ClientOptions {
-    
-    private Map<IClientConfigKey<?>, Object> options;
+
+    private final Map<IClientConfigKey<?>, Object> options;
     
     private ClientOptions() {
         options = new ConcurrentHashMap<>();
