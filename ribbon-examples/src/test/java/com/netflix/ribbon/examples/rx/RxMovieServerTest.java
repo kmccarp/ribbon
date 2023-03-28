@@ -28,14 +28,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import rx.Observable;
-import rx.functions.Func1;
 
 import java.nio.charset.Charset;
 import java.util.Random;
 import java.util.Set;
 
 import static com.netflix.ribbon.examples.rx.common.Movie.*;
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * @author Tomasz Bak
@@ -46,9 +46,9 @@ public class RxMovieServerTest {
 
     private static final Random RANDOM = new Random();
 
-    private int port = RANDOM.nextInt(1000) + 8000;
+    private final int port = RANDOM.nextInt(1000) + 8000;
 
-    private String baseURL = "http://localhost:" + port;
+    private final String baseURL = "http://localhost:" + port;
 
     private RxMovieServer movieServer;
 
@@ -70,12 +70,7 @@ public class RxMovieServerTest {
         String movieFormatted = ORANGE_IS_THE_NEW_BLACK.toString();
 
         HttpResponseStatus statusCode = RxNetty.createHttpPost(baseURL + "/movies", Observable.just(movieFormatted), new StringTransformer())
-                .flatMap(new Func1<HttpClientResponse<ByteBuf>, Observable<HttpResponseStatus>>() {
-                    @Override
-                    public Observable<HttpResponseStatus> call(HttpClientResponse<ByteBuf> httpClientResponse) {
-                        return Observable.just(httpClientResponse.getStatus());
-                    }
-                }).toBlocking().first();
+                .flatMap(httpClientResponse -> Observable.just(httpClientResponse.getStatus())).toBlocking().first();
 
         assertEquals(HttpResponseStatus.CREATED, statusCode);
         assertEquals(ORANGE_IS_THE_NEW_BLACK, movieServer.movies.get(ORANGE_IS_THE_NEW_BLACK.getId()));
@@ -85,12 +80,7 @@ public class RxMovieServerTest {
     public void testUpateRecommendations() {
         movieServer.movies.put(ORANGE_IS_THE_NEW_BLACK.getId(), ORANGE_IS_THE_NEW_BLACK);
         HttpResponseStatus statusCode = RxNetty.createHttpPost(baseURL + "/users/" + TEST_USER_ID + "/recommendations", Observable.just(ORANGE_IS_THE_NEW_BLACK.getId()), new StringTransformer())
-                .flatMap(new Func1<HttpClientResponse<ByteBuf>, Observable<HttpResponseStatus>>() {
-                    @Override
-                    public Observable<HttpResponseStatus> call(HttpClientResponse<ByteBuf> httpClientResponse) {
-                        return Observable.just(httpClientResponse.getStatus());
-                    }
-                }).toBlocking().first();
+                .flatMap(httpClientResponse -> Observable.just(httpClientResponse.getStatus())).toBlocking().first();
 
         assertEquals(HttpResponseStatus.OK, statusCode);
         assertTrue(movieServer.userRecommendations.get(TEST_USER_ID).contains(ORANGE_IS_THE_NEW_BLACK.getId()));
@@ -100,7 +90,7 @@ public class RxMovieServerTest {
     public void testRecommendationsByUserId() throws Exception {
         movieServer.movies.put(ORANGE_IS_THE_NEW_BLACK.getId(), ORANGE_IS_THE_NEW_BLACK);
         movieServer.movies.put(BREAKING_BAD.getId(), BREAKING_BAD);
-        Set<String> userRecom = new ConcurrentSet<String>();
+        Set<String> userRecom = new ConcurrentSet<>();
         userRecom.add(ORANGE_IS_THE_NEW_BLACK.getId());
         userRecom.add(BREAKING_BAD.getId());
         movieServer.userRecommendations.put(TEST_USER_ID, userRecom);
@@ -128,22 +118,14 @@ public class RxMovieServerTest {
 
     private Movie[] handleGetMoviesReply(Observable<HttpClientResponse<ByteBuf>> httpGet) {
         return httpGet
-                .flatMap(new Func1<HttpClientResponse<ByteBuf>, Observable<Movie[]>>() {
-                    @Override
-                    public Observable<Movie[]> call(HttpClientResponse<ByteBuf> httpClientResponse) {
-                        return httpClientResponse.getContent().map(new Func1<ByteBuf, Movie[]>() {
-                            @Override
-                            public Movie[] call(ByteBuf byteBuf) {
-                                String[] lines = byteBuf.toString(Charset.defaultCharset()).split("\n");
-                                Movie[] movies = new Movie[lines.length];
-                                for (int i = 0; i < movies.length; i++) {
-                                    movies[i] = Movie.from(lines[i]);
-                                }
-                                return movies;
-                            }
-                        });
-                    }
-                }).toBlocking().first();
+                .flatMap(httpClientResponse -> httpClientResponse.getContent().map(byteBuf -> {
+            String[] lines = byteBuf.toString(Charset.defaultCharset()).split("\n");
+            Movie[] movies = new Movie[lines.length];
+            for (int i = 0;i < movies.length;i++) {
+                movies[i] = Movie.from(lines[i]);
+            }
+            return movies;
+        })).toBlocking().first();
     }
 
 }

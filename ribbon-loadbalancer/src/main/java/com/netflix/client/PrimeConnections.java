@@ -103,13 +103,13 @@ public class PrimeConnections {
 
     private String name = "default";
 
-    private float primeRatio = 1.0f;
+    private float primeRatio = 1.0F;
 
     int maxRetries = 9;
 
     long maxTotalTimeToPrimeConnections = 30 * 1000; // default time
 
-    long totalTimeTaken = 0; // Total time taken
+    long totalTimeTaken; // Total time taken
 
     private boolean aSync = true;
         
@@ -196,7 +196,7 @@ public class PrimeConnections {
      * 
      */
     public void primeConnections(List<Server> servers) {
-        if (servers == null || servers.size() == 0) {
+        if (servers == null || servers.isEmpty()) {
             logger.debug("No server to prime");
             return;
         }
@@ -207,17 +207,14 @@ public class PrimeConnections {
         final CountDownLatch latch = new CountDownLatch(totalCount);
         final AtomicInteger successCount = new AtomicInteger(0);
         final AtomicInteger failureCount= new AtomicInteger(0);
-        primeConnectionsAsync(servers, new PrimeConnectionListener()  {            
-            @Override
-            public void primeCompleted(Server s, Throwable lastException) {
-                if (lastException == null) {
-                    successCount.incrementAndGet();
-                    s.setReadyToServe(true);
-                } else {
-                    failureCount.incrementAndGet();
-                }
-                latch.countDown();
+        primeConnectionsAsync(servers, (s, lastException) -> {
+            if (lastException == null) {
+                successCount.incrementAndGet();
+                s.setReadyToServe(true);
+            } else {
+                failureCount.incrementAndGet();
             }
+            latch.countDown();
         }); 
                 
         Stopwatch stopWatch = initialPrimeTimer.start();
@@ -279,16 +276,16 @@ public class PrimeConnections {
         if (servers == null) {
             return Collections.emptyList();
         }
-        List<Server> allServers = new ArrayList<Server>();
+        List<Server> allServers = new ArrayList<>();
         allServers.addAll(servers);
-        if (allServers.size() == 0){
+        if (allServers.isEmpty()){
             logger.debug("RestClient:" + name + ". No nodes/servers to prime connections");
             return Collections.emptyList();
         }        
 
         logger.info("Priming Connections for RestClient:" + name
                 + ", numServers:" + allServers.size());
-        List<Future<Boolean>> ftList = new ArrayList<Future<Boolean>>();
+        List<Future<Boolean>> ftList = new ArrayList<>();
         for (Server s : allServers) {
             // prevent the server to be used by load balancer
             // will be set to true when priming is done
@@ -317,11 +314,9 @@ public class PrimeConnections {
     
     private Future<Boolean> makeConnectionASync(final Server s, 
             final PrimeConnectionListener listener) throws InterruptedException, RejectedExecutionException {
-        Callable<Boolean> ftConn = new Callable<Boolean>() {
-            public Boolean call() throws Exception {
-                logger.debug("calling primeconnections ...");
-                return connectToServer(s, listener);
-            }
+        Callable<Boolean> ftConn = () -> {
+            logger.debug("calling primeconnections ...");
+            return connectToServer(s, listener);
         };
         return executorService.submit(ftConn);
     }
@@ -394,10 +389,12 @@ public class PrimeConnections {
         public Thread newThread(Runnable r) {
             Thread t = new Thread(group, r, namePrefix
                     + threadNumber.getAndIncrement(), 0);
-            if (!t.isDaemon())
+            if (!t.isDaemon()) {
                 t.setDaemon(true);
-            if (t.getPriority() != Thread.NORM_PRIORITY)
+            }
+            if (t.getPriority() != Thread.NORM_PRIORITY) {
                 t.setPriority(Thread.NORM_PRIORITY);
+            }
             return t;
         }
     }

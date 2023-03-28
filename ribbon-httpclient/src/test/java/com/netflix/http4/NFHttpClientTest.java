@@ -19,12 +19,9 @@ package com.netflix.http4;
 
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
@@ -57,13 +54,10 @@ public class NFHttpClientTest {
         ThreadSafeClientConnManager cm = (ThreadSafeClientConnManager) client.getConnectionManager();
     	cm.setDefaultMaxPerRoute(10);
         HttpGet get = new HttpGet(server.getServerURI());
-        ResponseHandler<Integer> respHandler = new ResponseHandler<Integer>(){
-        		public Integer handleResponse(HttpResponse response)
-                 throws ClientProtocolException, IOException {
-        			HttpEntity entity = response.getEntity();
-        			String contentStr = EntityUtils.toString(entity);
-            		return contentStr.length();
-        		}
+        ResponseHandler<Integer> respHandler = response -> {
+            HttpEntity entity = response.getEntity();
+            String contentStr = EntityUtils.toString(entity);
+            return contentStr.length();
         };
         long contentLen = client.execute(get, respHandler);
         assertTrue(contentLen > 0);
@@ -104,11 +98,11 @@ public class NFHttpClientTest {
      * A thread that performs a GET.
      */
     static class GetThread extends Thread {
-        
-        private HttpClient httpClient;
-        private HttpHost target;
-        private HttpGet request;
-        private int id;
+
+        private final HttpClient httpClient;
+        private final HttpHost target;
+        private final HttpGet request;
+        private final int id;
         
         public GetThread(HttpClient httpClient, HttpHost target, HttpGet request, int id) {
             this.httpClient = httpClient;

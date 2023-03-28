@@ -31,7 +31,7 @@ import com.netflix.client.http.HttpRequest;
  *
  */
 @Deprecated
-public class HttpClientRequest extends ClientRequest {
+public final class HttpClientRequest extends ClientRequest {
         
     public enum Verb {
         GET("GET"),

@@ -11,7 +11,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public abstract class AnnotationProcessorsProvider {
 
     public static final AnnotationProcessorsProvider DEFAULT = new DefaultAnnotationProcessorsProvider();
-    private final List<AnnotationProcessor> processors = new CopyOnWriteArrayList<AnnotationProcessor>();
+    private final List<AnnotationProcessor> processors = new CopyOnWriteArrayList<>();
 
     public static class DefaultAnnotationProcessorsProvider extends AnnotationProcessorsProvider {
         protected DefaultAnnotationProcessorsProvider() {

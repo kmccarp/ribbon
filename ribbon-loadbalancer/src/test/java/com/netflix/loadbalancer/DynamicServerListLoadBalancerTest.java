@@ -39,8 +39,8 @@ public class DynamicServerListLoadBalancerTest {
     
     public static class MyServerList extends AbstractServerList<Server> {
 
-        public final static CountDownLatch latch = new CountDownLatch(5);
-        public final static AtomicInteger counter = new AtomicInteger(0);
+        public static final CountDownLatch latch = new CountDownLatch(5);
+        public static final AtomicInteger counter = new AtomicInteger(0);
         
         public static final List<Server> list = Lists.newArrayList(new Server(server.getServerUrl()));
         
@@ -73,7 +73,7 @@ public class DynamicServerListLoadBalancerTest {
         config.set(CommonClientConfigKey.NIWSServerListClassName, MyServerList.class.getName());
         config.set(CommonClientConfigKey.NFLoadBalancerClassName, DynamicServerListLoadBalancer.class.getName());
         config.set(CommonClientConfigKey.ServerListRefreshInterval, 50);
-        DynamicServerListLoadBalancer<Server> lb = new DynamicServerListLoadBalancer<Server>(config);
+        DynamicServerListLoadBalancer<Server> lb = new DynamicServerListLoadBalancer<>(config);
         try {
             assertTrue(MyServerList.latch.await(2, TimeUnit.SECONDS));
         } catch (InterruptedException e) { // NOPMD

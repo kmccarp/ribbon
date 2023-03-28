@@ -196,7 +196,7 @@ public abstract class CommonClientConfigKey<T> implements IClientConfigKey<T> {
     
     public static final IClientConfigKey<String> ListOfServers = new CommonClientConfigKey<String>("listOfServers", "") {};
 
-    private static final Set<IClientConfigKey> keys = new HashSet<IClientConfigKey>();
+    private static final Set<IClientConfigKey> keys = new HashSet<>();
         
     static {
         for (Field f: CommonClientConfigKey.class.getDeclaredFields()) {
@@ -288,8 +288,12 @@ public abstract class CommonClientConfigKey<T> implements IClientConfigKey<T> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         CommonClientConfigKey<?> that = (CommonClientConfigKey<?>) o;
         return Objects.equals(configKey, that.configKey);
     }

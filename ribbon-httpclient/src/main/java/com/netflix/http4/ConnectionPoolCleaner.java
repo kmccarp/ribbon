@@ -42,7 +42,7 @@ public class ConnectionPoolCleaner {
 
     private Property<Integer> connIdleEvictTimeMilliSeconds = Property.of(30*1000);
     
-    volatile boolean enableConnectionPoolCleanerTask = false;
+    volatile boolean enableConnectionPoolCleanerTask;
     long connectionCleanerTimerDelay = 10;
     long connectionCleanerRepeatInterval = 30*1000;
     private volatile ScheduledFuture<?> scheduledFuture;
@@ -90,18 +90,16 @@ public class ConnectionPoolCleaner {
 
     public void initTask(){
         if (enableConnectionPoolCleanerTask) {
-            scheduledFuture = scheduler.scheduleWithFixedDelay(new Runnable() {
-                public void run() {
-                    try {
-                        if (enableConnectionPoolCleanerTask) {
-                            logger.debug("Connection pool clean up started for client {}", name);
-                            cleanupConnections();
-                        } else if (scheduledFuture != null) {
-                            scheduledFuture.cancel(true);
-                        }
-                    } catch (Throwable e) {
-                        logger.error("Exception in ConnectionPoolCleanerThread",e);
+            scheduledFuture = scheduler.scheduleWithFixedDelay(() -> {
+                try {
+                    if (enableConnectionPoolCleanerTask) {
+                        logger.debug("Connection pool clean up started for client {}", name);
+                        cleanupConnections();
+                    } else if (scheduledFuture != null) {
+                        scheduledFuture.cancel(true);
                     }
+                } catch (Throwable e) {
+                    logger.error("Exception in ConnectionPoolCleanerThread", e);
                 }
             }, connectionCleanerTimerDelay, connectionCleanerRepeatInterval, TimeUnit.MILLISECONDS);
             logger.info("Initializing ConnectionPoolCleaner for NFHttpClient:" + name);
@@ -123,10 +121,10 @@ public class ConnectionPoolCleaner {
     public String toString(){
         StringBuilder sb = new StringBuilder();
         
-        sb.append("ConnectionPoolCleaner:" + name);
-        sb.append(", connIdleEvictTimeMilliSeconds:" + connIdleEvictTimeMilliSeconds.get());
-        sb.append(", connectionCleanerTimerDelay:" + connectionCleanerTimerDelay);
-        sb.append(", connectionCleanerRepeatInterval:" + connectionCleanerRepeatInterval);
+        sb.append("ConnectionPoolCleaner:").append(name);
+        sb.append(", connIdleEvictTimeMilliSeconds:").append(connIdleEvictTimeMilliSeconds.get());
+        sb.append(", connectionCleanerTimerDelay:").append(connectionCleanerTimerDelay);
+        sb.append(", connectionCleanerRepeatInterval:").append(connectionCleanerRepeatInterval);
         
         return sb.toString();
     }

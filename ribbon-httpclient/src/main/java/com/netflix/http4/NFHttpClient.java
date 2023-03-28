@@ -69,16 +69,16 @@ public class NFHttpClient extends DefaultHttpClient {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(NFHttpClient.class);
 
-	private static IClientConfigKey<Integer> RETRIES = new CommonClientConfigKey<Integer>("%s.nfhttpclient.retries", 3) {};
-	private static IClientConfigKey<Integer> SLEEP_TIME_FACTOR_MS = new CommonClientConfigKey<Integer>("%s.nfhttpclient.sleepTimeFactorMs", 10) {};
-	private static IClientConfigKey<Integer> CONN_IDLE_EVICT_TIME_MILLIS = new CommonClientConfigKey<Integer>("%s.nfhttpclient.connIdleEvictTimeMilliSeconds", 30*1000) {};
+	private static IClientConfigKey<Integer> retries = new CommonClientConfigKey<Integer>("%s.nfhttpclient.retries", 3) {};
+	private static IClientConfigKey<Integer> sleepTimeFactorMs = new CommonClientConfigKey<Integer>("%s.nfhttpclient.sleepTimeFactorMs", 10) {};
+	private static IClientConfigKey<Integer> connIdleEvictTimeMillis = new CommonClientConfigKey<Integer>("%s.nfhttpclient.connIdleEvictTimeMilliSeconds", 30*1000) {};
 
 	protected static final String EXECUTE_TRACER = "HttpClient-ExecuteTimer";
 	
 	private static ScheduledExecutorService connectionPoolCleanUpScheduler;
 	
-	private HttpHost httpHost = null;
-	private HttpRoute httpRoute = null;
+	private HttpHost httpHost;
+	private HttpRoute httpRoute;
 
 	private static AtomicInteger numNonNamedHttpClients = new AtomicInteger();
 
@@ -147,16 +147,16 @@ public class NFHttpClient extends DefaultHttpClient {
 				ThreadSafeClientConnManager.class.getName());
 		HttpClientParams.setRedirecting(params, config.get(CommonClientConfigKey.FollowRedirects, true));
 		// set up default headers
-		List<Header> defaultHeaders = new ArrayList<Header>();
+		List<Header> defaultHeaders = new ArrayList<>();
 		defaultHeaders.add(new BasicHeader("Netflix.NFHttpClient.Version", "1.0"));
 		defaultHeaders.add(new BasicHeader("X-netflix-httpclientname", name));
 		params.setParameter(ClientPNames.DEFAULT_HEADERS, defaultHeaders);
 
 		connPoolCleaner = new ConnectionPoolCleaner(name, this.getConnectionManager(), connectionPoolCleanUpScheduler);
 
-		this.retriesProperty = config.getGlobalProperty(RETRIES.format(name));
+		this.retriesProperty = config.getGlobalProperty(retries.format(name));
 
-		this.sleepTimeFactorMsProperty = config.getGlobalProperty(SLEEP_TIME_FACTOR_MS.format(name));
+		this.sleepTimeFactorMsProperty = config.getGlobalProperty(sleepTimeFactorMs.format(name));
 		setHttpRequestRetryHandler(
 				new NFHttpMethodRetryHandler(this.name, this.retriesProperty.getOrDefault(), false,
 						this.sleepTimeFactorMsProperty.getOrDefault()));
@@ -165,16 +165,14 @@ public class NFHttpClient extends DefaultHttpClient {
             Monitors.registerObject(name, this);
 	    }
 	    maxTotalConnectionProperty = config.getDynamicProperty(CommonClientConfigKey.MaxTotalHttpConnections);
-	    maxTotalConnectionProperty.onChange(newValue ->
-	    	((ThreadSafeClientConnManager) getConnectionManager()).setMaxTotal(newValue)
+	    maxTotalConnectionProperty.onChange(((ThreadSafeClientConnManager) getConnectionManager())::setMaxTotal
 	    );
 
 	    maxConnectionPerHostProperty = config.getDynamicProperty(CommonClientConfigKey.MaxHttpConnectionsPerHost);
-	    maxConnectionPerHostProperty.onChange(newValue ->
-			((ThreadSafeClientConnManager) getConnectionManager()).setDefaultMaxPerRoute(newValue)
+	    maxConnectionPerHostProperty.onChange(((ThreadSafeClientConnManager) getConnectionManager())::setDefaultMaxPerRoute
         );
 
-		connIdleEvictTimeMilliSeconds = config.getGlobalProperty(CONN_IDLE_EVICT_TIME_MILLIS.format(name));
+		connIdleEvictTimeMilliSeconds = config.getGlobalProperty(connIdleEvictTimeMillis.format(name));
 	}
 
 	public void initConnectionCleanerTask(){
@@ -222,10 +220,11 @@ public class NFHttpClient extends DefaultHttpClient {
 	public int getMaxConnectionsPerHost() {
 		ClientConnectionManager connectionManager = this.getConnectionManager();
 		if (connectionManager != null) {
-			if(httpRoute == null)
-				return ((ThreadSafeClientConnManager)connectionManager).getDefaultMaxPerRoute();
-			else
-				return ((ThreadSafeClientConnManager)connectionManager).getMaxForRoute(httpRoute);
+            if (httpRoute == null) {
+                return ((ThreadSafeClientConnManager) connectionManager).getDefaultMaxPerRoute();
+            } else {
+                return ((ThreadSafeClientConnManager) connectionManager).getMaxForRoute(httpRoute);
+            }
 		} else {
 			return 0;
 		}
@@ -276,10 +275,11 @@ public class NFHttpClient extends DefaultHttpClient {
 			final HttpContext context)
 					throws IOException, ClientProtocolException {
 		HttpHost target = null;
-		if(httpHost == null)
-			target = determineTarget(request);
-		else
-			target = httpHost;
+        if (httpHost == null) {
+            target = determineTarget(request);
+        } else {
+            target = httpHost;
+        }
 		return this.execute(target, request, responseHandler, context);
 	}
 
