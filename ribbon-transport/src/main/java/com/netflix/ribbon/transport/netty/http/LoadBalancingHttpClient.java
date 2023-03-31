@@ -42,7 +42,6 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -179,21 +178,17 @@ public class LoadBalancingHttpClient<I, O> extends LoadBalancingRxClientWithPool
                 lb = LoadBalancerBuilder.newBuilder().withClientConfig(config).buildLoadBalancerFromConfigWithReflection();
             }
             if (listeners == null) {
-                listeners = Collections.<ExecutionListener<HttpClientRequest<I>, HttpClientResponse<O>>>emptyList();
+                listeners = Collections.emptyList();
             }
             if (backoffStrategy == null) {
-                backoffStrategy = new Func1<Integer, Integer>() {
-                    @Override
-                    public Integer call(Integer backoffCount) {
-                        int interval = config.getOrDefault(IClientConfigKey.Keys.BackoffInterval);
-                        if (backoffCount < 0) {
-                            backoffCount = 0;
-                        }
-                        else if (backoffCount > 10) {   // Reasonable upper bound
-                            backoffCount = 10;
-                        }
-                        return (int)Math.pow(2, backoffCount) * interval;
+                backoffStrategy = backoffCount -> {
+                    int interval = config.getOrDefault(IClientConfigKey.Keys.BackoffInterval);
+                    if (backoffCount < 0) {
+                        backoffCount = 0;
+                    } else if (backoffCount > 10) {   // Reasonable upper bound
+                        backoffCount = 10;
                     }
+                    return (int) Math.pow(2, backoffCount) * interval;
                 };
             }
             if (responseToErrorPolicy == null) {
@@ -204,12 +199,7 @@ public class LoadBalancingHttpClient<I, O> extends LoadBalancingRxClientWithPool
     }
     
     public static <I, O> Builder<I, O> builder() {
-        return new Builder<I, O>(new Func1<Builder<I, O>, LoadBalancingHttpClient<I, O>>() {
-            @Override
-            public LoadBalancingHttpClient<I, O> call(Builder<I, O> builder) {
-                return new LoadBalancingHttpClient<I, O>(builder);
-            }
-        });
+        return new Builder<>(builder -> new LoadBalancingHttpClient<>(builder));
     }
     
     protected LoadBalancingHttpClient(Builder<I, O> builder) {
@@ -218,7 +208,7 @@ public class LoadBalancingHttpClient<I, O> extends LoadBalancingRxClientWithPool
         requestIdProvider = (requestIdHeaderName != null) 
                           ? new HttpRequestIdProvider(requestIdHeaderName, RxContexts.DEFAULT_CORRELATOR)
                           : null;
-        this.listeners = new CopyOnWriteArrayList<ExecutionListener<HttpClientRequest<I>, HttpClientResponse<O>>>(builder.listeners);
+        this.listeners = new CopyOnWriteArrayList<>(builder.listeners);
         defaultCommandBuilder = LoadBalancerCommand.<HttpClientResponse<O>>builder()
                 .withLoadBalancerContext(lbContext)
                 .withListeners(this.listeners)
@@ -316,13 +306,11 @@ public class LoadBalancingHttpClient<I, O> extends LoadBalancingRxClientWithPool
                     o = rxClient.submit(request);
                 }
                 
-                return o.concatMap(new Func1<HttpClientResponse<O>, Observable<HttpClientResponse<O>>>() {
-                    @Override
-                    public Observable<HttpClientResponse<O>> call(HttpClientResponse<O> t1) {
-                        if (t1.getStatus().code()/100 == 4 || t1.getStatus().code()/100 == 5)
-                            return responseToErrorPolicy.call(t1, backoffStrategy.call(count.getAndIncrement()));
-                        else
-                            return Observable.just(t1);
+                return o.concatMap(t1 -> {
+                    if (t1.getStatus().code() / 100 == 4 || t1.getStatus().code() / 100 == 5) {
+                        return responseToErrorPolicy.call(t1, backoffStrategy.call(count.getAndIncrement()));
+                    } else {
+                        return Observable.just(t1);
                     }
                 });
             }
@@ -400,7 +388,7 @@ public class LoadBalancingHttpClient<I, O> extends LoadBalancingRxClientWithPool
         }
         
         final IClientConfig config = requestConfig == null ? DefaultClientConfigImpl.getEmptyConfig() : requestConfig;
-        final ExecutionContext<HttpClientRequest<I>> context = new ExecutionContext<HttpClientRequest<I>>(request, config, this.getClientConfig(), retryHandler);
+        final ExecutionContext<HttpClientRequest<I>> context = new ExecutionContext<>(request, config, this.getClientConfig(), retryHandler);
         
         Observable<HttpClientResponse<O>> result = submitToServerInURI(request, config, rxClientConfig, retryHandler, context);
         if (result == null) {
@@ -476,10 +464,10 @@ public class LoadBalancingHttpClient<I, O> extends LoadBalancingRxClientWithPool
     protected HttpClient<I, O> createRxClient(Server server) {
         HttpClientBuilder<I, O> clientBuilder;
         if (requestIdProvider != null) {
-            clientBuilder = RxContexts.<I, O>newHttpClientBuilder(server.getHost(), server.getPort(), 
+            clientBuilder = RxContexts.newHttpClientBuilder(server.getHost(), server.getPort(), 
                     requestIdProvider, RxContexts.DEFAULT_CORRELATOR, pipelineConfigurator);
         } else {
-            clientBuilder = RxContexts.<I, O>newHttpClientBuilder(server.getHost(), server.getPort(), 
+            clientBuilder = RxContexts.newHttpClientBuilder(server.getHost(), server.getPort(), 
                     RxContexts.DEFAULT_CORRELATOR, pipelineConfigurator);
         }
         Integer connectTimeout = getProperty(IClientConfigKey.Keys.ConnectTimeout,  null, DefaultClientConfigImpl.DEFAULT_CONNECT_TIMEOUT);

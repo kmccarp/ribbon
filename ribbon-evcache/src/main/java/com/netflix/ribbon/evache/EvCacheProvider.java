@@ -86,7 +86,7 @@ public class EvCacheProvider<T> implements CacheProvider<T> {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     static final class FutureObserver extends Thread {
-        private final Map<Future, Subscriber> futureMap = new ConcurrentHashMap<Future, Subscriber>();
+        private final Map<Future, Subscriber> futureMap = new ConcurrentHashMap<>();
 
         FutureObserver() {
             super("EvCache-Future-Observer");

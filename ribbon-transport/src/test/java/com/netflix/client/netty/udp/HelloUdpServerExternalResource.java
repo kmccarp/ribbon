@@ -3,7 +3,6 @@ package com.netflix.client.netty.udp;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.socket.DatagramPacket;
 import io.reactivex.netty.RxNetty;
-import io.reactivex.netty.channel.ConnectionHandler;
 import io.reactivex.netty.channel.ObservableConnection;
 import io.reactivex.netty.protocol.udp.server.UdpServer;
 
@@ -18,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import rx.Observable;
-import rx.functions.Func1;
 
 public class HelloUdpServerExternalResource extends ExternalResource {
     private static final Logger LOG = LoggerFactory.getLogger(HelloUdpServerExternalResource.class);
@@ -28,7 +26,7 @@ public class HelloUdpServerExternalResource extends ExternalResource {
     
     private UdpServer<DatagramPacket, DatagramPacket> server;
     
-    private int timeout = 0;
+    private int timeout;
     
     public HelloUdpServerExternalResource() {
     }
@@ -52,26 +50,13 @@ public class HelloUdpServerExternalResource extends ExternalResource {
             throw new RuntimeException("Error choosing point", e);
         }
         
-        server = RxNetty.createUdpServer(port, new ConnectionHandler<DatagramPacket, DatagramPacket>() {
-            @Override
-            public Observable<Void> handle(final ObservableConnection<DatagramPacket, DatagramPacket> newConnection) {
-                return newConnection.getInput().flatMap(new Func1<DatagramPacket, Observable<Void>>() {
-                    @Override
-                    public Observable<Void> call(final DatagramPacket received) {
-                        return Observable.interval(timeout, TimeUnit.MILLISECONDS).take(1).flatMap(new Func1<Long, Observable<Void>>() {
-                            @Override
-                            public Observable<Void> call(Long aLong) {
-                                InetSocketAddress sender = received.sender();
-                                LOG.info("Received datagram. Sender: " + sender);
-                                ByteBuf data = newConnection.getChannel().alloc().buffer(WELCOME_MSG_BYTES.length);
-                                data.writeBytes(WELCOME_MSG_BYTES);
-                                return newConnection.writeAndFlush(new DatagramPacket(data, sender));
-                            }
-                        });
-                    }
-                });
-            }
-        });
+        server = RxNetty.createUdpServer(port, newConnection -> newConnection.getInput().flatMap(received -> Observable.interval(timeout, TimeUnit.MILLISECONDS).take(1).flatMap(aLong -> {
+            InetSocketAddress sender = received.sender();
+            LOG.info("Received datagram. Sender: " + sender);
+            ByteBuf data = newConnection.getChannel().alloc().buffer(WELCOME_MSG_BYTES.length);
+            data.writeBytes(WELCOME_MSG_BYTES);
+            return newConnection.writeAndFlush(new DatagramPacket(data, sender));
+        })));
         
         server.start();
         

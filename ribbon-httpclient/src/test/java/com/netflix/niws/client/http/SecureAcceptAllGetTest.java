@@ -48,12 +48,12 @@ import static org.junit.Assert.fail;
  */
 public class SecureAcceptAllGetTest {
 
-    private static String TEST_SERVICE_URI;
+    private static String testServiceUri;
 
-    private static File TEST_FILE_KS;
-    private static File TEST_FILE_TS;
+    private static File testFileKs;
+    private static File testFileTs;
 
-    private static SimpleSSLTestServer TEST_SERVER;
+    private static SimpleSSLTestServer testServer;
 
     @Rule
     public TestName testName = new TestName();
@@ -65,17 +65,17 @@ public class SecureAcceptAllGetTest {
         byte[] sampleTruststore1 = Base64.decode(SecureGetTest.TEST_TS1);
         byte[] sampleKeystore1 = Base64.decode(SecureGetTest.TEST_KS1);
 
-        TEST_FILE_KS = File.createTempFile("SecureAcceptAllGetTest", ".keystore");
-        TEST_FILE_TS = File.createTempFile("SecureAcceptAllGetTest", ".truststore");
+        testFileKs = File.createTempFile("SecureAcceptAllGetTest", ".keystore");
+        testFileTs = File.createTempFile("SecureAcceptAllGetTest", ".truststore");
 
-        FileOutputStream keystoreFileOut = new FileOutputStream(TEST_FILE_KS);
+        FileOutputStream keystoreFileOut = new FileOutputStream(testFileKs);
         try {
             keystoreFileOut.write(sampleKeystore1);
         } finally {
             keystoreFileOut.close();
         }
 
-        FileOutputStream truststoreFileOut = new FileOutputStream(TEST_FILE_TS);
+        FileOutputStream truststoreFileOut = new FileOutputStream(testFileTs);
         try {
             truststoreFileOut.write(sampleTruststore1);
         } finally {
@@ -83,14 +83,14 @@ public class SecureAcceptAllGetTest {
         }
 
         try {
-            TEST_SERVER = new SimpleSSLTestServer(TEST_FILE_TS, SecureGetTest.PASSWORD, TEST_FILE_KS, SecureGetTest.PASSWORD, false);
+            testServer = new SimpleSSLTestServer(testFileTs, SecureGetTest.PASSWORD, testFileKs, SecureGetTest.PASSWORD, false);
         } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());
         }
 
         // setup server 1, will use first keystore/truststore with client auth
-        TEST_SERVICE_URI = "https://127.0.0.1:" + TEST_SERVER.getPort() + "/";
+        testServiceUri = "https://127.0.0.1:" + testServer.getPort() + "/";
 
 
     }
@@ -99,7 +99,7 @@ public class SecureAcceptAllGetTest {
     public static void shutDown(){
 
         try{
-            TEST_SERVER.close();
+            testServer.close();
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -122,9 +122,9 @@ public class SecureAcceptAllGetTest {
 
         RestClient rc = (RestClient) ClientFactory.getNamedClient(name);
 
-        TEST_SERVER.accept();
+        testServer.accept();
 
-        URI getUri = new URI(TEST_SERVICE_URI + "test/");
+        URI getUri = new URI(testServiceUri + "test/");
         HttpRequest request = HttpRequest.newBuilder().uri(getUri).queryParams("name", "test").build();
         HttpResponse response = rc.execute(request);
         assertEquals(200, response.getStatus());
@@ -142,7 +142,7 @@ public class SecureAcceptAllGetTest {
         String configPrefix = name + "." + "ribbon";
 
         cm.setProperty(configPrefix + "." + CommonClientConfigKey.CustomSSLSocketFactoryClassName, "com.netflix.http4.ssl.AcceptAllSocketFactory");
-        cm.setProperty(configPrefix + "." + CommonClientConfigKey.TrustStore, TEST_FILE_TS.getAbsolutePath());
+        cm.setProperty(configPrefix + "." + CommonClientConfigKey.TrustStore, testFileTs.getAbsolutePath());
         cm.setProperty(configPrefix + "." + CommonClientConfigKey.TrustStorePassword, SecureGetTest.PASSWORD);
 
         boolean foundCause = false;
@@ -174,9 +174,9 @@ public class SecureAcceptAllGetTest {
 
         RestClient rc = (RestClient) ClientFactory.getNamedClient(name);
 
-        TEST_SERVER.accept();
+        testServer.accept();
 
-        URI getUri = new URI(TEST_SERVICE_URI + "test/");
+        URI getUri = new URI(testServiceUri + "test/");
         HttpRequest request = HttpRequest.newBuilder().uri(getUri).queryParams("name", "test").build();
 
         boolean foundCause = false;

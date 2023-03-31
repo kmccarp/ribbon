@@ -28,10 +28,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.StatusType;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.codehaus.jackson.map.ObjectMapper;
@@ -68,20 +66,26 @@ public class EmbeddedResources {
         }
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
+            if (this == obj) {
                 return true;
-            if (obj == null)
+            }
+            if (obj == null) {
                 return false;
-            if (getClass() != obj.getClass())
+            }
+            if (getClass() != obj.getClass()) {
                 return false;
+            }
             Person other = (Person) obj;
-            if (age != other.age)
+            if (age != other.age) {
                 return false;
+            }
             if (name == null) {
-                if (other.name != null)
+                if (other.name != null) {
                     return false;
-            } else if (!name.equals(other.name))
+                }
+            } else if (!name.equals(other.name)) {
                 return false;
+            }
             return true;
         }
     }
@@ -165,15 +169,10 @@ public class EmbeddedResources {
     @Path("/stream")
     @Produces("text/event-stream")
     public StreamingOutput getStream() {
-        return new StreamingOutput() {
-
-            @Override
-            public void write(OutputStream output) throws IOException,
-                    WebApplicationException {
-                for (String line: streamContent) {
-                    String eventLine = line + "\n";
-                    output.write(eventLine.getBytes("UTF-8"));
-                }
+        return output -> {
+            for (String line: streamContent) {
+                String eventLine = line + "\n";
+                output.write(eventLine.getBytes("UTF-8"));
             }
         };
     }
@@ -188,14 +187,10 @@ public class EmbeddedResources {
     @Path("/personStream")
     @Produces("text/event-stream")
     public StreamingOutput getEntityStream() {
-        return new StreamingOutput() {
-            @Override
-            public void write(OutputStream output) throws IOException,
-                    WebApplicationException {
-                for (Person person: entityStream) {
-                    String eventLine = "data: " + mapper.writeValueAsString(person) + "\n\n";
-                    output.write(eventLine.getBytes("UTF-8"));
-                }
+        return output -> {
+            for (Person person: entityStream) {
+                String eventLine = "data: " + mapper.writeValueAsString(person) + "\n\n";
+                output.write(eventLine.getBytes("UTF-8"));
             }
         };
     }

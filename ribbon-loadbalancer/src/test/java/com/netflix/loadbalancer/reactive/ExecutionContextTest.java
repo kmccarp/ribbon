@@ -31,7 +31,7 @@ import static org.junit.Assert.assertSame;
 public class ExecutionContextTest {
     @Test
     public void testSubContext() {
-        ExecutionContext<String> context = new ExecutionContext<String>("hello", DefaultClientConfigImpl.getEmptyConfig(),
+        ExecutionContext<String> context = new ExecutionContext<>("hello", DefaultClientConfigImpl.getEmptyConfig(),
                 DefaultClientConfigImpl.getClientConfigWithDefaultValues(), RetryHandler.DEFAULT);
         ExecutionContext<String> subContext1 = context.getChildContext("foo");
         ExecutionContext<String> subContext2 = context.getChildContext("bar");
