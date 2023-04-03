@@ -32,7 +32,6 @@ import java.util.Optional;
 import com.netflix.client.config.Property;
 import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.UserTokenHandler;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnRouteParams;
 import org.apache.http.conn.scheme.Scheme;
@@ -45,7 +44,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +87,7 @@ import com.sun.jersey.client.apache4.config.DefaultApacheHttpClient4Config;
 @Deprecated
 public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, HttpResponse> {
 
-    private static IClientConfigKey<Integer> CONN_IDLE_EVICT_TIME_MILLIS = new CommonClientConfigKey<Integer>(
+    private static IClientConfigKey<Integer> connIdleEvictTimeMillis = new CommonClientConfigKey<Integer>(
             "%s.nfhttpclient.connIdleEvictTimeMilliSeconds") {};
 
 
@@ -98,7 +96,7 @@ public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, Htt
     private IClientConfig ncc;
     private String restClientName;
 
-    private boolean enableConnectionPoolCleanerTask = false;
+    private boolean enableConnectionPoolCleanerTask;
     private Property<Integer> connIdleEvictTimeMilliSeconds;
     private int connectionCleanerRepeatInterval;
     private int maxConnectionsperHost;
@@ -346,12 +344,7 @@ public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, Htt
         // reused, which is generally not the intent for long-living proxy connections and the like.
         // See http://hc.apache.org/httpcomponents-client-ga/tutorial/html/advanced.html
         if (ignoreUserToken) {
-            ((DefaultHttpClient) httpClient4).setUserTokenHandler(new UserTokenHandler() {
-                @Override
-                public Object getUserToken(HttpContext context) {
-                    return null;
-                }
-            });
+            ((DefaultHttpClient) httpClient4).setUserTokenHandler(context -> null);
         }
 
         // custom SSL Factory handler
@@ -485,7 +478,7 @@ public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, Htt
         boolean isSecure = ncc.get(CommonClientConfigKey.IsSecure, this.isSecure);
         String scheme = uri.getScheme();
         if (scheme != null) {
-            isSecure = 	scheme.equalsIgnoreCase("https");
+            isSecure = 	"https".equalsIgnoreCase(scheme);
         }
         int port = uri.getPort();
         if (port < 0 && !isSecure){
@@ -582,8 +575,7 @@ public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, Htt
                 && ((ClientException)e).getErrorType() == ClientException.ErrorType.SERVER_THROTTLED){
             return false;
         }
-        boolean shouldRetry = isConnectException(e) || isSocketException(e);
-        return shouldRetry;
+        return isConnectException(e) || isSocketException(e);
     }
 
     @Override

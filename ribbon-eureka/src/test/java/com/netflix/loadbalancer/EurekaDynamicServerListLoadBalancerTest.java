@@ -58,12 +58,7 @@ public class EurekaDynamicServerListLoadBalancerTest {
                 .anyTimes();
 
         eurekaClientMock = setUpEurekaClientMock(servers);
-        eurekaClientProvider = new Provider<EurekaClient>() {
-            @Override
-            public EurekaClient get() {
-                return eurekaClientMock;
-            }
-        };
+        eurekaClientProvider = () -> eurekaClientMock;
 
         config = DefaultClientConfigImpl.getClientConfigWithDefaultValues();
         config.set(CommonClientConfigKey.DeploymentContextBasedVipAddresses, vipAddress);
@@ -78,7 +73,7 @@ public class EurekaDynamicServerListLoadBalancerTest {
 
         DynamicServerListLoadBalancer<DiscoveryEnabledServer> lb = null;
         try {
-            Capture<EurekaEventListener> eventListenerCapture = new Capture<EurekaEventListener>();
+            Capture<EurekaEventListener> eventListenerCapture = new Capture<>();
             eurekaClientMock.registerEventListener(EasyMock.capture(eventListenerCapture));
 
             PowerMock.replay(DiscoveryClient.class);
@@ -86,7 +81,7 @@ public class EurekaDynamicServerListLoadBalancerTest {
 
             // actual testing
             // initial creation and loading of the first serverlist
-            lb = new DynamicServerListLoadBalancer<DiscoveryEnabledServer>(
+            lb = new DynamicServerListLoadBalancer<>(
                     config,
                     new AvailabilityFilteringRule(),
                     new DummyPing(),
@@ -121,7 +116,7 @@ public class EurekaDynamicServerListLoadBalancerTest {
             PowerMock.replay(DiscoveryClient.class);
             PowerMock.replay(eurekaClientMock);
 
-            DynamicServerListLoadBalancer<DiscoveryEnabledServer> lb1 = new DynamicServerListLoadBalancer<DiscoveryEnabledServer>(
+            DynamicServerListLoadBalancer<DiscoveryEnabledServer> lb1 = new DynamicServerListLoadBalancer<>(
                     config,
                     new AvailabilityFilteringRule(),
                     new DummyPing(),
@@ -130,7 +125,7 @@ public class EurekaDynamicServerListLoadBalancerTest {
                     new EurekaNotificationServerListUpdater(eurekaClientProvider)
             );
 
-            DynamicServerListLoadBalancer<DiscoveryEnabledServer> lb2 = new DynamicServerListLoadBalancer<DiscoveryEnabledServer>(
+            DynamicServerListLoadBalancer<DiscoveryEnabledServer> lb2 = new DynamicServerListLoadBalancer<>(
                     config,
                     new AvailabilityFilteringRule(),
                     new DummyPing(),
@@ -139,7 +134,7 @@ public class EurekaDynamicServerListLoadBalancerTest {
                     new EurekaNotificationServerListUpdater(eurekaClientProvider)
             );
 
-            DynamicServerListLoadBalancer<DiscoveryEnabledServer> lb3 = new DynamicServerListLoadBalancer<DiscoveryEnabledServer>(
+            DynamicServerListLoadBalancer<DiscoveryEnabledServer> lb3 = new DynamicServerListLoadBalancer<>(
                     config,
                     new AvailabilityFilteringRule(),
                     new DummyPing(),

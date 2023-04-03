@@ -37,7 +37,7 @@ public class ConfigurationBasedServerListTest {
 		assertTrue(list.getInitialListOfServers().isEmpty());
 		ConfigurationManager.getConfigInstance().setProperty("junit1.ribbon.listOfServers", "abc.com:80,microsoft.com,1.2.3.4:8080");
 		List<Server> servers = list.getUpdatedListOfServers();
-		List<Server> expected = new ArrayList<Server>();
+		List<Server> expected = new ArrayList<>();
 		expected.add(new Server("abc.com:80"));
 		expected.add(new Server("microsoft.com:80"));
 		expected.add(new Server("1.2.3.4:8080"));

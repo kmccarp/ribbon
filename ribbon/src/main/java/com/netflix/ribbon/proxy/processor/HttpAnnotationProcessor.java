@@ -33,7 +33,7 @@ public class HttpAnnotationProcessor implements AnnotationProcessor<HttpResource
         final Map<String, List<String>> headers = annotation.headers().length == 0 ? null : new HashMap<String, List<String>>();
         for (Header h : annotation.headers()) {
             if (!headers.containsKey(h.name())) {
-                ArrayList<String> values = new ArrayList<String>();
+                ArrayList<String> values = new ArrayList<>();
                 values.add(h.value());
                 headers.put(h.name(), values);
             } else {

@@ -19,14 +19,14 @@ import com.netflix.hystrix.HystrixObservableCommand;
  */
 public class HystrixCommandChainTest {
 
-    private TestableHystrixObservableCommand command1 = new TestableHystrixObservableCommand("result1");
-    private TestableHystrixObservableCommand command2 = new TestableHystrixObservableCommand("result2");
-    private TestableHystrixObservableCommand errorCommand1 = new TestableHystrixObservableCommand(new RuntimeException("error1"));
-    private TestableHystrixObservableCommand errorCommand2 = new TestableHystrixObservableCommand(new RuntimeException("error2"));
+    private final TestableHystrixObservableCommand command1 = new TestableHystrixObservableCommand("result1");
+    private final TestableHystrixObservableCommand command2 = new TestableHystrixObservableCommand("result2");
+    private final TestableHystrixObservableCommand errorCommand1 = new TestableHystrixObservableCommand(new RuntimeException("error1"));
+    private final TestableHystrixObservableCommand errorCommand2 = new TestableHystrixObservableCommand(new RuntimeException("error2"));
 
     @Test
     public void testMaterializedNotificationObservableFirstOK() throws Exception {
-        HystrixObservableCommandChain<String> commandChain = new HystrixObservableCommandChain<String>(command1, errorCommand1);
+        HystrixObservableCommandChain<String> commandChain = new HystrixObservableCommandChain<>(command1, errorCommand1);
         ResultCommandPair<String> pair = commandChain.toResultCommandPairObservable().toBlocking().single();
         assertEquals("result1", pair.getResult());
         assertEquals("expected first hystrix command", command1, pair.getCommand());
@@ -34,7 +34,7 @@ public class HystrixCommandChainTest {
 
     @Test
     public void testMaterializedNotificationObservableLastOK() throws Exception {
-        HystrixObservableCommandChain<String> commandChain = new HystrixObservableCommandChain<String>(errorCommand1, command2);
+        HystrixObservableCommandChain<String> commandChain = new HystrixObservableCommandChain<>(errorCommand1, command2);
         ResultCommandPair<String> pair = commandChain.toResultCommandPairObservable().toBlocking().single();
         assertEquals("result2", pair.getResult());
         assertEquals("expected first hystrix command", command2, pair.getCommand());
@@ -42,7 +42,7 @@ public class HystrixCommandChainTest {
 
     @Test
     public void testMaterializedNotificationObservableError() throws Exception {
-        HystrixObservableCommandChain<String> commandChain = new HystrixObservableCommandChain<String>(errorCommand1, errorCommand2);
+        HystrixObservableCommandChain<String> commandChain = new HystrixObservableCommandChain<>(errorCommand1, errorCommand2);
         Notification<ResultCommandPair<String>> notification = commandChain.toResultCommandPairObservable().materialize().toBlocking().single();
 
         assertTrue("onError notification expected", notification.isOnError());
@@ -51,14 +51,14 @@ public class HystrixCommandChainTest {
 
     @Test
     public void testObservableOK() throws Exception {
-        HystrixObservableCommandChain<String> commandChain = new HystrixObservableCommandChain<String>(command1, errorCommand1);
+        HystrixObservableCommandChain<String> commandChain = new HystrixObservableCommandChain<>(command1, errorCommand1);
         String value = commandChain.toObservable().toBlocking().single();
         assertEquals("result1", value);
     }
 
     @Test(expected = RuntimeException.class)
     public void testObservableError() throws Exception {
-        HystrixObservableCommandChain<String> commandChain = new HystrixObservableCommandChain<String>(errorCommand1, errorCommand2);
+        HystrixObservableCommandChain<String> commandChain = new HystrixObservableCommandChain<>(errorCommand1, errorCommand2);
         commandChain.toObservable().toBlocking().single();
     }
 

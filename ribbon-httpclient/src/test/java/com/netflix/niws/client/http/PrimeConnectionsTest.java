@@ -22,9 +22,9 @@ import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.net.httpserver.HttpServer;
 
 public class PrimeConnectionsTest {
-    private static String SERVICE_URI;
-    private static int port = (new Random()).nextInt(1000) + 4000;
-    private static HttpServer server = null;
+    private static String serviceUri;
+    private static final int port = (new Random()).nextInt(1000) + 4000;
+    private static HttpServer server;
 	
 	private static final int SMALL_FIXED_SERVER_LIST_SIZE = 10;
 	private static final int LARGE_FIXED_SERVER_LIST_SIZE = 200;
@@ -42,11 +42,11 @@ public class PrimeConnectionsTest {
 	}
 	
 	public static class FixedServerList extends AbstractServerList<Server> {
-	    private Server testServer = new Server("localhost", port);
-	    private List<Server> testServers; 
+        private final Server testServer = new Server("localhost", port);
+        private final List<Server> testServers; 
 	    
 	    public FixedServerList(int repeatCount) {
-			Server list[] = new Server[repeatCount];
+			Server[] list = new Server[repeatCount];
 			for (int ii = 0; ii < list.length; ii++) {
 				list[ii] = testServer;
 			}
@@ -71,9 +71,9 @@ public class PrimeConnectionsTest {
 	@BeforeClass
 	public static void setup(){
         PackagesResourceConfig resourceConfig = new PackagesResourceConfig("com.netflix.niws.client.http");
-        SERVICE_URI = "http://localhost:" + port + "/";
+        serviceUri = "http://localhost:" + port + "/";
         try{
-            server = HttpServerFactory.create(SERVICE_URI, resourceConfig);           
+            server = HttpServerFactory.create(serviceUri, resourceConfig);           
             server.start();
         } catch (Exception e) {
             e.printStackTrace();

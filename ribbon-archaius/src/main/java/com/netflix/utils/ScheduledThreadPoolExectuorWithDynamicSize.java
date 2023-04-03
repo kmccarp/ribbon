@@ -38,19 +38,15 @@ public class ScheduledThreadPoolExectuorWithDynamicSize extends ScheduledThreadP
     
     public ScheduledThreadPoolExectuorWithDynamicSize(final DynamicIntProperty corePoolSize, ThreadFactory threadFactory) {
         super(corePoolSize.get(), threadFactory);
-        corePoolSize.addCallback(new Runnable() {
-            public void run() {
-                setCorePoolSize(corePoolSize.get());
-            }
+        corePoolSize.addCallback(() -> {
+            setCorePoolSize(corePoolSize.get());
         });
-        shutdownThread = new Thread(new Runnable() {
-            public void run() {
-                shutdown();
-                if (shutdownThread != null) {
-                    try {
-                        Runtime.getRuntime().removeShutdownHook(shutdownThread);
-                    } catch (IllegalStateException ise) { // NOPMD
-                    }
+        shutdownThread = new Thread(() -> {
+            shutdown();
+            if (shutdownThread != null) {
+                try {
+                    Runtime.getRuntime().removeShutdownHook(shutdownThread);
+                } catch (IllegalStateException ise) { // NOPMD
                 }
             }
         });

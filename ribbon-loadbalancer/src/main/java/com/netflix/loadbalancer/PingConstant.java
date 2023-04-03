@@ -27,7 +27,7 @@ public class PingConstant implements IPing {
 		boolean constant = true;
 
 		public void setConstant(String constantStr) {
-				constant = (constantStr != null) && (constantStr.toLowerCase().equals("true"));
+				constant = (constantStr != null) && ("true".equals(constantStr.toLowerCase()));
 		}
 
 		public void setConstant(boolean constant) {
