@@ -57,10 +57,10 @@ import com.netflix.servo.monitor.Stopwatch;
  *
  * @author Allen Wang
  */
-public class LoadBalancerCommand<T> {
+public final class LoadBalancerCommand<T> {
     private static final Logger logger = LoggerFactory.getLogger(LoadBalancerCommand.class);
 
-    public static class Builder<T> {
+    public static final class Builder<T> {
         private RetryHandler        retryHandler;
         private ILoadBalancer       loadBalancer;
         private IClientConfig       config;
@@ -137,7 +137,7 @@ public class LoadBalancerCommand<T> {
                 throw new IllegalArgumentException("Either LoadBalancer or LoadBalancerContext needs to be set");
             }
             
-            if (listeners != null && listeners.size() > 0) {
+            if (listeners != null && !listeners.isEmpty()) {
                 this.invoker = new ExecutionContextListenerInvoker(executionContext, listeners, config);
             }
             
@@ -145,12 +145,12 @@ public class LoadBalancerCommand<T> {
                 loadBalancerContext = new LoadBalancerContext(loadBalancer, config);
             }
             
-            return new LoadBalancerCommand<T>(this);
+            return new LoadBalancerCommand<>(this);
         }
     }
     
     public static <T> Builder<T> builder() {
-        return new Builder<T>();
+        return new Builder<>();
     }
 
     private final URI    loadBalancerURI;
@@ -193,8 +193,8 @@ public class LoadBalancerCommand<T> {
     
     class ExecutionInfoContext {
         Server      server;
-        int         serverAttemptCount = 0;
-        int         attemptCount = 0;
+        int         serverAttemptCount;
+        int         attemptCount;
         
         public void setServer(Server server) {
             this.server = server;
@@ -230,23 +230,20 @@ public class LoadBalancerCommand<T> {
     }
     
     private Func2<Integer, Throwable, Boolean> retryPolicy(final int maxRetrys, final boolean same) {
-        return new Func2<Integer, Throwable, Boolean>() {
-            @Override
-            public Boolean call(Integer tryCount, Throwable e) {
-                if (e instanceof AbortExecutionException) {
-                    return false;
-                }
-
-                if (tryCount > maxRetrys) {
-                    return false;
-                }
-                
-                if (e.getCause() != null && e instanceof RuntimeException) {
-                    e = e.getCause();
-                }
-                
-                return retryHandler.isRetriableException(e, same);
+        return (tryCount, e) -> {
+            if (e instanceof AbortExecutionException) {
+                return false;
             }
+
+            if (tryCount > maxRetrys) {
+                return false;
+            }
+
+            if (e.getCause() != null && e instanceof RuntimeException) {
+                e = e.getCause();
+            }
+
+            return retryHandler.isRetriableException(e, same);
         };
     }
 
@@ -332,36 +329,34 @@ public class LoadBalancerCommand<T> {
                                         });
                                     }
                                 });
-                        
-                        if (maxRetrysSame > 0) 
+
+                        if (maxRetrysSame > 0) {
                             o = o.retry(retryPolicy(maxRetrysSame, true));
+                        }
                         return o;
                     }
                 });
-            
-        if (maxRetrysNext > 0 && server == null) 
+
+        if (maxRetrysNext > 0 && server == null) {
             o = o.retry(retryPolicy(maxRetrysNext, false));
+        }
         
-        return o.onErrorResumeNext(new Func1<Throwable, Observable<T>>() {
-            @Override
-            public Observable<T> call(Throwable e) {
-                if (context.getAttemptCount() > 0) {
-                    if (maxRetrysNext > 0 && context.getServerAttemptCount() == (maxRetrysNext + 1)) {
-                        e = new ClientException(ClientException.ErrorType.NUMBEROF_RETRIES_NEXTSERVER_EXCEEDED,
-                                "Number of retries on next server exceeded max " + maxRetrysNext
-                                + " retries, while making a call for: " + context.getServer(), e);
-                    }
-                    else if (maxRetrysSame > 0 && context.getAttemptCount() == (maxRetrysSame + 1)) {
-                        e = new ClientException(ClientException.ErrorType.NUMBEROF_RETRIES_EXEEDED,
-                                "Number of retries exceeded max " + maxRetrysSame
-                                + " retries, while making a call for: " + context.getServer(), e);
-                    }
+        return o.onErrorResumeNext(e -> {
+            if (context.getAttemptCount() > 0) {
+                if (maxRetrysNext > 0 && context.getServerAttemptCount() == (maxRetrysNext + 1)) {
+                    e = new ClientException(ClientException.ErrorType.NUMBEROF_RETRIES_NEXTSERVER_EXCEEDED,
+                            "Number of retries on next server exceeded max " + maxRetrysNext
+                                    + " retries, while making a call for: " + context.getServer(), e);
+                } else if (maxRetrysSame > 0 && context.getAttemptCount() == (maxRetrysSame + 1)) {
+                    e = new ClientException(ClientException.ErrorType.NUMBEROF_RETRIES_EXEEDED,
+                            "Number of retries exceeded max " + maxRetrysSame
+                                    + " retries, while making a call for: " + context.getServer(), e);
                 }
-                if (listenerInvoker != null) {
-                    listenerInvoker.onExecutionFailed(e, context.toFinalExecutionInfo());
-                }
-                return Observable.error(e);
             }
+            if (listenerInvoker != null) {
+                listenerInvoker.onExecutionFailed(e, context.toFinalExecutionInfo());
+            }
+            return Observable.error(e);
         });
     }
 }

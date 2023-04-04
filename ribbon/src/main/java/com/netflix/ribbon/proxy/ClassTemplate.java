@@ -60,7 +60,7 @@ class ClassTemplate<T> {
     }
 
     public static <T> ClassTemplate<T> from(Class<T> clientInterface) {
-        return new ClassTemplate<T>(clientInterface);
+        return new ClassTemplate<>(clientInterface);
     }
 
     private void verify() {

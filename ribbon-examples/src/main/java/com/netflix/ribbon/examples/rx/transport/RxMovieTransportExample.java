@@ -29,9 +29,8 @@ import io.reactivex.netty.channel.StringTransformer;
 import io.reactivex.netty.protocol.http.client.HttpClientRequest;
 import io.reactivex.netty.protocol.http.client.HttpClientResponse;
 import rx.Observable;
-import rx.functions.Func1;
 
-import static java.lang.String.*;
+import static java.lang.String.format;
 
 /**
  * Run {@link com.netflix.ribbon.examples.rx.RxMovieServer} prior to runnng this example!
@@ -64,15 +63,12 @@ public class RxMovieTransportExample extends AbstractRxMovieClient {
                 .withHeader("X-Auth-Token", "abc")
                 .withRawContentSource(Observable.just(movie), new RxMovieTransformer());
 
-        return client.submit(httpRequest).flatMap(new Func1<HttpClientResponse<ByteBuf>, Observable<Void>>() {
-            @Override
-            public Observable<Void> call(HttpClientResponse<ByteBuf> httpClientResponse) {
-                if (httpClientResponse.getStatus().code() / 100 != 2) {
-                    return Observable.error(new RuntimeException(
-                            format("HTTP request failed (status code=%s)", httpClientResponse.getStatus())));
-                }
-                return Observable.empty();
+        return client.submit(httpRequest).flatMap(httpClientResponse -> {
+            if (httpClientResponse.getStatus().code() / 100 != 2) {
+                return Observable.error(new RuntimeException(
+                        format("HTTP request failed (status code=%s)", httpClientResponse.getStatus())));
             }
+            return Observable.empty();
         });
     }
 
@@ -91,15 +87,12 @@ public class RxMovieTransportExample extends AbstractRxMovieClient {
                 .withHeader("X-Auth-Token", "abc")
                 .withRawContentSource(Observable.just(movie.getId()), new StringTransformer());
 
-        return client.submit(httpRequest).flatMap(new Func1<HttpClientResponse<ByteBuf>, Observable<Void>>() {
-            @Override
-            public Observable<Void> call(HttpClientResponse<ByteBuf> httpClientResponse) {
-                if (httpClientResponse.getStatus().code() / 100 != 2) {
-                    return Observable.error(new RuntimeException(
-                            format("HTTP request failed (status code=%s)", httpClientResponse.getStatus())));
-                }
-                return Observable.empty();
+        return client.submit(httpRequest).flatMap(httpClientResponse -> {
+            if (httpClientResponse.getStatus().code() / 100 != 2) {
+                return Observable.error(new RuntimeException(
+                        format("HTTP request failed (status code=%s)", httpClientResponse.getStatus())));
             }
+            return Observable.empty();
         });
     }
 
@@ -109,29 +102,23 @@ public class RxMovieTransportExample extends AbstractRxMovieClient {
         HttpClientRequest<ByteBuf> httpRequest = HttpClientRequest.createGet(format("/users/%s/recommendations", TEST_USER))
                 .withHeader("X-Platform-Version", "xyz")
                 .withHeader("X-Auth-Token", "abc");
-        Observable<ByteBuf> searchByUserObservable = client.submit(httpRequest).flatMap(new Func1<HttpClientResponse<ByteBuf>, Observable<ByteBuf>>() {
-            @Override
-            public Observable<ByteBuf> call(HttpClientResponse<ByteBuf> httpClientResponse) {
-                if (httpClientResponse.getStatus().code() / 100 != 2) {
-                    return Observable.error(new RuntimeException(
-                            format("HTTP request failed (status code=%s)", httpClientResponse.getStatus())));
-                }
-                return httpClientResponse.getContent();
+        Observable<ByteBuf> searchByUserObservable = client.submit(httpRequest).flatMap(httpClientResponse -> {
+            if (httpClientResponse.getStatus().code() / 100 != 2) {
+                return Observable.error(new RuntimeException(
+                        format("HTTP request failed (status code=%s)", httpClientResponse.getStatus())));
             }
+            return httpClientResponse.getContent();
         });
 
         httpRequest = HttpClientRequest.createGet("/recommendations?category=Drama&ageGroup=Adults")
                 .withHeader("X-Platform-Version", "xyz")
                 .withHeader("X-Auth-Token", "abc");
-        Observable<ByteBuf> searchByCriteriaObservable = client.submit(httpRequest).flatMap(new Func1<HttpClientResponse<ByteBuf>, Observable<ByteBuf>>() {
-            @Override
-            public Observable<ByteBuf> call(HttpClientResponse<ByteBuf> httpClientResponse) {
-                if (httpClientResponse.getStatus().code() / 100 != 2) {
-                    return Observable.error(new RuntimeException(
-                            format("HTTP request failed (status code=%s)", httpClientResponse.getStatus())));
-                }
-                return httpClientResponse.getContent();
+        Observable<ByteBuf> searchByCriteriaObservable = client.submit(httpRequest).flatMap(httpClientResponse -> {
+            if (httpClientResponse.getStatus().code() / 100 != 2) {
+                return Observable.error(new RuntimeException(
+                        format("HTTP request failed (status code=%s)", httpClientResponse.getStatus())));
             }
+            return httpClientResponse.getContent();
         });
 
         return new Observable[]{searchByUserObservable, searchByCriteriaObservable};

@@ -54,7 +54,7 @@ For each request, the steps above will be repeated. That is to say, each zone re
  */
 public class ZoneAwareLoadBalancer<T extends Server> extends DynamicServerListLoadBalancer<T> {
 
-    private ConcurrentHashMap<String, BaseLoadBalancer> balancers = new ConcurrentHashMap<String, BaseLoadBalancer>();
+    private ConcurrentHashMap<String, BaseLoadBalancer> balancers = new ConcurrentHashMap<>();
     
     private static final Logger logger = LoggerFactory.getLogger(ZoneAwareLoadBalancer.class);
 
@@ -121,7 +121,7 @@ public class ZoneAwareLoadBalancer<T extends Server> extends DynamicServerListLo
     protected void setServerListForZones(Map<String, List<Server>> zoneServersMap) {
         super.setServerListForZones(zoneServersMap);
         if (balancers == null) {
-            balancers = new ConcurrentHashMap<String, BaseLoadBalancer>();
+            balancers = new ConcurrentHashMap<>();
         }
         for (Map.Entry<String, List<Server>> entry: zoneServersMap.entrySet()) {
         	String zone = entry.getKey().toLowerCase();
