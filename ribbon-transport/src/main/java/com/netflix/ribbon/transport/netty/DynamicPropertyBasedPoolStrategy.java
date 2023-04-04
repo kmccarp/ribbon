@@ -36,11 +36,8 @@ public class DynamicPropertyBasedPoolStrategy extends MaxConnectionsBasedStrateg
         super(maxConnections);
         poolSizeProperty = DynamicProperty.getInstance(propertyName);
         setMaxConnections(poolSizeProperty.getInteger(maxConnections));
-        poolSizeProperty.addCallback(new Runnable() {
-            @Override
-            public void run() {
-                setMaxConnections(poolSizeProperty.getInteger(maxConnections));
-            };
+        poolSizeProperty.addCallback(() -> {
+            setMaxConnections(poolSizeProperty.getInteger(maxConnections));
         });
     }
     

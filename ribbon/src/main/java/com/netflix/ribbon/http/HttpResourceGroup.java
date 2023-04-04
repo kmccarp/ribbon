@@ -28,7 +28,7 @@ public class HttpResourceGroup extends ResourceGroup<HttpRequestTemplate<?>> {
     private final HttpClient<ByteBuf, ByteBuf> client;
     private final HttpHeaders headers;
 
-    public static class Builder extends GroupBuilder<HttpResourceGroup> {
+    public static final class Builder extends GroupBuilder<HttpResourceGroup> {
         private ClientOptions clientOptions;
         private HttpHeaders httpHeaders = new DefaultHttpHeaders();
         private ClientConfigFactory clientConfigFactory;

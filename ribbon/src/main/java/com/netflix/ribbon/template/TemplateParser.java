@@ -27,7 +27,7 @@ import com.google.common.collect.Maps;
 public class TemplateParser {
 
     public static List<Object> parseTemplate(String template) {
-        List<Object> templateParts = new ArrayList<Object>();
+        List<Object> templateParts = new ArrayList<>();
         if (template == null) {
             return templateParts;
         }

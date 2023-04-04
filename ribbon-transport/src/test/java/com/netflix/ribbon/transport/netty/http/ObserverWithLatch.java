@@ -29,8 +29,8 @@ import static org.junit.Assert.fail;
 public class ObserverWithLatch<T> implements Observer<T> {
     public volatile T obj;
     public volatile Throwable error;
-    
-    private CountDownLatch latch = new CountDownLatch(1);
+
+    private final CountDownLatch latch = new CountDownLatch(1);
     public AtomicInteger nextCounter = new AtomicInteger();
     public AtomicInteger errorCounter = new AtomicInteger();
 

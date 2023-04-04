@@ -79,7 +79,7 @@ public class DefaultNIWSServerListFilterTest {
         assertTrue(lb.getRule() instanceof AvailabilityFilteringRule);
         ZoneAffinityServerListFilter filter = (ZoneAffinityServerListFilter) lb.getFilter();
         LoadBalancerStats loadBalancerStats = lb.getLoadBalancerStats();
-        List<DiscoveryEnabledServer> servers = new ArrayList<DiscoveryEnabledServer>();        
+        List<DiscoveryEnabledServer> servers = new ArrayList<>();        
         servers.add(createServer(1, "a"));
         servers.add(createServer(2, "a"));
         servers.add(createServer(3, "a"));
@@ -93,7 +93,7 @@ public class DefaultNIWSServerListFilterTest {
         servers.add(createServer(4, "c"));
         servers.add(createServer(5, "c"));
         List<DiscoveryEnabledServer> filtered = filter.getFilteredListOfServers(servers);
-        List<DiscoveryEnabledServer> expected = new ArrayList<DiscoveryEnabledServer>();
+        List<DiscoveryEnabledServer> expected = new ArrayList<>();
         expected.add(createServer(1, "c"));
         expected.add(createServer(2, "c"));
         expected.add(createServer(3, "c"));
@@ -119,7 +119,7 @@ public class DefaultNIWSServerListFilterTest {
         DynamicServerListLoadBalancer lb = (DynamicServerListLoadBalancer) ClientFactory.getNamedLoadBalancer("DefaultNIWSServerListFilterTest2");
         ZoneAffinityServerListFilter filter = (ZoneAffinityServerListFilter) lb.getFilter();
         LoadBalancerStats loadBalancerStats = lb.getLoadBalancerStats();
-        List<DiscoveryEnabledServer> servers = new ArrayList<DiscoveryEnabledServer>();        
+        List<DiscoveryEnabledServer> servers = new ArrayList<>();        
         servers.add(createServer(1, "a"));
         servers.add(createServer(2, "a"));
         servers.add(createServer(3, "a"));
@@ -133,7 +133,7 @@ public class DefaultNIWSServerListFilterTest {
         servers.add(createServer(4, "c"));
         servers.add(createServer(5, "c"));
         List<DiscoveryEnabledServer> filtered = filter.getFilteredListOfServers(servers);
-        List<DiscoveryEnabledServer> expected = new ArrayList<DiscoveryEnabledServer>();
+        List<DiscoveryEnabledServer> expected = new ArrayList<>();
         expected.add(createServer(1, "c"));
         expected.add(createServer(2, "c"));
         expected.add(createServer(3, "c"));
@@ -159,7 +159,7 @@ public class DefaultNIWSServerListFilterTest {
         DynamicServerListLoadBalancer lb = (DynamicServerListLoadBalancer) ClientFactory.getNamedLoadBalancer("DefaultNIWSServerListFilterTest3");
         ZoneAffinityServerListFilter filter = (ZoneAffinityServerListFilter) lb.getFilter();
         LoadBalancerStats loadBalancerStats = lb.getLoadBalancerStats();
-        List<DiscoveryEnabledServer> servers = new ArrayList<DiscoveryEnabledServer>();        
+        List<DiscoveryEnabledServer> servers = new ArrayList<>();        
         servers.add(createServer(1, "a"));
         servers.add(createServer(2, "a"));
         servers.add(createServer(3, "a"));
@@ -170,7 +170,7 @@ public class DefaultNIWSServerListFilterTest {
         servers.add(createServer(1, "c"));
         servers.add(createServer(2, "c"));
         List<DiscoveryEnabledServer> filtered = filter.getFilteredListOfServers(servers);
-        List<DiscoveryEnabledServer> expected = new ArrayList<DiscoveryEnabledServer>();
+        List<DiscoveryEnabledServer> expected = new ArrayList<>();
         /*
         expected.add(createServer(1, "c"));
         expected.add(createServer(2, "c"));

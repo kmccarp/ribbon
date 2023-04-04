@@ -36,10 +36,6 @@ public class ZoneAffinityPredicate extends AbstractServerPredicate {
     public boolean apply(PredicateKey input) {
         Server s = input.getServer();
         String az = s.getZone();
-        if (az != null && zone != null && az.toLowerCase().equals(zone.toLowerCase())) {
-            return true;
-        } else {
-            return false;
-        }
+        return az != null && zone != null && az.toLowerCase().equals(zone.toLowerCase());
     }
 }

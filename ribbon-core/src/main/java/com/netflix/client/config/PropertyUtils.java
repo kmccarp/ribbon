@@ -8,15 +8,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class PropertyUtils {
-    private static Logger LOG = LoggerFactory.getLogger(PropertyUtils.class);
+public final class PropertyUtils {
+    private static final Logger LOG = LoggerFactory.getLogger(PropertyUtils.class);
 
     private PropertyUtils() {}
 
     /**
      * Returns the internal property to the desiredn type
      */
-    private static Map<Class<?>, Optional<Method>> valueOfMethods = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, Optional<Method>> valueOfMethods = new ConcurrentHashMap<>();
 
     public static <T> Optional<T> resolveWithValueOf(Class<T> type, String value) {
         return valueOfMethods.computeIfAbsent(type, ignore -> {
