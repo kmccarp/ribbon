@@ -29,8 +29,6 @@ import io.reactivex.netty.channel.ObservableConnection;
 import io.reactivex.netty.client.RxClient;
 import io.reactivex.netty.protocol.udp.server.UdpServer;
 import org.junit.Test;
-import rx.Observable;
-import rx.functions.Func1;
 
 import java.net.DatagramSocket;
 import java.net.SocketException;
@@ -63,20 +61,11 @@ public class UdpClientTest {
         RxClient<DatagramPacket, DatagramPacket> client = RibbonTransport.newUdpClient(lb,
                 DefaultClientConfigImpl.getClientConfigWithDefaultValues());
         try {
-            String response = client.connect().flatMap(new Func1<ObservableConnection<DatagramPacket, DatagramPacket>,
-                    Observable<DatagramPacket>>() {
-                @Override
-                public Observable<DatagramPacket> call(ObservableConnection<DatagramPacket, DatagramPacket> connection) {
-                    connection.writeStringAndFlush("Is there anybody out there?");
-                    return connection.getInput();
-                }
-            }).take(1)
-                    .map(new Func1<DatagramPacket, String>() {
-                        @Override
-                        public String call(DatagramPacket datagramPacket) {
-                            return datagramPacket.content().toString(Charset.defaultCharset());
-                        }
-                    })
+            String response = client.connect().flatMap(connection -> {
+                        connection.writeStringAndFlush("Is there anybody out there?");
+                        return connection.getInput();
+                    }).take(1)
+                    .map(datagramPacket -> datagramPacket.content().toString(Charset.defaultCharset()))
                     .toBlocking()
                     .first();
             assertEquals(HelloUdpServer.WELCOME_MSG, response);
@@ -96,12 +85,7 @@ public class UdpClientTest {
         MyUDPClient client = new MyUDPClient(lb, DefaultClientConfigImpl.getClientConfigWithDefaultValues());
         try {
             String response = client.submit("Is there anybody out there?")
-                    .map(new Func1<DatagramPacket, String>() {
-                        @Override
-                        public String call(DatagramPacket datagramPacket) {
-                            return datagramPacket.content().toString(Charset.defaultCharset());
-                        }
-                    })
+                    .map(datagramPacket -> datagramPacket.content().toString(Charset.defaultCharset()))
                     .toBlocking()
                     .first();
             fail("Exception expected");

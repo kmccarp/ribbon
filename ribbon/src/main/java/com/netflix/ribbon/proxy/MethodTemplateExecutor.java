@@ -77,8 +77,7 @@ class MethodTemplateExecutor {
     }
 
     private Builder<?> createHttpRequestTemplateBuilder() {
-        Builder<?> httpRequestTemplateBuilder = createBaseHttpRequestTemplate(httpResourceGroup);
-        return httpRequestTemplateBuilder;
+        return createBaseHttpRequestTemplate(httpResourceGroup);
     }
 
     private Builder<?> createBaseHttpRequestTemplate(HttpResourceGroup httpResourceGroup) {
@@ -128,7 +127,7 @@ class MethodTemplateExecutor {
 
     public static Map<Method, MethodTemplateExecutor> from(HttpResourceGroup httpResourceGroup, Class<?> clientInterface, AnnotationProcessorsProvider annotations) {
         MethodTemplate[] methodTemplates = MethodTemplate.from(clientInterface);
-        Map<Method, MethodTemplateExecutor> tgm = new HashMap<Method, MethodTemplateExecutor>();
+        Map<Method, MethodTemplateExecutor> tgm = new HashMap<>();
         for (MethodTemplate mt : methodTemplates) {
             tgm.put(mt.getMethod(), new MethodTemplateExecutor(httpResourceGroup, mt, annotations));
         }

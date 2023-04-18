@@ -30,7 +30,7 @@ public abstract class RequestTemplate<T, R> {
     public abstract RequestTemplate<T, R> copy(String name);
         
 
-    public static abstract class RequestBuilder<T> {
+    public abstract static class RequestBuilder<T> {
         public abstract RequestBuilder<T> withRequestProperty(String key, Object value);
         
         public abstract RibbonRequest<T> build();

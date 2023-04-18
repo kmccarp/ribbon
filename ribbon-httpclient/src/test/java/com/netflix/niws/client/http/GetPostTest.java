@@ -41,17 +41,17 @@ import com.sun.net.httpserver.HttpServer;
 
 public class GetPostTest {
 
-    private static HttpServer server = null;
-    private static String SERVICE_URI;
+    private static HttpServer server;
+    private static String serviceUri;
 	private static RestClient client;
 
     @BeforeClass 
     public static void init() throws Exception {
         PackagesResourceConfig resourceConfig = new PackagesResourceConfig("com.netflix.niws.http", "com.netflix.niws.client");
         int port = (new Random()).nextInt(1000) + 4000;
-        SERVICE_URI = "http://localhost:" + port + "/";
+        serviceUri = "http://localhost:" + port + "/";
         try{
-            server = HttpServerFactory.create(SERVICE_URI, resourceConfig);           
+            server = HttpServerFactory.create(serviceUri, resourceConfig);           
             server.start();
         } catch (Exception e) {
             e.printStackTrace();
@@ -67,30 +67,30 @@ public class GetPostTest {
     
     @Test
     public void testGet() throws Exception {
-    	URI getUri = new URI(SERVICE_URI + "test/getObject");
+    	URI getUri = new URI(serviceUri + "test/getObject");
     	MultivaluedMapImpl params = new MultivaluedMapImpl();
     	params.add("name", "test");
     	HttpRequest request = HttpRequest.newBuilder().uri(getUri).queryParams("name", "test").build();
     	HttpResponse response = client.execute(request);
     	assertEquals(200, response.getStatus());
-    	assertTrue(response.getEntity(TestObject.class).name.equals("test"));
+    	assertTrue("test".equals(response.getEntity(TestObject.class).name));
     }
     
     @Test
     public void testPost() throws Exception {
-    	URI getUri = new URI(SERVICE_URI + "test/setObject");
+    	URI getUri = new URI(serviceUri + "test/setObject");
     	TestObject obj = new TestObject();
     	obj.name = "fromClient";
     	HttpRequest request = HttpRequest.newBuilder().verb(Verb.POST).uri(getUri).entity(obj).build();
     	HttpResponse response = client.execute(request);
     	assertEquals(200, response.getStatus());
-    	assertTrue(response.getEntity(TestObject.class).name.equals("fromClient"));
+    	assertTrue("fromClient".equals(response.getEntity(TestObject.class).name));
     }
     
     @Test
     public void testChunkedEncoding() throws Exception {
         String obj = "chunked encoded content";
-    	URI postUri = new URI(SERVICE_URI + "test/postStream");
+    	URI postUri = new URI(serviceUri + "test/postStream");
     	InputStream input = new ByteArrayInputStream(obj.getBytes("UTF-8"));
     	HttpRequest request = HttpRequest.newBuilder().verb(Verb.POST).uri(postUri).entity(input).build();
     	HttpResponse response = client.execute(request);

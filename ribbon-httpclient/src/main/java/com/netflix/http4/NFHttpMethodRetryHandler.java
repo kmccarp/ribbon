@@ -36,9 +36,9 @@ import com.netflix.servo.monitor.DynamicCounter;
 
 public class NFHttpMethodRetryHandler extends DefaultHttpRequestRetryHandler {
 	private static final String RETRY_COUNTER = "PLATFORM:NFttpClient:Retries:";
-	private Logger logger = LoggerFactory.getLogger(NFHttpMethodRetryHandler.class);
-	private int sleepTimeFactorMs;
-	private String httpClientName;
+    private final Logger logger = LoggerFactory.getLogger(NFHttpMethodRetryHandler.class);
+    private final int sleepTimeFactorMs;
+    private final String httpClientName;
 
 	/**
 	 * Creates a new NFHttpMethodRetryHandler.
