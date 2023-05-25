@@ -21,8 +21,6 @@ import com.netflix.ribbon.examples.rx.common.Movie;
 import io.netty.buffer.ByteBuf;
 import rx.Notification;
 import rx.Observable;
-import rx.functions.Func1;
-import rx.functions.Func2;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -30,7 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static java.lang.String.*;
+import static java.lang.String.format;
 
 /**
  * Base class for the transport/template and proxy examples. It orchestrates application flow, and
@@ -58,29 +56,23 @@ public abstract class AbstractRxMovieClient {
     }
 
     protected Observable<Void> searchCatalog() {
-        List<String> searches = new ArrayList<String>(2);
+        List<String> searches = new ArrayList<>(2);
         Collections.addAll(searches, "findById", "findRawMovieById", "findMovie(name, category)");
 
         return Observable
             .concat(Observable.from(triggerRecommendationsSearch()))
-            .flatMap(new Func1<ByteBuf, Observable<List<Movie>>>() {
-                @Override
-                public Observable<List<Movie>> call(ByteBuf byteBuf) {
-                    List<Movie> movies = new ArrayList<Movie>();
-                    String lines = byteBuf.toString(Charset.defaultCharset());
-                    for (String line : NEW_LINE_SPLIT_RE.split(lines)) {
-                        movies.add(Movie.from(line));
-                    }
-                    return Observable.just(movies);
+            .flatMap(byteBuf -> {
+                List<Movie> movies = new ArrayList<Movie>();
+                String lines = byteBuf.toString(Charset.defaultCharset());
+                for (String line: NEW_LINE_SPLIT_RE.split(lines)) {
+                    movies.add(Movie.from(line));
                 }
+                return Observable.just(movies);
             })
-            .zipWith(searches, new Func2<List<Movie>, String, Void>() {
-                @Override
-                public Void call(List<Movie> movies, String query) {
-                    System.out.println(format("    %s=%s", query, movies));
-                    return null;
-                }
-            });
+            .zipWith(searches, (movies, query) -> {
+            System.out.println(format("    %s=%s", query, movies));
+            return null;
+        });
     }
 
     public boolean runExample() {
@@ -107,25 +99,19 @@ public abstract class AbstractRxMovieClient {
 
     Notification<Void> executeServerCalls() {
         Observable<Void> resultObservable = registerMovies().materialize().flatMap(
-                new Func1<Notification<ByteBuf>, Observable<Void>>() {
-                    @Override
-                    public Observable<Void> call(Notification<ByteBuf> notif) {
-                        if (!verifyStatus(notif)) {
-                            return Observable.error(notif.getThrowable());
-                        }
-                        System.out.print("Updating user recommendations...");
-                        return updateRecommendations().materialize().flatMap(
-                                new Func1<Notification<ByteBuf>, Observable<Void>>() {
-                                    @Override
-                                    public Observable<Void> call(Notification<ByteBuf> notif) {
-                                        if (!verifyStatus(notif)) {
-                                            return Observable.error(notif.getThrowable());
-                                        }
-                                        System.out.println("Searching through the movie catalog...");
-                                        return searchCatalog();
-                                    }
-                                });
+                notif -> {
+                    if (!verifyStatus(notif)) {
+                        return Observable.error(notif.getThrowable());
                     }
+                    System.out.print("Updating user recommendations...");
+                    return updateRecommendations().materialize().flatMap(
+                            notif -> {
+                                if (!verifyStatus(notif)) {
+                                    return Observable.error(notif.getThrowable());
+                                }
+                                System.out.println("Searching through the movie catalog...");
+                                return searchCatalog();
+                            });
                 }
         );
         return resultObservable.materialize().toBlocking().last();

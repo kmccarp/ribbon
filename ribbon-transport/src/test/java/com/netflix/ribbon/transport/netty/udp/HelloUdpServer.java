@@ -20,11 +20,9 @@ package com.netflix.ribbon.transport.netty.udp;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.socket.DatagramPacket;
 import io.reactivex.netty.RxNetty;
-import io.reactivex.netty.channel.ConnectionHandler;
 import io.reactivex.netty.channel.ObservableConnection;
 import io.reactivex.netty.protocol.udp.server.UdpServer;
 import rx.Observable;
-import rx.functions.Func1;
 
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
@@ -53,26 +51,13 @@ public final class HelloUdpServer {
     }
 
     public UdpServer<DatagramPacket, DatagramPacket> createServer() {
-        UdpServer<DatagramPacket, DatagramPacket> server = RxNetty.createUdpServer(port, new ConnectionHandler<DatagramPacket, DatagramPacket>() {
-            @Override
-            public Observable<Void> handle(final ObservableConnection<DatagramPacket, DatagramPacket> newConnection) {
-                return newConnection.getInput().flatMap(new Func1<DatagramPacket, Observable<Void>>() {
-                    @Override
-                    public Observable<Void> call(final DatagramPacket received) {
-                        return Observable.interval(delay, TimeUnit.MILLISECONDS).take(1).flatMap(new Func1<Long, Observable<Void>>() {
-                            @Override
-                            public Observable<Void> call(Long aLong) {
-                                InetSocketAddress sender = received.sender();
-                                System.out.println("Received datagram. Sender: " + sender);
-                                ByteBuf data = newConnection.getChannel().alloc().buffer(WELCOME_MSG_BYTES.length);
-                                data.writeBytes(WELCOME_MSG_BYTES);
-                                return newConnection.writeAndFlush(new DatagramPacket(data, sender));
-                            }
-                        });
-                    }
-                });
-            }
-        });
+        UdpServer<DatagramPacket, DatagramPacket> server = RxNetty.createUdpServer(port, newConnection -> newConnection.getInput().flatMap(received -> Observable.interval(delay, TimeUnit.MILLISECONDS).take(1).flatMap(aLong -> {
+            InetSocketAddress sender = received.sender();
+            System.out.println("Received datagram. Sender: " + sender);
+            ByteBuf data = newConnection.getChannel().alloc().buffer(WELCOME_MSG_BYTES.length);
+            data.writeBytes(WELCOME_MSG_BYTES);
+            return newConnection.writeAndFlush(new DatagramPacket(data, sender));
+        })));
         System.out.println("UDP hello server started at port: " + port);
         return server;
     }

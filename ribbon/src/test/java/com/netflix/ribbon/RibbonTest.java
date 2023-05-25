@@ -26,7 +26,6 @@ import com.netflix.ribbon.hystrix.FallbackHandler;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.reactivex.netty.protocol.http.client.HttpClientResponse;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -35,8 +34,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import rx.Observable;
-import rx.functions.Action0;
-import rx.functions.Action1;
 import rx.functions.Func1;
 
 import java.io.IOException;
@@ -54,13 +51,7 @@ import static org.junit.Assert.*;
 public class RibbonTest {
     
     private static String toStringBlocking(RibbonRequest<ByteBuf> request) {
-        return request.toObservable().map(new Func1<ByteBuf, String>() {
-            @Override
-            public String call(ByteBuf t1) {
-                return t1.toString(Charset.defaultCharset());
-            }
-            
-        }).toBlocking().single();
+        return request.toObservable().map(t1 -> t1.toString(Charset.defaultCharset())).toBlocking().single();
     }
 
     @BeforeClass
@@ -160,12 +151,7 @@ public class RibbonTest {
         HttpRequestTemplate<ByteBuf> template = group.newTemplateBuilder("test")
                 .withUriTemplate("/")
                 .withMethod("GET")
-                .withCacheProvider("somekey", new CacheProvider<ByteBuf>(){
-                    @Override
-                    public Observable<ByteBuf> get(String key, Map<String, Object> vars) {
-                        return Observable.error(new Exception("Cache miss"));
-                    }
-                }).build();
+                .withCacheProvider("somekey", (key, vars) -> Observable.error(new Exception("Cache miss"))).build();
         RibbonRequest<ByteBuf> request = template
                 .requestBuilder().build();
         final AtomicBoolean success = new AtomicBoolean(false);
@@ -175,12 +161,7 @@ public class RibbonTest {
             public Observable<String> call(
                     final RibbonResponse<Observable<ByteBuf>> response) {
                 success.set(response.getHystrixInfo().isSuccessfulExecution());
-                return response.content().map(new Func1<ByteBuf, String>(){
-                    @Override
-                    public String call(ByteBuf t1) {
-                        return t1.toString(Charset.defaultCharset());
-                    }
-                });
+                return response.content().map(t1 -> t1.toString(Charset.defaultCharset()));
             }
         });
         String s = result.toBlocking().single();
@@ -216,32 +197,20 @@ public class RibbonTest {
         HttpRequestTemplate<ByteBuf> template = group.newTemplateBuilder("test", ByteBuf.class)
                 .withUriTemplate("/")
                 .withMethod("GET")
-                .withResponseValidator(new ResponseValidator<HttpClientResponse<ByteBuf>>() {
-                    @Override
-                    public void validate(HttpClientResponse<ByteBuf> t1) throws UnsuccessfulResponseException {
-                        throw new UnsuccessfulResponseException("error", new IllegalArgumentException());
-                    }
-                }).build();
+                .withResponseValidator(t1 -> {
+            throw new UnsuccessfulResponseException("error", new IllegalArgumentException());
+        }).build();
         RibbonRequest<ByteBuf> request = template.requestBuilder().build();
         final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
-        request.toObservable().subscribe(new Action1<ByteBuf>() {
-            @Override
-            public void call(ByteBuf t1) {
-            }
-        }, 
-        new Action1<Throwable>(){
-            @Override
-            public void call(Throwable t1) {
-                error.set(t1);
-                latch.countDown();
-            }
-        }, 
-        new Action0() {
-            @Override
-            public void call() {
-            }
-        });
+        final AtomicReference<Throwable> error = new AtomicReference<>();
+        request.toObservable().subscribe(t1 -> {
+        },
+                t1 -> {
+                    error.set(t1);
+                    latch.countDown();
+                },
+                () -> {
+                });
         latch.await();
         assertTrue(error.get() instanceof HystrixBadRequestException);
         assertTrue(error.get().getCause() instanceof UnsuccessfulResponseException);
@@ -270,21 +239,12 @@ public class RibbonTest {
                 }).build();
         RibbonRequest<ByteBuf> request = template
                 .requestBuilder().build();
-        final AtomicReference<HystrixInvokableInfo<?>> hystrixInfo = new AtomicReference<HystrixInvokableInfo<?>>();
+        final AtomicReference<HystrixInvokableInfo<?>> hystrixInfo = new AtomicReference<>();
         final AtomicBoolean failed = new AtomicBoolean(false);
-        Observable<String> result = request.withMetadata().toObservable().flatMap(new Func1<RibbonResponse<Observable<ByteBuf>>, Observable<String>>(){
-            @Override
-            public Observable<String> call(
-                    final RibbonResponse<Observable<ByteBuf>> response) {
-                hystrixInfo.set(response.getHystrixInfo());
-                failed.set(response.getHystrixInfo().isFailedExecution());
-                return response.content().map(new Func1<ByteBuf, String>(){
-                    @Override
-                    public String call(ByteBuf t1) {
-                        return t1.toString(Charset.defaultCharset());
-                    }
-                });
-            }
+        Observable<String> result = request.withMetadata().toObservable().flatMap(response -> {
+            hystrixInfo.set(response.getHystrixInfo());
+            failed.set(response.getHystrixInfo().isFailedExecution());
+            return response.content().map(t1 -> t1.toString(Charset.defaultCharset()));
         });
         String s = result.toBlocking().single();
         // this returns true only after the blocking call is done
@@ -301,20 +261,17 @@ public class RibbonTest {
         final String content = "from cache";
         final String cacheKey = "somekey";
         HttpRequestTemplate<ByteBuf> template = group.newTemplateBuilder("test")
-        .withCacheProvider(cacheKey, new CacheProvider<ByteBuf>(){
-            @Override
-            public Observable<ByteBuf> get(String key, Map<String, Object> vars) {
-                if (key.equals(cacheKey)) {
-                    try {
-                        return Observable.just(Unpooled.buffer().writeBytes(content.getBytes("UTF-8")));
-                    } catch (UnsupportedEncodingException e) {
-                        return Observable.error(e);
+        .withCacheProvider(cacheKey, (key, vars) -> {
+                    if (key.equals(cacheKey)) {
+                        try {
+                            return Observable.just(Unpooled.buffer().writeBytes(content.getBytes("UTF-8")));
+                        } catch (UnsupportedEncodingException e) {
+                            return Observable.error(e);
+                        }
+                    } else {
+                        return Observable.error(new Exception("Cache miss"));
                     }
-                } else {
-                    return Observable.error(new Exception("Cache miss"));
-                }
-            }
-        }).withUriTemplate("/")
+                }).withUriTemplate("/")
                 .withMethod("GET").build();
         RibbonRequest<ByteBuf> request = template
                 .requestBuilder().build();
@@ -347,20 +304,17 @@ public class RibbonTest {
                 .requestBuilder().build();
         Observable<ByteBuf> result = request.observe();
         final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<String> fromCommand = new AtomicReference<String>();
+        final AtomicReference<String> fromCommand = new AtomicReference<>();
         // We need to wait until the response is received and processed by event loop
         // and make sure that subscribing to it again will not cause ByteBuf ref count issue
         result.toBlocking().last();
-        result.subscribe(new Action1<ByteBuf>() {
-            @Override
-            public void call(ByteBuf t1) {
-                try {
-                    fromCommand.set(t1.toString(Charset.defaultCharset()));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                latch.countDown();
+        result.subscribe(t1 -> {
+            try {
+                fromCommand.set(t1.toString(Charset.defaultCharset()));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            latch.countDown();
         });
         latch.await();
         assertEquals(content, fromCommand.get());
@@ -370,18 +324,7 @@ public class RibbonTest {
         // We need to wait until the response is received and processed by event loop
         // and make sure that subscribing to it again will not cause ByteBuf ref count issue
         metaResult.toBlocking().last();
-        result2 = metaResult.flatMap(new Func1<RibbonResponse<Observable<ByteBuf>>, Observable<ByteBuf>>(){
-            @Override
-            public Observable<ByteBuf> call(
-                    RibbonResponse<Observable<ByteBuf>> t1) {
-                return t1.content();
-            }
-        }).map(new Func1<ByteBuf, String>(){
-            @Override
-            public String call(ByteBuf t1) {
-                return t1.toString(Charset.defaultCharset());
-            }
-        }).toBlocking().single();
+        result2 = metaResult.flatMap(t1 -> t1.content()).map(t1 -> t1.toString(Charset.defaultCharset())).toBlocking().single();
         assertEquals(content, result2);
     }
     
@@ -400,12 +343,7 @@ public class RibbonTest {
                 .withMaxAutoRetriesNextServer(1));
         final String cacheKey = "somekey";
         HttpRequestTemplate<ByteBuf> template = group.newTemplateBuilder("test")
-                .withCacheProvider(cacheKey, new CacheProvider<ByteBuf>(){
-                    @Override
-                    public Observable<ByteBuf> get(String key, Map<String, Object> vars) {
-                        return Observable.error(new Exception("Cache miss again"));
-                    }
-                })
+                .withCacheProvider(cacheKey, (key, vars) -> Observable.error(new Exception("Cache miss again")))
                 .withMethod("GET")
                 .withUriTemplate("/").build();
         RibbonRequest<ByteBuf> request = template

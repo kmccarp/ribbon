@@ -1,7 +1,6 @@
 package com.netflix.ribbon.examples.loadbalancer;
 
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
@@ -16,7 +15,6 @@ import com.netflix.loadbalancer.LoadBalancerBuilder;
 import com.netflix.loadbalancer.LoadBalancerStats;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.reactive.LoadBalancerCommand;
-import com.netflix.loadbalancer.reactive.ServerOperation;
 
 /**
  *
@@ -37,17 +35,14 @@ public class URLConnectionLoadBalancer {
         return LoadBalancerCommand.<String>builder()
                 .withLoadBalancer(loadBalancer)
                 .build()
-                .submit(new ServerOperation<String>() {
-            @Override
-            public Observable<String> call(Server server) {
-                URL url;
-                try {
-                    url = new URL("http://" + server.getHost() + ":" + server.getPort() + path);
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    return Observable.just(conn.getResponseMessage());
-                } catch (Exception e) {
-                    return Observable.error(e);
-                }
+                .submit(server -> {
+            URL url;
+            try {
+                url = new URL("http://" + server.getHost() + ":" + server.getPort() + path);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                return Observable.just(conn.getResponseMessage());
+            } catch (Exception e) {
+                return Observable.error(e);
             }
         }).toBlocking().first();
     }

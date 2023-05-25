@@ -66,8 +66,7 @@ public class LoadBalancingTcpClient<I, O> extends LoadBalancingRxClientWithPoolO
         } else {
             builder.withNoConnectionPooling();
         }
-        RxClient<I, O> client = builder.build();
-        return client;
+        return builder.build();
     }
 
     @Override

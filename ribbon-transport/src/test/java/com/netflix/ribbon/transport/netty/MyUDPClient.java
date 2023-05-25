@@ -23,7 +23,6 @@ import com.netflix.client.config.IClientConfig;
 import com.netflix.ribbon.transport.netty.udp.LoadBalancingUdpClient;
 import com.netflix.loadbalancer.ILoadBalancer;
 import com.netflix.loadbalancer.reactive.LoadBalancerCommand;
-import com.netflix.loadbalancer.reactive.ServerOperation;
 import com.netflix.loadbalancer.Server;
 
 import io.netty.channel.socket.DatagramPacket;
@@ -31,7 +30,6 @@ import io.reactivex.netty.channel.ObservableConnection;
 import io.reactivex.netty.client.RxClient;
 import io.reactivex.netty.pipeline.PipelineConfigurator;
 import rx.Observable;
-import rx.functions.Func1;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -69,18 +67,12 @@ public class MyUDPClient extends LoadBalancingUdpClient<DatagramPacket, Datagram
         return LoadBalancerCommand.<DatagramPacket>builder()
                 .withLoadBalancerContext(lbContext)
                 .build()
-                .submit(new ServerOperation<DatagramPacket>() {
-                    @Override
-                    public Observable<DatagramPacket> call(Server server) {
-                        RxClient<DatagramPacket, DatagramPacket> rxClient = getOrCreateRxClient(server);
-                        return rxClient.connect().flatMap(new Func1<ObservableConnection<DatagramPacket, DatagramPacket>, Observable<? extends DatagramPacket>>() {
-                            @Override
-                            public Observable<? extends DatagramPacket> call(ObservableConnection<DatagramPacket, DatagramPacket> connection) {
-                                connection.writeStringAndFlush(content);
-                                return connection.getInput().timeout(10, TimeUnit.MILLISECONDS).take(1);
-                            }
-                        });
-                    }
-                });
+                .submit(server -> {
+            RxClient<DatagramPacket, DatagramPacket> rxClient = getOrCreateRxClient(server);
+            return rxClient.connect().flatMap(connection -> {
+                connection.writeStringAndFlush(content);
+                return connection.getInput().timeout(10, TimeUnit.MILLISECONDS).take(1);
+            });
+        });
     }
 }

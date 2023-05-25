@@ -55,7 +55,7 @@ public abstract class ReloadableClientConfig implements IClientConfig {
 
     private String namespace = DEFAULT_NAMESPACE;
 
-    private boolean isDynamic = false;
+    private boolean isDynamic;
 
     protected ReloadableClientConfig(PropertyResolver resolver) {
         this.resolver = resolver;
@@ -429,12 +429,12 @@ public abstract class ReloadableClientConfig implements IClientConfig {
             return this;
         }
 
-        override.forEach((key, value) -> setProperty(key, value));
+        override.forEach(this::setProperty);
 
         return this;
     }
 
-    private volatile String cachedToString = null;
+    private volatile String cachedToString;
 
     @Override
     public String toString() {

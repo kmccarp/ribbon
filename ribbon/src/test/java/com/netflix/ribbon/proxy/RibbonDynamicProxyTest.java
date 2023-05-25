@@ -114,7 +114,7 @@ public class RibbonDynamicProxyTest {
         MethodTemplateExecutor tgMock = createMock(MethodTemplateExecutor.class);
         expect(tgMock.executeFromTemplate(anyObject(Object[].class))).andReturn(ribbonRequestMock);
 
-        Map<Method, MethodTemplateExecutor> tgMap = new HashMap<Method, MethodTemplateExecutor>();
+        Map<Method, MethodTemplateExecutor> tgMap = new HashMap<>();
         tgMap.put(methodByName(SampleMovieService.class, "findMovieById"), tgMock);
 
         mockStatic(MethodTemplateExecutor.class);

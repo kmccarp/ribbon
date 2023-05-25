@@ -36,11 +36,10 @@ import io.reactivex.netty.pipeline.PipelineConfigurators;
 import io.reactivex.netty.protocol.http.server.HttpServer;
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
 import io.reactivex.netty.protocol.http.server.HttpServerResponse;
-import io.reactivex.netty.protocol.http.server.RequestHandler;
 import rx.Observable;
 import rx.functions.Func1;
 
-import static java.lang.String.*;
+import static java.lang.String.format;
 
 /**
  * The client examples assume that the movie server runs on the default port 8080.
@@ -54,33 +53,30 @@ public class RxMovieServer {
 
     private final int port;
 
-    final Map<String, Movie> movies = new ConcurrentHashMap<String, Movie>();
-    final Map<String, Set<String>> userRecommendations = new ConcurrentHashMap<String, Set<String>>();
+    final Map<String, Movie> movies = new ConcurrentHashMap<>();
+    final Map<String, Set<String>> userRecommendations = new ConcurrentHashMap<>();
 
     public RxMovieServer(int port) {
         this.port = port;
     }
 
     public HttpServer<ByteBuf, ByteBuf> createServer() {
-        HttpServer<ByteBuf, ByteBuf> server = RxNetty.newHttpServerBuilder(port, new RequestHandler<ByteBuf, ByteBuf>() {
-            @Override
-            public Observable<Void> handle(HttpServerRequest<ByteBuf> request, final HttpServerResponse<ByteBuf> response) {
-                if (request.getPath().contains("/users")) {
-                    if (request.getHttpMethod().equals(HttpMethod.GET)) {
-                        return handleRecommendationsByUserId(request, response);
-                    } else {
-                        return handleUpdateRecommendationsForUser(request, response);
-                    }
+        HttpServer<ByteBuf, ByteBuf> server = RxNetty.newHttpServerBuilder(port, (request, response) -> {
+            if (request.getPath().contains("/users")) {
+                if (request.getHttpMethod().equals(HttpMethod.GET)) {
+                    return handleRecommendationsByUserId(request, response);
+                } else {
+                    return handleUpdateRecommendationsForUser(request, response);
                 }
-                if (request.getPath().contains("/recommendations")) {
-                    return handleRecommendationsBy(request, response);
-                }
-                if (request.getPath().contains("/movies")) {
-                    return handleRegisterMovie(request, response);
-                }
-                response.setStatus(HttpResponseStatus.NOT_FOUND);
-                return response.close();
             }
+            if (request.getPath().contains("/recommendations")) {
+                return handleRecommendationsBy(request, response);
+            }
+            if (request.getPath().contains("/movies")) {
+                return handleRegisterMovie(request, response);
+            }
+            response.setStatus(HttpResponseStatus.NOT_FOUND);
+            return response.close();
         }).pipelineConfigurator(PipelineConfigurators.<ByteBuf, ByteBuf>httpServerConfigurator()).enableWireLogging(LogLevel.ERROR).build();
 
         System.out.println("RxMovie server started...");
@@ -162,7 +158,7 @@ public class RxMovieServer {
                     if (userRecommendations.containsKey(userId)) {
                         recommendations = userRecommendations.get(userId);
                     } else {
-                        recommendations = new ConcurrentSet<String>();
+                        recommendations = new ConcurrentSet<>();
                         userRecommendations.put(userId, recommendations);
                     }
                     recommendations.add(movieId);
@@ -175,22 +171,19 @@ public class RxMovieServer {
 
     private Observable<Void> handleRegisterMovie(HttpServerRequest<ByteBuf> request, final HttpServerResponse<ByteBuf> response) {
         System.out.println("Http request -> register movie: " + request.getPath());
-        return request.getContent().flatMap(new Func1<ByteBuf, Observable<Void>>() {
-            @Override
-            public Observable<Void> call(ByteBuf byteBuf) {
-                String formatted = byteBuf.toString(Charset.defaultCharset());
-                System.out.println("    movie: " + formatted);
-                try {
-                    Movie movie = Movie.from(formatted);
-                    movies.put(movie.getId(), movie);
-                    response.setStatus(HttpResponseStatus.CREATED);
-                } catch (Exception e) {
-                    System.err.println("Invalid movie content");
-                    e.printStackTrace();
-                    response.setStatus(HttpResponseStatus.BAD_REQUEST);
-                }
-                return response.close();
+        return request.getContent().flatMap(byteBuf -> {
+            String formatted = byteBuf.toString(Charset.defaultCharset());
+            System.out.println("    movie: " + formatted);
+            try {
+                Movie movie = Movie.from(formatted);
+                movies.put(movie.getId(), movie);
+                response.setStatus(HttpResponseStatus.CREATED);
+            } catch (Exception e) {
+                System.err.println("Invalid movie content");
+                e.printStackTrace();
+                response.setStatus(HttpResponseStatus.BAD_REQUEST);
             }
+            return response.close();
         });
     }
 

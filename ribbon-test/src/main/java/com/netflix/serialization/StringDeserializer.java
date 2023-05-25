@@ -8,14 +8,14 @@ import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Closeables;
 
-public class StringDeserializer implements Deserializer<String> {
+public final class StringDeserializer implements Deserializer<String> {
     
     private static final StringDeserializer instance = new StringDeserializer();
     
     private StringDeserializer() {
     }
 
-    public static final StringDeserializer getInstance() {
+    public static StringDeserializer getInstance() {
         return instance;
     }
     
@@ -23,8 +23,7 @@ public class StringDeserializer implements Deserializer<String> {
     public String deserialize(InputStream in, TypeDef<String> type)
             throws IOException {
         try {
-            String content = CharStreams.toString(new InputStreamReader(in, Charsets.UTF_8));
-            return content;
+            return CharStreams.toString(new InputStreamReader(in, Charsets.UTF_8));
         } finally {
             Closeables.close(in, true);
         }
