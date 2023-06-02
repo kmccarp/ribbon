@@ -94,7 +94,7 @@ class MethodTemplateExecutor {
 
     private void withParameters(HttpRequestBuilder<?> requestBuilder, Object[] args) {
         int length = methodTemplate.getParamSize();
-        for (int i = 0; i < length; i++) {
+        for (int i = 0;i < length;i++) {
             String name = methodTemplate.getParamName(i);
             Object value = args[methodTemplate.getParamPosition(i)];
             requestBuilder.withRequestProperty(name, value);
@@ -109,7 +109,7 @@ class MethodTemplateExecutor {
         Object contentValue = args[methodTemplate.getContentArgPosition()];
         if (contentValue instanceof Observable) {
             if (ByteBuf.class.isAssignableFrom(methodTemplate.getGenericContentType())) {
-                requestBuilder.withContent((Observable<ByteBuf>) contentValue); 
+                requestBuilder.withContent((Observable<ByteBuf>) contentValue);
             } else {
                 ContentTransformer contentTransformer = Utils.newInstance(methodTemplate.getContentTransformerClass());
                 requestBuilder.withRawContentSource((Observable) contentValue, contentTransformer);
@@ -129,7 +129,7 @@ class MethodTemplateExecutor {
     public static Map<Method, MethodTemplateExecutor> from(HttpResourceGroup httpResourceGroup, Class<?> clientInterface, AnnotationProcessorsProvider annotations) {
         MethodTemplate[] methodTemplates = MethodTemplate.from(clientInterface);
         Map<Method, MethodTemplateExecutor> tgm = new HashMap<Method, MethodTemplateExecutor>();
-        for (MethodTemplate mt : methodTemplates) {
+        for (MethodTemplate mt: methodTemplates) {
             tgm.put(mt.getMethod(), new MethodTemplateExecutor(httpResourceGroup, mt, annotations));
         }
         return tgm;

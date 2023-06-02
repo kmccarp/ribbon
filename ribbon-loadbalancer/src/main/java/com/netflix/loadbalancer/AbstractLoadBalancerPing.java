@@ -26,20 +26,20 @@ import com.netflix.client.IClientConfigAware;
  * @author stonse
  * 
  */
-public abstract class AbstractLoadBalancerPing implements IPing, IClientConfigAware{
+public abstract class AbstractLoadBalancerPing implements IPing, IClientConfigAware {
 
     AbstractLoadBalancer lb;
-    
+
     @Override
     public boolean isAlive(Server server) {
         return true;
     }
-    
-    public void setLoadBalancer(AbstractLoadBalancer lb){
+
+    public void setLoadBalancer(AbstractLoadBalancer lb) {
         this.lb = lb;
     }
-    
-    public AbstractLoadBalancer getLoadBalancer(){
+
+    public AbstractLoadBalancer getLoadBalancer() {
         return lb;
     }
 

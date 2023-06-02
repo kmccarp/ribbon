@@ -27,61 +27,65 @@ package com.netflix.client.config;
 public interface IClientConfigKey<T> {
 
     @SuppressWarnings("rawtypes")
-	final class Keys extends CommonClientConfigKey {
+    final class Keys extends CommonClientConfigKey {
         private Keys(String configKey) {
             super(configKey);
         }
     }
-    
-	/**
-	 * @return string representation of the key used for hash purpose.
-	 */
-	String key();
-	
-	/**
+
+    /**
+     * @return string representation of the key used for hash purpose.
+     */
+    String key();
+
+    /**
      * @return Data type for the key. For example, Integer.class.
-	 */
-	Class<T> type();
+     */
+    Class<T> type();
 
-	default T defaultValue() { return null; }
+    default T defaultValue() {
+        return null;
+    }
 
-	default IClientConfigKey<T> format(Object ... args) {
-		return create(String.format(key(), args), type(), defaultValue());
-	}
+    default IClientConfigKey<T> format(Object ... args) {
+        return create(String.format(key(), args), type(), defaultValue());
+    }
 
-	default IClientConfigKey<T> create(String key, Class<T> type, T defaultValue) {
-		return new IClientConfigKey<T>() {
+    default IClientConfigKey<T> create(String key, Class<T> type, T defaultValue) {
+        return new IClientConfigKey<T>() {
 
-			@Override
-			public int hashCode() {
-				return key().hashCode();
-			}
+            @Override
+            public int hashCode() {
+                return key().hashCode();
+            }
 
-			@Override
-			public boolean equals(Object obj) {
-				if (obj instanceof IClientConfigKey) {
-					return key().equals(((IClientConfigKey)obj).key());
-				}
-				return false;
-			}
+            @Override
+            public boolean equals(Object obj) {
+                if (obj instanceof IClientConfigKey) {
+                    return key().equals(((IClientConfigKey) obj).key());
+                }
+                return false;
+            }
 
-			@Override
-			public String toString() {
-				return key();
-			}
+            @Override
+            public String toString() {
+                return key();
+            }
 
-			@Override
-			public String key() {
-				return key;
-			}
+            @Override
+            public String key() {
+                return key;
+            }
 
-			@Override
-			public Class<T> type() {
-				return type;
-			}
+            @Override
+            public Class<T> type() {
+                return type;
+            }
 
-			@Override
-			public T defaultValue() { return defaultValue; }
-		};
-	}
+            @Override
+            public T defaultValue() {
+                return defaultValue;
+            }
+        };
+    }
 }

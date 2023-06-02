@@ -103,7 +103,7 @@ class MethodTemplate {
 
     public static <T> MethodTemplate[] from(Class<T> clientInterface) {
         List<MethodTemplate> list = new ArrayList<MethodTemplate>(clientInterface.getMethods().length);
-        for (Method m : clientInterface.getMethods()) {
+        for (Method m: clientInterface.getMethods()) {
             list.add(new MethodTemplate(m));
         }
         return list.toArray(new MethodTemplate[list.size()]);
@@ -151,8 +151,8 @@ class MethodTemplate {
             List<String> nameList = new ArrayList<String>();
             List<Integer> idxList = new ArrayList<Integer>();
             Annotation[][] params = method.getParameterAnnotations();
-            for (int i = 0; i < params.length; i++) {
-                for (Annotation a : params[i]) {
+            for (int i = 0;i < params.length;i++) {
+                for (Annotation a: params[i]) {
                     if (a.annotationType().equals(Var.class)) {
                         String name = ((Var) a).value();
                         nameList.add(name);
@@ -163,7 +163,7 @@ class MethodTemplate {
             int size = nameList.size();
             paramNames = new String[size];
             valueIdxs = new int[size];
-            for (int i = 0; i < size; i++) {
+            for (int i = 0;i < size;i++) {
                 paramNames[i] = nameList.get(i);
                 valueIdxs[i] = idxList.get(i);
             }
@@ -173,8 +173,8 @@ class MethodTemplate {
             Annotation[][] params = method.getParameterAnnotations();
             int pos = -1;
             int count = 0;
-            for (int i = 0; i < params.length; i++) {
-                for (Annotation a : params[i]) {
+            for (int i = 0;i < params.length;i++) {
+                for (Annotation a: params[i]) {
                     if (a.annotationType().equals(Content.class)) {
                         pos = i;
                         count++;

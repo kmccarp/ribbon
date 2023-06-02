@@ -18,22 +18,22 @@ public class SimpleGet {
         HttpClientRequest<ByteBuf> request = HttpClientRequest.createGet("http://www.google.com/");
         final CountDownLatch latch = new CountDownLatch(1);
         client.submit(request)
-            .toBlocking()
-            .forEach(new Action1<HttpClientResponse<ByteBuf>>() {
-                @Override
-                public void call(HttpClientResponse<ByteBuf> t1) {
-                    System.out.println("Status code: " + t1.getStatus());
-                    t1.getContent().subscribe(new Action1<ByteBuf>() {
+                .toBlocking()
+                .forEach(new Action1<HttpClientResponse<ByteBuf>>() {
+                    @Override
+                    public void call(HttpClientResponse<ByteBuf> t1) {
+                        System.out.println("Status code: " + t1.getStatus());
+                        t1.getContent().subscribe(new Action1<ByteBuf>() {
 
-                        @Override
-                        public void call(ByteBuf content) {
-                            System.out.println("Response content: " + content.toString(Charset.defaultCharset()));
-                            latch.countDown();
-                        }
-                        
-                    });
-                }
-            });
+                            @Override
+                            public void call(ByteBuf content) {
+                                System.out.println("Response content: " + content.toString(Charset.defaultCharset()));
+                                latch.countDown();
+                            }
+
+                        });
+                    }
+                });
         latch.await(2, TimeUnit.SECONDS);
     }
 }

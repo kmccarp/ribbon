@@ -69,7 +69,7 @@ public class WeightedResponseTimeRuleTest {
         // initialize first server with maximum response time
         // so that we could reproduce issue with decreased number of servers in loadbalancer
         int responseTimeMax = servers.size() * 100;
-        for (Server server : servers) {
+        for (Server server: servers) {
             ServerStats s1 = statsWithResponseTimeAverage(responseTimeMax);
             when(stats.getSingleServerStat(server)).thenReturn(s1);
             responseTimeMax -= 100;

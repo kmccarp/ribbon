@@ -42,28 +42,28 @@ public class NFHttpClientTest {
 
     @Test
     public void testDefaultClient() throws Exception {
-    	NFHttpClient client = NFHttpClientFactory.getDefaultClient();
-    	HttpGet get = new HttpGet(server.getServerURI()); // uri
-    	// this is not the overridable method
-    	HttpResponse response = client.execute(get);
-    	HttpEntity entity = response.getEntity();
-    	String contentStr = EntityUtils.toString(entity);
-    	assertTrue(contentStr.length() > 0);
+        NFHttpClient client = NFHttpClientFactory.getDefaultClient();
+        HttpGet get = new HttpGet(server.getServerURI()); // uri
+        // this is not the overridable method
+        HttpResponse response = client.execute(get);
+        HttpEntity entity = response.getEntity();
+        String contentStr = EntityUtils.toString(entity);
+        assertTrue(contentStr.length() > 0);
     }
-    
+
     @Test
     public void testNFHttpClient() throws Exception {
         NFHttpClient client = NFHttpClientFactory.getNFHttpClient("localhost", server.getServerPort());
         ThreadSafeClientConnManager cm = (ThreadSafeClientConnManager) client.getConnectionManager();
-    	cm.setDefaultMaxPerRoute(10);
+        cm.setDefaultMaxPerRoute(10);
         HttpGet get = new HttpGet(server.getServerURI());
         ResponseHandler<Integer> respHandler = new ResponseHandler<Integer>(){
-        		public Integer handleResponse(HttpResponse response)
-                 throws ClientProtocolException, IOException {
-        			HttpEntity entity = response.getEntity();
-        			String contentStr = EntityUtils.toString(entity);
-            		return contentStr.length();
-        		}
+            public Integer handleResponse(HttpResponse response)
+                    throws ClientProtocolException, IOException {
+                HttpEntity entity = response.getEntity();
+                String contentStr = EntityUtils.toString(entity);
+                return contentStr.length();
+            }
         };
         long contentLen = client.execute(get, respHandler);
         assertTrue(contentLen > 0);
@@ -74,66 +74,66 @@ public class NFHttpClientTest {
 
         NFHttpClient client = (NFHttpClient) NFHttpClientFactory
                 .getNFHttpClient("hc.apache.org", 80);
-       
+
         ThreadSafeClientConnManager cm = (ThreadSafeClientConnManager) client.getConnectionManager();
         cm.setDefaultMaxPerRoute(10);
-        
+
         HttpHost target = new HttpHost("hc.apache.org", 80);
 
         // create an array of URIs to perform GETs on
-        String[] urisToGet = { "/", "/httpclient-3.x/status.html",
+        String[] urisToGet = {"/", "/httpclient-3.x/status.html",
                 "/httpclient-3.x/methods/",
-                "http://svn.apache.org/viewvc/httpcomponents/oac.hc3x/" };
+                "http://svn.apache.org/viewvc/httpcomponents/oac.hc3x/"};
 
         // create a thread for each URI
         GetThread[] threads = new GetThread[urisToGet.length];
-        for (int i = 0; i < threads.length; i++) {
+        for (int i = 0;i < threads.length;i++) {
             HttpGet get = new HttpGet(urisToGet[i]);
             threads[i] = new GetThread(client, target, get, i + 1);
         }
 
         // start the threads
-        for (int j = 0; j < threads.length; j++) {
+        for (int j = 0;j < threads.length;j++) {
             threads[j].start();
         }
 
     }
 
-    
+
     /**
      * A thread that performs a GET.
      */
     static class GetThread extends Thread {
-        
+
         private HttpClient httpClient;
         private HttpHost target;
         private HttpGet request;
         private int id;
-        
+
         public GetThread(HttpClient httpClient, HttpHost target, HttpGet request, int id) {
             this.httpClient = httpClient;
             this.target = target;
             this.request = request;
             this.id = id;
         }
-        
+
         /**
          * Executes the GetMethod and prints some satus information.
          */
         public void run() {
-            
+
             try {
-                
+
                 System.out.println(id + " - about to get something from " + request.getURI());
                 // execute the method
                 HttpResponse resp = httpClient.execute(target, request);
-                
+
                 System.out.println(id + " - get executed");
                 // get the response body as an array of bytes
                 byte[] bytes = EntityUtils.toByteArray(resp.getEntity());
-                
+
                 System.out.println(id + " - " + bytes.length + " bytes read");
-                
+
             } catch (Exception e) {
                 System.out.println(id + " - error: " + e);
             } finally {

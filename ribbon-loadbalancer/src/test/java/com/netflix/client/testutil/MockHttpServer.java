@@ -210,16 +210,16 @@ public class MockHttpServer implements TestRule {
                     "9I4P1YhySxo3Qd3g";
 
     public static final String PASSWORD = "changeit";
-    
+
     public static final String INTERNALERROR_PATH = "/internalerror";
     public static final String NORESPONSE_PATH = "/noresponse";
     public static final String STATUS_PATH = "/status";
     public static final String OK_PATH = "/ok";
     public static final String ROOT_PATH = "/";
-    
+
     private static final int DEFAULT_THREAD_COUNT = 10;
     private static final String DELAY_QUERY_PARAM = "delay";
-    
+
     private HttpServer server;
     private int localHttpServerPort = 0;
     private ExecutorService service;
@@ -230,58 +230,63 @@ public class MockHttpServer implements TestRule {
     private File truststore;
 
     private String GENERIC_RESPONSE = "GenericTestHttpServer Response";
-    
+
     public MockHttpServer() {
         handlers.put(ROOT_PATH, new TestHttpHandler() {
             @Override
             protected void handle(RequestContext context) throws IOException {
                 context.response(200, GENERIC_RESPONSE);
-            }});
-        
+            }
+        });
+
         handlers.put(OK_PATH, new TestHttpHandler() {
             @Override
             protected void handle(RequestContext context) throws IOException {
                 context.response(200, GENERIC_RESPONSE);
-            }});
-        
+            }
+        });
+
         handlers.put(STATUS_PATH, new TestHttpHandler() {
             @Override
             protected void handle(RequestContext context) throws IOException {
                 context.response(Integer.parseInt(context.query("code")), GENERIC_RESPONSE);
-            }});
-        
+            }
+        });
+
         handlers.put(NORESPONSE_PATH, new TestHttpHandler() {
             @Override
             protected void handle(RequestContext context) throws IOException {
-            }});
-        
+            }
+        });
+
         handlers.put(INTERNALERROR_PATH, new TestHttpHandler() {
             @Override
             protected void handle(RequestContext context) throws IOException {
                 throw new RuntimeException("InternalError");
-            }});
+            }
+        });
     }
-    
+
     public MockHttpServer handler(String path, HttpHandler handler) {
         handlers.put(path, handler);
         return this;
     }
-    
+
     public MockHttpServer port(int port) {
         this.localHttpServerPort = port;
         return this;
     }
-    
+
     public MockHttpServer secure() {
         this.hasSsl = true;
         return this;
     }
-    
+
     public MockHttpServer threadCount(int threads) {
         this.threadCount = threads;
         return this;
     }
-    
+
     @Override
     public Statement apply(final Statement statement, final Description description) {
         return new Statement() {
@@ -299,15 +304,16 @@ public class MockHttpServer implements TestRule {
 
     private static interface RequestContext {
         void response(int code, String body) throws IOException;
+
         String query(String key);
     }
-    
+
     private static abstract class TestHttpHandler implements HttpHandler {
         @Override
         public final void handle(final HttpExchange t) throws IOException {
             try {
                 final Map<String, String> queryParameters = queryToMap(t);
-                
+
                 if (queryParameters.containsKey(DELAY_QUERY_PARAM)) {
                     Long delay = Long.parseLong(queryParameters.get(DELAY_QUERY_PARAM));
                     if (delay != null) {
@@ -318,7 +324,7 @@ public class MockHttpServer implements TestRule {
                         }
                     }
                 }
-                
+
                 handle(new RequestContext() {
                     @Override
                     public void response(int code, String body) throws IOException {
@@ -327,11 +333,11 @@ public class MockHttpServer implements TestRule {
                         os.write(body.getBytes());
                         os.close();
                     }
-    
+
                     @Override
                     public String query(String key) {
                         return queryParameters.get(key);
-                    } 
+                    }
                 });
             }
             catch (Exception e) {
@@ -339,26 +345,25 @@ public class MockHttpServer implements TestRule {
                 PrintWriter pw = new PrintWriter(sw);
                 e.printStackTrace(pw);
                 String body = sw.toString();
-                
+
                 OutputStream os = t.getResponseBody();
                 t.sendResponseHeaders(500, body.length());
                 os.write(body.getBytes());
                 os.close();
             }
         }
-        
+
         protected abstract void handle(RequestContext context) throws IOException;
-        
+
         private static Map<String, String> queryToMap(HttpExchange t) {
             String queryString = t.getRequestURI().getQuery();
             Map<String, String> result = new HashMap<String, String>();
             if (queryString != null) {
-                for (String param : queryString.split("&")) {
+                for (String param: queryString.split("&")) {
                     String pair[] = param.split("=");
-                    if (pair.length>1) {
+                    if (pair.length > 1) {
                         result.put(pair[0], pair[1]);
-                    }
-                    else{
+                    }else {
                         result.put(pair[0], "");
                     }
                 }
@@ -367,12 +372,12 @@ public class MockHttpServer implements TestRule {
         }
 
     }
-    
+
     public void before(final Description description) throws Exception {
         this.service = Executors.newFixedThreadPool(
-                threadCount, 
+                threadCount,
                 new ThreadFactoryBuilder().setDaemon(true).setNameFormat("TestHttpServer-%d").build());
-        
+
         InetSocketAddress inetSocketAddress = new InetSocketAddress("localhost", 0);
         if (hasSsl) {
             byte[] sampleTruststore1 = Base64.decode(TEST_TS1);
@@ -408,38 +413,37 @@ public class MockHttpServer implements TestRule {
 
             SSLContext sc = SSLContext.getInstance("TLS");
             sc.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
-            
+
             HttpsServer secureServer = HttpsServer.create(inetSocketAddress, 0);
             secureServer.setHttpsConfigurator(new HttpsConfigurator(sc) {
-                public void configure (HttpsParameters params) {
+                public void configure(HttpsParameters params) {
                     SSLContext c = getSSLContext();
                     SSLParameters sslparams = c.getDefaultSSLParameters();
                     params.setSSLParameters(sslparams);
                 }
             });
             server = secureServer;
-        }
-        else {
+        }else {
             server = HttpServer.create(inetSocketAddress, 0);
         }
-        
+
         server.setExecutor(service);
-        
-        for (Entry<String, HttpHandler> handler : handlers.entrySet()) {
+
+        for (Entry<String, HttpHandler> handler: handlers.entrySet()) {
             server.createContext(handler.getKey(), handler.getValue());
         }
-        
+
         server.start();
         localHttpServerPort = server.getAddress().getPort();
-        
+
         System.out.println(description.getClassName() + " TestServer is started: " + getServerUrl());
     }
 
     public void after(final Description description) {
-        try{
+        try {
             server.stop(0);
             ((ExecutorService) server.getExecutor()).shutdownNow();
-            
+
             System.out.println(description.getClassName() + " TestServer is shutdown: " + getServerUrl());
         } catch (Exception e) {
             e.printStackTrace();
@@ -452,8 +456,7 @@ public class MockHttpServer implements TestRule {
     public String getServerUrl() {
         if (hasSsl) {
             return "https://localhost:" + localHttpServerPort;
-        }
-        else {
+        }else {
             return "http://localhost:" + localHttpServerPort;
         }
     }
@@ -488,11 +491,11 @@ public class MockHttpServer implements TestRule {
     public int getServerPort() {
         return localHttpServerPort;
     }
-    
+
     public File getKeyStore() {
         return keystore;
     }
-    
+
     public File getTrustStore() {
         return truststore;
     }

@@ -30,7 +30,7 @@ public class ClientPropertiesProcessor implements AnnotationProcessor<GroupBuild
         ClientProperties properties = interfaceClass.getAnnotation(ClientProperties.class);
         if (properties != null) {
             IClientConfig config = resourceFactory.getClientConfigFactory().newConfig();
-            for (Property prop : properties.properties()) {
+            for (Property prop: properties.properties()) {
                 String name = prop.name();
                 config.set(CommonClientConfigKey.valueOf(name), prop.value());
             }
@@ -53,7 +53,7 @@ public class ClientPropertiesProcessor implements AnnotationProcessor<GroupBuild
                 ac.addConfiguration((AbstractConfiguration) configuration, configName);
             }
         }
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
+        for (Map.Entry<String, Object> entry: map.entrySet()) {
             configuration.setProperty(groupName + "." + config.getNameSpace() + "." + entry.getKey(), entry.getValue());
         }
     }

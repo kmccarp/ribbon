@@ -74,17 +74,17 @@ import com.netflix.client.config.IClientConfigKey;
 public class ResponseTimeWeightedRule extends RoundRobinRule {
 
     public static final IClientConfigKey<Integer> WEIGHT_TASK_TIMER_INTERVAL_CONFIG_KEY = WeightedResponseTimeRule.WEIGHT_TASK_TIMER_INTERVAL_CONFIG_KEY;
-    
+
     public static final int DEFAULT_TIMER_INTERVAL = 30 * 1000;
-    
+
     private int serverWeightTaskTimerInterval = DEFAULT_TIMER_INTERVAL;
 
     private static final Logger logger = LoggerFactory.getLogger(ResponseTimeWeightedRule.class);
-    
+
     // holds the accumulated weight from index 0 to current index
     // for example, element at index 2 holds the sum of weight of servers from 0 to 2
     private volatile List<Double> accumulatedWeights = new ArrayList<Double>();
-    
+
 
     private final Random random = new Random();
 
@@ -101,7 +101,7 @@ public class ResponseTimeWeightedRule extends RoundRobinRule {
     public ResponseTimeWeightedRule(ILoadBalancer lb) {
         super(lb);
     }
-    
+
     @Override
     public void setLoadBalancer(ILoadBalancer lb) {
         super.setLoadBalancer(lb);
@@ -111,7 +111,7 @@ public class ResponseTimeWeightedRule extends RoundRobinRule {
         initialize(lb);
     }
 
-    void initialize(ILoadBalancer lb) {        
+    void initialize(ILoadBalancer lb) {
         if (serverWeightTimer != null) {
             serverWeightTimer.cancel();
         }
@@ -163,17 +163,17 @@ public class ResponseTimeWeightedRule extends RoundRobinRule {
             int serverIndex = 0;
 
             // last one in the list is the sum of all weights
-            double maxTotalWeight = currentWeights.size() == 0 ? 0 : currentWeights.get(currentWeights.size() - 1); 
+            double maxTotalWeight = currentWeights.size() == 0 ? 0 : currentWeights.get(currentWeights.size() - 1);
             // No server has been hit yet and total weight is not initialized
             // fallback to use round robin
             if (maxTotalWeight < 0.001d) {
-                server =  super.choose(getLoadBalancer(), key); 
+                server = super.choose(getLoadBalancer(), key);
             } else {
                 // generate a random weight between 0 (inclusive) to maxTotalWeight (exclusive)
                 double randomWeight = random.nextDouble() * maxTotalWeight;
                 // pick the server index based on the randomIndex
                 int n = 0;
-                for (Double d : currentWeights) {
+                for (Double d: currentWeights) {
                     if (d >= randomWeight) {
                         serverIndex = n;
                         break;
@@ -219,11 +219,11 @@ public class ResponseTimeWeightedRule extends RoundRobinRule {
             if (lb == null) {
                 return;
             }
-            
+
             if (!serverWeightAssignmentInProgress.compareAndSet(false, true)) {
                 return;
             }
-            
+
             try {
                 logger.info("Weight adjusting job started");
                 AbstractLoadBalancer nlb = (AbstractLoadBalancer) lb;
@@ -234,7 +234,7 @@ public class ResponseTimeWeightedRule extends RoundRobinRule {
                 }
                 double totalResponseTime = 0;
                 // find maximal 95% response time
-                for (Server server : nlb.getAllServers()) {
+                for (Server server: nlb.getAllServers()) {
                     // this will automatically load the stats if not in cache
                     ServerStats ss = stats.getSingleServerStat(server);
                     totalResponseTime += ss.getResponseTimeAvg();
@@ -242,14 +242,14 @@ public class ResponseTimeWeightedRule extends RoundRobinRule {
                 // weight for each server is (sum of responseTime of all servers - responseTime)
                 // so that the longer the response time, the less the weight and the less likely to be chosen
                 Double weightSoFar = 0.0;
-                
+
                 // create new list and hot swap the reference
                 List<Double> finalWeights = new ArrayList<Double>();
-                for (Server server : nlb.getAllServers()) {
+                for (Server server: nlb.getAllServers()) {
                     ServerStats ss = stats.getSingleServerStat(server);
                     double weight = totalResponseTime - ss.getResponseTimeAvg();
                     weightSoFar += weight;
-                    finalWeights.add(weightSoFar);   
+                    finalWeights.add(weightSoFar);
                 }
                 setWeights(finalWeights);
             } catch (Exception e) {
@@ -264,11 +264,11 @@ public class ResponseTimeWeightedRule extends RoundRobinRule {
     void setWeights(List<Double> weights) {
         this.accumulatedWeights = weights;
     }
-    
-	@Override
-	public void initWithNiwsConfig(IClientConfig clientConfig) {
-	    super.initWithNiwsConfig(clientConfig);
-	    serverWeightTaskTimerInterval = clientConfig.get(WEIGHT_TASK_TIMER_INTERVAL_CONFIG_KEY, DEFAULT_TIMER_INTERVAL);
-	}
+
+    @Override
+    public void initWithNiwsConfig(IClientConfig clientConfig) {
+        super.initWithNiwsConfig(clientConfig);
+        serverWeightTaskTimerInterval = clientConfig.get(WEIGHT_TASK_TIMER_INTERVAL_CONFIG_KEY, DEFAULT_TIMER_INTERVAL);
+    }
 
 }

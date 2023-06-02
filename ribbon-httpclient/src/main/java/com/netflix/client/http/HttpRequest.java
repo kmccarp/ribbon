@@ -35,7 +35,7 @@ import com.netflix.client.config.IClientConfig;
  *
  */
 public class HttpRequest extends ClientRequest {
-        
+
     public enum Verb {
         GET("GET"),
         PUT("PUT"),
@@ -59,27 +59,27 @@ public class HttpRequest extends ClientRequest {
     protected Multimap<String, String> queryParams = ArrayListMultimap.create();
     private Object entity;
     protected Verb verb;
-    
+
     HttpRequest() {
         this.verb = Verb.GET;
     }
-    
+
     public static class Builder {
-        
-        private HttpRequest request = new HttpRequest(); 
-        
+
+        private HttpRequest request = new HttpRequest();
+
         public Builder() {
         }
 
         public Builder(HttpRequest request) {
             this.request = request;
         }
-        
+
         public Builder uri(URI uri) {
             request.setUri(uri);
             return this;
         }
-        
+
         public Builder uri(String uri) {
             try {
                 request.setUri(new URI(uri));
@@ -88,12 +88,12 @@ public class HttpRequest extends ClientRequest {
             }
             return this;
         }
-        
+
         public Builder header(String name, String value) {
             request.httpHeaders.addHeader(name, value);
             return this;
         }
-        
+
         Builder queryParams(Multimap<String, String> queryParams) {
             request.queryParams = queryParams;
             return this;
@@ -113,7 +113,7 @@ public class HttpRequest extends ClientRequest {
             request.httpHeaders = headers;
             return this;
         }
-        
+
         public Builder setRetriable(boolean retriable) {
             request.setRetriable(retriable);
             return this;
@@ -127,7 +127,7 @@ public class HttpRequest extends ClientRequest {
             request.queryParams.put(name, value);
             return this;
         }
-        
+
         public Builder queryParam(String name, String value) {
             request.queryParams.put(name, value);
             return this;
@@ -143,25 +143,25 @@ public class HttpRequest extends ClientRequest {
             request.verb = verb;
             return this;
         }
-        
+
         public Builder loadBalancerKey(Object loadBalancerKey) {
             request.setLoadBalancerKey(loadBalancerKey);
             return this;
         }
-        
+
         public HttpRequest build() {
-            return request;    
+            return request;
         }
     }
-    
+
     public Map<String, Collection<String>> getQueryParams() {
         return queryParams.asMap();
     }
-    
+
     public Verb getVerb() {
         return verb;
     }
-    
+
     /**
      * Replaced by {@link #getHttpHeaders()}
      */
@@ -169,15 +169,15 @@ public class HttpRequest extends ClientRequest {
     public Map<String, Collection<String>>  getHeaders() {
         return httpHeaders.asMap();
     }
-    
+
     public HttpHeaders getHttpHeaders() {
         return httpHeaders;
     }
-    
+
     public Object getEntity() {
         return entity;
     }
-        
+
     /**
      * Test if the request is retriable. If the request is
      * a {@link Verb#GET} and {@link Builder#setRetriable(boolean)}
@@ -195,7 +195,7 @@ public class HttpRequest extends ClientRequest {
     public static Builder newBuilder() {
         return new Builder();
     }
-    
+
     public static Builder newBuilder(HttpRequest toCopy) {
         return new Builder(toCopy);
     }
@@ -207,13 +207,13 @@ public class HttpRequest extends ClientRequest {
     @Override
     public HttpRequest replaceUri(URI newURI) {
         return (new Builder()).uri(newURI)
-        .headers(this.httpHeaders)
-        .overrideConfig(this.getOverrideConfig())
-        .queryParams(this.queryParams)
-        .setRetriable(this.isRetriable())
-        .loadBalancerKey(this.getLoadBalancerKey())
-        .verb(this.getVerb())
-        .entity(this.entity)
-        .build();        
+                .headers(this.httpHeaders)
+                .overrideConfig(this.getOverrideConfig())
+                .queryParams(this.queryParams)
+                .setRetriable(this.isRetriable())
+                .loadBalancerKey(this.getLoadBalancerKey())
+                .verb(this.getVerb())
+                .entity(this.entity)
+                .build();
     }
 }

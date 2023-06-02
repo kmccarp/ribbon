@@ -38,7 +38,7 @@ import javax.inject.Singleton;
 
 public class RibbonModuleTest {
     private static final int PORT = 7001;
-    
+
     @Singleton
     public static class MyService extends AbstractRxMovieClient {
         private final HttpResourceGroup httpResourceGroup;
@@ -130,14 +130,14 @@ public class RibbonModuleTest {
             };
         }
     }
-    
-    
+
+
     @Test
     public void shouldBind() {
         Injector injector = Guice.createInjector(
-            new RibbonModule()
-            );
-            
+                new RibbonModule()
+        );
+
         MyService service = injector.getInstance(MyService.class);
         service.runExample();
     }

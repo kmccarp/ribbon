@@ -36,11 +36,11 @@ import java.util.List;
 public class DefaultLoadBalancerRetryHandler implements RetryHandler {
 
     @SuppressWarnings("unchecked")
-    private List<Class<? extends Throwable>> retriable = 
+    private List<Class<? extends Throwable>> retriable =
             Lists.<Class<? extends Throwable>>newArrayList(ConnectException.class, SocketTimeoutException.class);
-    
+
     @SuppressWarnings("unchecked")
-    private List<Class<? extends Throwable>> circuitRelated = 
+    private List<Class<? extends Throwable>> circuitRelated =
             Lists.<Class<? extends Throwable>>newArrayList(SocketException.class, SocketTimeoutException.class);
 
     protected final int retrySameServer;
@@ -52,19 +52,19 @@ public class DefaultLoadBalancerRetryHandler implements RetryHandler {
         this.retryNextServer = 0;
         this.retryEnabled = false;
     }
-    
+
     public DefaultLoadBalancerRetryHandler(int retrySameServer, int retryNextServer, boolean retryEnabled) {
         this.retrySameServer = retrySameServer;
         this.retryNextServer = retryNextServer;
         this.retryEnabled = retryEnabled;
     }
-    
+
     public DefaultLoadBalancerRetryHandler(IClientConfig clientConfig) {
         this.retrySameServer = clientConfig.getOrDefault(CommonClientConfigKey.MaxAutoRetries);
         this.retryNextServer = clientConfig.getOrDefault(CommonClientConfigKey.MaxAutoRetriesNextServer);
         this.retryEnabled = clientConfig.getOrDefault(CommonClientConfigKey.OkToRetryOnAllOperations);
     }
-    
+
     @Override
     public boolean isRetriableException(Throwable e, boolean sameServer) {
         if (retryEnabled) {
@@ -82,7 +82,7 @@ public class DefaultLoadBalancerRetryHandler implements RetryHandler {
      */
     @Override
     public boolean isCircuitTrippingException(Throwable e) {
-        return Utils.isPresentAsCause(e, getCircuitRelatedExceptions());        
+        return Utils.isPresentAsCause(e, getCircuitRelatedExceptions());
     }
 
     @Override
@@ -94,11 +94,11 @@ public class DefaultLoadBalancerRetryHandler implements RetryHandler {
     public int getMaxRetriesOnNextServer() {
         return retryNextServer;
     }
-    
+
     protected List<Class<? extends Throwable>> getRetriableExceptions() {
         return retriable;
     }
-    
+
     protected List<Class<? extends Throwable>>  getCircuitRelatedExceptions() {
         return circuitRelated;
     }

@@ -34,7 +34,7 @@ import com.netflix.client.config.DefaultClientConfigImpl;
 import com.netflix.config.ConfigurationManager;
 
 public class SubsetFilterTest {
-    
+
     @BeforeClass
     public static void init() {
         Configuration config = ConfigurationManager.getConfigInstance();
@@ -60,13 +60,13 @@ public class SubsetFilterTest {
         }
         return list;
     }
-    
+
     @Test
     public void testSorting() {
         ServerListSubsetFilter<Server> filter = new ServerListSubsetFilter<Server>();
         LoadBalancerStats stats = new LoadBalancerStats("default");
         filter.setLoadBalancerStats(stats);
-        Object[][] serverStats = { 
+        Object[][] serverStats = {
                 {"server0", 0, 0},
                 {"server1", 1, 0},
                 {"server2", 1, 1},
@@ -76,11 +76,11 @@ public class SubsetFilterTest {
         List<Server> servers = getServersAndStats(stats, serverStats);
         Collections.sort(servers, filter);
         List<String> expected = Lists.newArrayList("server4", "server2", "server1", "server3", "server0");
-        for (int i = 0; i < servers.size(); i++) {
+        for (int i = 0;i < servers.size();i++) {
             assertEquals(expected.get(i), servers.get(i).getHost());
         }
     }
-    
+
     @Test
     public void testFiltering() {
         DefaultClientConfigImpl config = new DefaultClientConfigImpl();
@@ -90,7 +90,7 @@ public class SubsetFilterTest {
         LoadBalancerStats stats = new LoadBalancerStats("default");
         stats.initWithNiwsConfig(config);
         filter.setLoadBalancerStats(stats);
-        Object[][] serverStats = { 
+        Object[][] serverStats = {
                 {"server0", 0, 0},
                 {"server1", 0, 0},
                 {"server2", 0, 0},
@@ -106,8 +106,8 @@ public class SubsetFilterTest {
         List<Server> filtered = filter.getFilteredListOfServers(list);
         // first filtering, should get 5 servers 
         assertEquals(filtered.size(), 5);
-        
-        Server s1 = filtered.get(0);        
+
+        Server s1 = filtered.get(0);
         Server s2 = filtered.get(1);
         Server s3 = filtered.get(2);
         Server s4 = filtered.get(3);
@@ -116,7 +116,7 @@ public class SubsetFilterTest {
         // failure count > threshold
         DummyServerStats stats1 = (DummyServerStats) stats.getSingleServerStat(s1);
         stats1.setConnectionFailureCount(3);
-        
+
         // active requests count > threshold
         DummyServerStats stats2 = (DummyServerStats) stats.getSingleServerStat(s2);
         stats2.setActiveRequestsCount(3);
@@ -131,25 +131,25 @@ public class SubsetFilterTest {
 
         // filter again, this time some servers will be eliminated
         filtered = filter.getFilteredListOfServers(list);
-        
+
         assertEquals(5, filtered.size());
         assertTrue(!filtered.contains(s1));
         assertTrue(!filtered.contains(s2));
         assertTrue(filtered.contains(s3));
         assertTrue(!filtered.contains(s4));
         assertTrue(filtered.contains(s5));
-        
+
         // Not enough healthy servers, just get whatever is available
         List<Server> lastFiltered = filter.getFilteredListOfServers(Lists.newArrayList(filtered));
         assertEquals(5, lastFiltered.size());
     }
-    
+
     @Test
     public void testWithLoadBalancer() {
-        DynamicServerListLoadBalancer<Server> lb = (DynamicServerListLoadBalancer<Server>) 
-                ClientFactory.getNamedLoadBalancer("SubsetFilerTest");        
+        DynamicServerListLoadBalancer<Server> lb = (DynamicServerListLoadBalancer<Server>)
+                ClientFactory.getNamedLoadBalancer("SubsetFilerTest");
         MockServerList serverList = (MockServerList) lb.getServerListImpl();
-        Object[][] serverStats = { 
+        Object[][] serverStats = {
                 {"server0", 0, 0},
                 {"server1", 0, 0},
                 {"server2", 0, 0},
@@ -171,8 +171,8 @@ public class SubsetFilterTest {
         List<Server> filtered = lb.getAllServers();
         // first filtering, should get 5 servers 
         assertEquals(filtered.size(), 5);
-        
-        Server s1 = filtered.get(0);        
+
+        Server s1 = filtered.get(0);
         Server s2 = filtered.get(1);
         Server s3 = filtered.get(2);
         Server s4 = filtered.get(3);
@@ -181,7 +181,7 @@ public class SubsetFilterTest {
         // failure count > threshold
         DummyServerStats stats1 = (DummyServerStats) stats.getSingleServerStat(s1);
         stats1.setConnectionFailureCount(3);
-        
+
         // active requests count > threshold
         DummyServerStats stats2 = (DummyServerStats) stats.getSingleServerStat(s2);
         stats2.setActiveRequestsCount(3);
@@ -198,14 +198,14 @@ public class SubsetFilterTest {
         serverList.setServerList(list);
         lb.updateListOfServers();
         filtered = lb.getAllServers();
-        
+
         assertEquals(5, filtered.size());
         assertTrue(!filtered.contains(s1));
         assertTrue(!filtered.contains(s2));
         assertTrue(filtered.contains(s3));
         assertTrue(!filtered.contains(s4));
         assertTrue(filtered.contains(s5));
-        
+
         // Not enough healthy servers, just get whatever is available
         serverList.setServerList(Lists.newArrayList(filtered));
         lb.updateListOfServers();
@@ -213,21 +213,21 @@ public class SubsetFilterTest {
         assertEquals(5, lastFiltered.size());
 
     }
-    
+
 }
 
 
 class DummyServerStats extends ServerStats {
 
     int activeRequestsCount;
-    
+
     int connectionFailureCount;
-    
+
     public DummyServerStats(int activeRequestsCount, int connectionFailureCount) {
         this.activeRequestsCount = activeRequestsCount;
-        this.connectionFailureCount = connectionFailureCount;                
+        this.connectionFailureCount = connectionFailureCount;
     }
-    
+
     public final void setActiveRequestsCount(int activeRequestsCount) {
         this.activeRequestsCount = activeRequestsCount;
     }
@@ -245,5 +245,5 @@ class DummyServerStats extends ServerStats {
     public long getFailureCount() {
         return connectionFailureCount;
     }
-    
+
 }

@@ -33,26 +33,26 @@ import org.slf4j.LoggerFactory;
 public class NoOpLoadBalancer extends AbstractLoadBalancer {
 
     static final Logger  logger = LoggerFactory.getLogger(NoOpLoadBalancer.class);
-    
-    
+
+
     @Override
     public void addServers(List<Server> newServers) {
         logger.info("addServers to NoOpLoadBalancer ignored");
     }
 
     @Override
-    public Server chooseServer(Object key) {       
+    public Server chooseServer(Object key) {
         return null;
     }
 
     @Override
-    public LoadBalancerStats getLoadBalancerStats() {        
+    public LoadBalancerStats getLoadBalancerStats() {
         return null;
     }
 
-    
+
     @Override
-    public List<Server> getServerList(ServerGroup serverGroup) {     
+    public List<Server> getServerList(ServerGroup serverGroup) {
         return Collections.emptyList();
     }
 
@@ -61,11 +61,11 @@ public class NoOpLoadBalancer extends AbstractLoadBalancer {
         logger.info("markServerDown to NoOpLoadBalancer ignored");
     }
 
-	@Override
-	public List<Server> getServerList(boolean availableOnly) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public List<Server> getServerList(boolean availableOnly) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
     @Override
     public List<Server> getReachableServers() {

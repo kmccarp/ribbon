@@ -30,7 +30,7 @@ import io.reactivex.netty.pipeline.PipelineConfigurator;
 import io.reactivex.netty.protocol.udp.client.UdpClientBuilder;
 import io.reactivex.netty.servo.udp.UdpClientListener;
 
-public class LoadBalancingUdpClient<I, O> extends LoadBalancingRxClient<I, O, RxClient<I,O>> implements RxClient<I, O> {
+public class LoadBalancingUdpClient<I, O> extends LoadBalancingRxClient<I, O, RxClient<I, O>> implements RxClient<I, O> {
 
     public LoadBalancingUdpClient(IClientConfig config,
             RetryHandler retryHandler,
@@ -38,7 +38,7 @@ public class LoadBalancingUdpClient<I, O> extends LoadBalancingRxClient<I, O, Rx
         super(config, retryHandler, pipelineConfigurator);
     }
 
-    
+
     public LoadBalancingUdpClient(ILoadBalancer lb, IClientConfig config,
             RetryHandler retryHandler,
             PipelineConfigurator<O, I> pipelineConfigurator) {

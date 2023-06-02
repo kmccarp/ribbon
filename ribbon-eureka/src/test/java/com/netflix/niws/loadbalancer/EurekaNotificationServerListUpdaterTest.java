@@ -84,7 +84,7 @@ public class EurekaNotificationServerListUpdaterTest {
             eventListenerCapture.getValue().onEvent(new CacheRefreshedEvent());
             Assert.assertTrue(firstLatch.await(2, TimeUnit.SECONDS));
             // wait a bit for the updateQueued flag to be reset
-            for (int i = 1; i < 10; i++) {
+            for (int i = 1;i < 10;i++) {
                 if (serverListUpdater.updateQueued.get()) {
                     Thread.sleep(i * 100);
                 } else {
@@ -243,7 +243,7 @@ public class EurekaNotificationServerListUpdaterTest {
         }
 
     }
-    
+
     @Test
     public void testEurekaClientUnregister() {
         ThreadPoolExecutor executorMock = EasyMock.createMock(ThreadPoolExecutor.class);
@@ -274,7 +274,7 @@ public class EurekaNotificationServerListUpdaterTest {
             });
 
             registeredListener.getValue().onEvent(new CacheRefreshedEvent());
-            
+
         } finally {
             EasyMock.verify(executorMock);
             EasyMock.verify(eurekaClientMock);

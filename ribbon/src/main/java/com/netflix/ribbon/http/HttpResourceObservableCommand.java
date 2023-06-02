@@ -41,12 +41,12 @@ public class HttpResourceObservableCommand<T> extends HystrixObservableCommand<T
     private final ResponseValidator<HttpClientResponse<ByteBuf>> validator;
 
     public HttpResourceObservableCommand(HttpClient<ByteBuf, ByteBuf> httpClient,
-                                         HttpClientRequest<ByteBuf> httpRequest, String hystrixCacheKey,
-                                         Map<String, Object> requestProperties,
-                                         FallbackHandler<T> fallbackHandler,
-                                         ResponseValidator<HttpClientResponse<ByteBuf>> validator,
-                                         Class<? extends T> classType,
-                                         HystrixObservableCommand.Setter setter) {
+            HttpClientRequest<ByteBuf> httpRequest, String hystrixCacheKey,
+            Map<String, Object> requestProperties,
+            FallbackHandler<T> fallbackHandler,
+            ResponseValidator<HttpClientResponse<ByteBuf>> validator,
+            Class<? extends T> classType,
+            HystrixObservableCommand.Setter setter) {
         super(setter);
         this.httpClient = httpClient;
         this.fallbackHandler = fallbackHandler;

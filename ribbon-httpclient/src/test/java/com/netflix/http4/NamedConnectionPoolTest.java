@@ -36,7 +36,7 @@ import com.netflix.config.ConfigurationManager;
 import com.netflix.niws.client.http.RestClient;
 
 public class NamedConnectionPoolTest {
-    
+
     @ClassRule
     public static MockHttpServer server = new MockHttpServer();
 
@@ -55,7 +55,7 @@ public class NamedConnectionPoolTest {
         System.out.println("Free entries: " + connectionPool.getFreeEntryCount());
         System.out.println("Deleted :" + connectionPool.getDeleteCount());
         System.out.println("Released: " + connectionPool.getReleaseCount());
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0;i < 10;i++) {
             HttpUriRequest request = new HttpGet(server.getServerPath("/"));
             HttpResponse response = client.execute(request);
             EntityUtils.consume(response.getEntity());

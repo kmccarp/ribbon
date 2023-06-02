@@ -91,7 +91,7 @@ public class Server {
     public Server(String host, int port) {
         this(null, host, port);
     }
-    
+
     public Server(String scheme, String host, int port) {
         this.scheme = scheme;
         this.host = host;
@@ -132,7 +132,7 @@ public class Server {
             return hostPort.first() + ":" + hostPort.second();
         }
     }
-    
+
     private static String getScheme(String id) {
         if (id != null) {
             if (id.toLowerCase().startsWith("http://")) {
@@ -192,7 +192,7 @@ public class Server {
             this.id = null;
         }
     }
-    
+
     public void setSchemea(String scheme) {
         this.scheme = scheme;
     }
@@ -223,7 +223,7 @@ public class Server {
     public int getPort() {
         return port;
     }
-    
+
     public String getScheme() {
         return scheme;
     }

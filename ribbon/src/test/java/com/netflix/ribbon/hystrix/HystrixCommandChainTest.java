@@ -88,7 +88,7 @@ public class HystrixCommandChainTest {
 
         public void fireEvents(Observer<String> observer) {
             if (values != null) {
-                for (String v : values) {
+                for (String v: values) {
                     observer.onNext(v);
                 }
             }

@@ -28,7 +28,7 @@ import com.netflix.ribbon.proxy.processor.AnnotationProcessorsProvider;
  */
 public final class Ribbon {
     private static final RibbonResourceFactory factory = new DefaultResourceFactory(ClientConfigFactory.DEFAULT, RibbonTransportFactory.DEFAULT, AnnotationProcessorsProvider.DEFAULT);
-    
+
     private Ribbon() {
     }
 

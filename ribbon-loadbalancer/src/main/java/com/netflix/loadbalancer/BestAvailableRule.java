@@ -35,7 +35,7 @@ import java.util.List;
 public class BestAvailableRule extends ClientConfigEnabledRoundRobinRule {
 
     private LoadBalancerStats loadBalancerStats;
-    
+
     @Override
     public Server choose(Object key) {
         if (loadBalancerStats == null) {
@@ -66,10 +66,9 @@ public class BestAvailableRule extends ClientConfigEnabledRoundRobinRule {
     public void setLoadBalancer(ILoadBalancer lb) {
         super.setLoadBalancer(lb);
         if (lb instanceof AbstractLoadBalancer) {
-            loadBalancerStats = ((AbstractLoadBalancer) lb).getLoadBalancerStats();            
+            loadBalancerStats = ((AbstractLoadBalancer) lb).getLoadBalancerStats();
         }
     }
-    
-    
+
 
 }

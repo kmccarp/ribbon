@@ -43,33 +43,33 @@ import com.netflix.servo.annotations.Monitor;
  * @author awang
  *
  */
-public class AvailabilityFilteringRule extends PredicateBasedRule {    
+public class AvailabilityFilteringRule extends PredicateBasedRule {
 
     private AbstractServerPredicate predicate;
-    
+
     public AvailabilityFilteringRule() {
-    	super();
+        super();
         predicate = CompositePredicate.withPredicate(new AvailabilityPredicate(this, null))
                 .addFallbackPredicate(AbstractServerPredicate.alwaysTrue())
                 .build();
     }
-    
-    
+
+
     @Override
     public void initWithNiwsConfig(IClientConfig clientConfig) {
-    	predicate = CompositePredicate.withPredicate(new AvailabilityPredicate(this, clientConfig))
-    	            .addFallbackPredicate(AbstractServerPredicate.alwaysTrue())
-    	            .build();
+        predicate = CompositePredicate.withPredicate(new AvailabilityPredicate(this, clientConfig))
+                .addFallbackPredicate(AbstractServerPredicate.alwaysTrue())
+                .build();
     }
 
-    @Monitor(name="AvailableServersCount", type = DataSourceType.GAUGE)
+    @Monitor(name = "AvailableServersCount", type = DataSourceType.GAUGE)
     public int getAvailableServersCount() {
-    	ILoadBalancer lb = getLoadBalancer();
-    	List<Server> servers = lb.getAllServers();
-    	if (servers == null) {
-    		return 0;
-    	}
-    	return Collections2.filter(servers, predicate.getServerOnlyPredicate()).size();
+        ILoadBalancer lb = getLoadBalancer();
+        List<Server> servers = lb.getAllServers();
+        if (servers == null) {
+            return 0;
+        }
+        return Collections2.filter(servers, predicate.getServerOnlyPredicate()).size();
     }
 
 

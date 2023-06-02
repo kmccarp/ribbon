@@ -276,7 +276,7 @@ public class DefaultClientConfigImpl extends AbstractDefaultClientConfigImpl {
     }
 
     @Deprecated
-    public Boolean getDefaultIsClientAuthRequired(){
+    public Boolean getDefaultIsClientAuthRequired() {
         return DEFAULT_IS_CLIENT_AUTH_REQUIRED;
     }
 
@@ -326,7 +326,7 @@ public class DefaultClientConfigImpl extends AbstractDefaultClientConfigImpl {
         setDefault(CommonClientConfigKey.PrimeConnectionsURI, getDefaultPrimeConnectionsUri());
         setDefault(CommonClientConfigKey.PoolMinThreads, getDefaultPoolMinThreads());
         setDefault(CommonClientConfigKey.PoolMaxThreads, getDefaultPoolMaxThreads());
-        setDefault(CommonClientConfigKey.PoolKeepAliveTime, (int)getDefaultPoolKeepAliveTime());
+        setDefault(CommonClientConfigKey.PoolKeepAliveTime, (int) getDefaultPoolKeepAliveTime());
         setDefault(CommonClientConfigKey.PoolKeepAliveTimeUnits, getDefaultPoolKeepAliveTimeUnits().toString());
         setDefault(CommonClientConfigKey.EnableZoneAffinity, getDefaultEnableZoneAffinity());
         setDefault(CommonClientConfigKey.EnableZoneExclusivity, getDefaultEnableZoneExclusivity());

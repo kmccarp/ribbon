@@ -39,19 +39,23 @@ import java.util.Set;
  *
  * @param <T>
  */
-public class ServerListSubsetFilter<T extends Server> extends ZoneAffinityServerListFilter<T> implements IClientConfigAware, Comparator<T>{
+public class ServerListSubsetFilter<T extends Server> extends ZoneAffinityServerListFilter<T> implements IClientConfigAware, Comparator<T> {
 
     private Random random = new Random();
-    private volatile Set<T> currentSubset = Sets.newHashSet(); 
+    private volatile Set<T> currentSubset = Sets.newHashSet();
     private Property<Integer> sizeProp;
     private Property<Float> eliminationPercent;
     private Property<Integer> eliminationFailureCountThreshold;
     private Property<Integer> eliminationConnectionCountThreshold;
 
-    private static final IClientConfigKey<Integer> SIZE = new CommonClientConfigKey<Integer>("ServerListSubsetFilter.size", 20) {};
-    private static final IClientConfigKey<Float> FORCE_ELIMINATE_PERCENT = new CommonClientConfigKey<Float>("ServerListSubsetFilter.forceEliminatePercent", 0.1f) {};
-    private static final IClientConfigKey<Integer> ELIMINATION_FAILURE_THRESHOLD = new CommonClientConfigKey<Integer>("ServerListSubsetFilter.eliminationFailureThresold", 0) {};
-    private static final IClientConfigKey<Integer> ELIMINATION_CONNECTION_THRESHOLD = new CommonClientConfigKey<Integer>("ServerListSubsetFilter.eliminationConnectionThresold", 0) {};
+    private static final IClientConfigKey<Integer> SIZE = new CommonClientConfigKey<Integer>("ServerListSubsetFilter.size", 20) {
+    };
+    private static final IClientConfigKey<Float> FORCE_ELIMINATE_PERCENT = new CommonClientConfigKey<Float>("ServerListSubsetFilter.forceEliminatePercent", 0.1f) {
+    };
+    private static final IClientConfigKey<Integer> ELIMINATION_FAILURE_THRESHOLD = new CommonClientConfigKey<Integer>("ServerListSubsetFilter.eliminationFailureThresold", 0) {
+    };
+    private static final IClientConfigKey<Integer> ELIMINATION_CONNECTION_THRESHOLD = new CommonClientConfigKey<Integer>("ServerListSubsetFilter.eliminationConnectionThresold", 0) {
+    };
 
     /**
      * @deprecated ServerListSubsetFilter should only be created with an IClientConfig.  See {@link ServerListSubsetFilter#ServerListSubsetFilter(IClientConfig)}
@@ -127,21 +131,21 @@ public class ServerListSubsetFilter<T extends Server> extends ZoneAffinityServer
             // size is shrinking
             numToForceEliminate = newSubSet.size() - targetedListSize;
         } else if (minElimination > numEliminated) {
-            numToForceEliminate = minElimination - numEliminated; 
+            numToForceEliminate = minElimination - numEliminated;
         }
-        
+
         if (numToForceEliminate > newSubSet.size()) {
             numToForceEliminate = newSubSet.size();
         }
 
         if (numToForceEliminate > 0) {
-            List<T> sortedSubSet = Lists.newArrayList(newSubSet);           
+            List<T> sortedSubSet = Lists.newArrayList(newSubSet);
             Collections.sort(sortedSubSet, this);
             List<T> forceEliminated = sortedSubSet.subList(0, numToForceEliminate);
             newSubSet.removeAll(forceEliminated);
             candidates.removeAll(forceEliminated);
         }
-        
+
         // after forced elimination or elimination of unhealthy instances,
         // the size of the set may be less than the targeted size,
         // then we just randomly add servers from the big pool
@@ -159,8 +163,8 @@ public class ServerListSubsetFilter<T extends Server> extends ZoneAffinityServer
                 newSubSet.add(server);
             }
         }
-        currentSubset = newSubSet;       
-        return Lists.newArrayList(newSubSet);            
+        currentSubset = newSubSet;
+        return Lists.newArrayList(newSubSet);
     }
 
     /**
@@ -175,14 +179,14 @@ public class ServerListSubsetFilter<T extends Server> extends ZoneAffinityServer
         int size = servers.size();
         if (toChoose >= size || toChoose < 0) {
             return servers;
-        } 
-        for (int i = 0; i < toChoose; i++) {
+        }
+        for (int i = 0;i < toChoose;i++) {
             int index = random.nextInt(size);
             T tmp = servers.get(index);
             servers.set(index, servers.get(i));
             servers.set(i, tmp);
         }
-        return servers.subList(0, toChoose);        
+        return servers.subList(0, toChoose);
     }
 
     /**

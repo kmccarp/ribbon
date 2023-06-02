@@ -48,16 +48,21 @@ public class EmbeddedResources {
     public static class Person {
         public String name;
         public int age;
-        public Person() {}
+
+        public Person() {
+        }
+
         public Person(String name, int age) {
             super();
             this.name = name;
             this.age = age;
         }
+
         @Override
         public String toString() {
             return "Person [name=" + name + ", age=" + age + "]";
         }
+
         @Override
         public int hashCode() {
             final int prime = 31;
@@ -66,6 +71,7 @@ public class EmbeddedResources {
             result = prime * result + ((name == null) ? 0 : name.hashCode());
             return result;
         }
+
         @Override
         public boolean equals(Object obj) {
             if (this == obj)
@@ -88,20 +94,20 @@ public class EmbeddedResources {
 
     private static ObjectMapper mapper = new ObjectMapper();
     public static final Person defaultPerson = new Person("ribbon", 1);
-    
+
     public static final List<String> streamContent = Lists.newArrayList();
     public static final List<Person> entityStream = Lists.newArrayList();
-    
+
     static {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0;i < 1000;i++) {
             streamContent.add("data: line " + i);
         }
-        
-        for (int i = 0; i < 1000; i++) {
+
+        for (int i = 0;i < 1000;i++) {
             entityStream.add(new Person("ribbon", i));
         }
     }
-    
+
     @GET
     @Path("/person")
     public Response getPerson() throws IOException {
@@ -121,7 +127,7 @@ public class EmbeddedResources {
     public Response getNoEntity() {
         return Response.ok().build();
     }
-    
+
     @GET
     @Path("/readTimeout")
     public Response getReadTimeout() throws IOException, InterruptedException {
@@ -130,21 +136,21 @@ public class EmbeddedResources {
         return Response.ok(content).build();
     }
 
-    
+
     @POST
     @Path("/person")
     public Response createPerson(String content) throws IOException {
         Person person = mapper.readValue(content, Person.class);
         return Response.ok(mapper.writeValueAsString(person)).build();
     }
-    
+
     @GET
     @Path("/personQuery")
     public Response queryPerson(@QueryParam("name") String name, @QueryParam("age") int age) throws IOException {
         Person person = new Person(name, age);
         return Response.ok(mapper.writeValueAsString(person)).build();
     }
-    
+
     @POST
     @Path("/postTimeout")
     public Response postWithTimeout(String content) {
@@ -154,13 +160,13 @@ public class EmbeddedResources {
         }
         return Response.ok().build();
     }
-    
+
     @GET
     @Path("/throttle")
     public Response throttle() {
         return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("Rate exceeds limit").build();
     }
-    
+
     @GET
     @Path("/stream")
     @Produces("text/event-stream")
@@ -177,7 +183,7 @@ public class EmbeddedResources {
             }
         };
     }
-    
+
     @GET
     @Path("/redirect")
     public Response redirect(@QueryParam("port") int port) {

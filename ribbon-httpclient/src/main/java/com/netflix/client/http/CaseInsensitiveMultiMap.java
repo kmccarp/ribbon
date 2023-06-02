@@ -19,7 +19,7 @@ public class CaseInsensitiveMultiMap implements HttpHeaders {
         Collection<Entry<String, String>> entries = map.get(headerName.toLowerCase());
         if (entries == null || entries.isEmpty()) {
             return null;
-        } 
+        }
         return entries.iterator().next().getValue();
     }
 
@@ -45,7 +45,7 @@ public class CaseInsensitiveMultiMap implements HttpHeaders {
     public boolean containsHeader(String name) {
         return map.containsKey(name.toLowerCase());
     }
-    
+
     public void addHeader(String name, String value) {
         if (getAllValues(name).contains(value)) {
             return;
@@ -53,7 +53,7 @@ public class CaseInsensitiveMultiMap implements HttpHeaders {
         SimpleEntry<String, String> entry = new SimpleEntry<String, String>(name, value);
         map.put(name.toLowerCase(), entry);
     }
-    
+
     Map<String, Collection<String>> asMap() {
         Multimap<String, String> result = ArrayListMultimap.create();
         Collection<Entry<String, String>> all = map.values();

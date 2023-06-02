@@ -33,7 +33,7 @@ public class TemplateParser {
         }
         StringBuilder val = new StringBuilder();
         String key;
-        for (char c : template.toCharArray()) {
+        for (char c: template.toCharArray()) {
             switch (c) {
                 case '{':
                     key = val.toString();
@@ -64,7 +64,7 @@ public class TemplateParser {
     public static String toData(Map<String, Object> variables, ParsedTemplate parsedTemplate) throws TemplateParsingException {
         return toData(variables, parsedTemplate.getTemplate(), parsedTemplate.getParsed());
     }
-    
+
     public static String toData(Map<String, Object> variables, String template, List<Object> parsedList) throws TemplateParsingException {
         int params = variables.size();
         // skip expansion if there's no valid variables set. ex. {a} is the
@@ -74,7 +74,7 @@ public class TemplateParser {
         }
 
         StringBuilder builder = new StringBuilder();
-        for (Object part : parsedList) {
+        for (Object part: parsedList) {
             if (part instanceof TemplateVar) {
                 Object var = variables.get(part.toString());
                 if (part instanceof MatrixVar) {
@@ -99,7 +99,7 @@ public class TemplateParser {
 
         return builder.toString();
     }
-    
+
     public static void main(String[] args) throws TemplateParsingException {
         String template = "/abc/{id}?name={name}";
         Map<String, Object> vars = Maps.newHashMap();
@@ -107,6 +107,6 @@ public class TemplateParser {
         vars.put("name", "netflix");
         List<Object> list = parseTemplate(template);
         System.out.println(toData(vars, template, list));
-        
+
     }
 }

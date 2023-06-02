@@ -44,30 +44,30 @@ public class DefaultNIWSServerListFilterTest {
     public static void init() {
         ConfigurationManager.getConfigInstance().setProperty(ContextKey.zone.getKey(), "us-eAst-1C");
     }
-    
+
     private DiscoveryEnabledServer createServer(String host, String zone) {
-        return createServer(host, 7001, zone);    
+        return createServer(host, 7001, zone);
     }
-    
+
     private DiscoveryEnabledServer createServer(String host, int port, String zone) {
         AmazonInfo amazonInfo = AmazonInfo.Builder.newBuilder().addMetadata(AmazonInfo.MetaDataKey.availabilityZone, zone).build();
-        
+
         Builder builder = InstanceInfo.Builder.newBuilder();
         InstanceInfo info = builder.setAppName("l10nservicegeneral")
-        .setDataCenterInfo(amazonInfo)
-        .setHostName(host)
-        .setPort(port)
-        .build();
+                .setDataCenterInfo(amazonInfo)
+                .setHostName(host)
+                .setPort(port)
+                .build();
         DiscoveryEnabledServer server = new DiscoveryEnabledServer(info, false, false);
         server.setZone(zone);
         return server;
     }
-    
+
     private DiscoveryEnabledServer createServer(int hostId, String zoneSuffix) {
         return createServer(zoneSuffix + "-" + "server" + hostId, "Us-east-1" + zoneSuffix);
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void testZoneAffinityEnabled() throws Exception {
         ConfigurationManager.getConfigInstance().setProperty("DefaultNIWSServerListFilterTest1.ribbon.DeploymentContextBasedVipAddresses", "l10nservicegeneral.cloud.netflix.net:7001");
@@ -79,7 +79,7 @@ public class DefaultNIWSServerListFilterTest {
         assertTrue(lb.getRule() instanceof AvailabilityFilteringRule);
         ZoneAffinityServerListFilter filter = (ZoneAffinityServerListFilter) lb.getFilter();
         LoadBalancerStats loadBalancerStats = lb.getLoadBalancerStats();
-        List<DiscoveryEnabledServer> servers = new ArrayList<DiscoveryEnabledServer>();        
+        List<DiscoveryEnabledServer> servers = new ArrayList<DiscoveryEnabledServer>();
         servers.add(createServer(1, "a"));
         servers.add(createServer(2, "a"));
         servers.add(createServer(3, "a"));
@@ -100,8 +100,8 @@ public class DefaultNIWSServerListFilterTest {
         expected.add(createServer(4, "c"));
         expected.add(createServer(5, "c"));
         assertEquals(expected, filtered);
-        lb.setServersList(filtered);        
-        for (int i = 1; i <= 4; i++) {            
+        lb.setServersList(filtered);
+        for (int i = 1;i <= 4;i++) {
             loadBalancerStats.incrementActiveRequestsCount(createServer(i, "c"));
         }
         filtered = filter.getFilteredListOfServers(servers);
@@ -109,7 +109,7 @@ public class DefaultNIWSServerListFilterTest {
 
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })    
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void testZoneExclusivity() throws Exception {
         ConfigurationManager.getConfigInstance().setProperty("DefaultNIWSServerListFilterTest2.ribbon.DeploymentContextBasedVipAddresses", "l10nservicegeneral.cloud.netflix.net:7001");
@@ -119,7 +119,7 @@ public class DefaultNIWSServerListFilterTest {
         DynamicServerListLoadBalancer lb = (DynamicServerListLoadBalancer) ClientFactory.getNamedLoadBalancer("DefaultNIWSServerListFilterTest2");
         ZoneAffinityServerListFilter filter = (ZoneAffinityServerListFilter) lb.getFilter();
         LoadBalancerStats loadBalancerStats = lb.getLoadBalancerStats();
-        List<DiscoveryEnabledServer> servers = new ArrayList<DiscoveryEnabledServer>();        
+        List<DiscoveryEnabledServer> servers = new ArrayList<DiscoveryEnabledServer>();
         servers.add(createServer(1, "a"));
         servers.add(createServer(2, "a"));
         servers.add(createServer(3, "a"));
@@ -140,15 +140,15 @@ public class DefaultNIWSServerListFilterTest {
         expected.add(createServer(4, "c"));
         expected.add(createServer(5, "c"));
         assertEquals(expected, filtered);
-        lb.setServersList(filtered);        
-        for (int i = 1; i <= 4; i++) {            
+        lb.setServersList(filtered);
+        for (int i = 1;i <= 4;i++) {
             loadBalancerStats.incrementActiveRequestsCount(createServer(i, "c"));
         }
         filtered = filter.getFilteredListOfServers(servers);
         assertEquals(expected, filtered);
     }
-    
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void testZoneAffinityOverride() throws Exception {
         ConfigurationManager.getConfigInstance().setProperty("DefaultNIWSServerListFilterTest3.ribbon.DeploymentContextBasedVipAddresses", "l10nservicegeneral.cloud.netflix.net:7001");
@@ -159,7 +159,7 @@ public class DefaultNIWSServerListFilterTest {
         DynamicServerListLoadBalancer lb = (DynamicServerListLoadBalancer) ClientFactory.getNamedLoadBalancer("DefaultNIWSServerListFilterTest3");
         ZoneAffinityServerListFilter filter = (ZoneAffinityServerListFilter) lb.getFilter();
         LoadBalancerStats loadBalancerStats = lb.getLoadBalancerStats();
-        List<DiscoveryEnabledServer> servers = new ArrayList<DiscoveryEnabledServer>();        
+        List<DiscoveryEnabledServer> servers = new ArrayList<DiscoveryEnabledServer>();
         servers.add(createServer(1, "a"));
         servers.add(createServer(2, "a"));
         servers.add(createServer(3, "a"));
@@ -179,7 +179,7 @@ public class DefaultNIWSServerListFilterTest {
         expected.add(createServer(5, "c")); */
         // less than 3 servers in zone c, will not honor zone affinity
         assertEquals(servers, filtered);
-        lb.setServersList(filtered);        
+        lb.setServersList(filtered);
         servers.add(createServer(3, "c"));
         filtered = filter.getFilteredListOfServers(servers);
         expected.add(createServer(1, "c"));
@@ -190,7 +190,7 @@ public class DefaultNIWSServerListFilterTest {
         assertEquals(expected, filtered);
 
         // make one server black out
-        for (int i = 1; i <= 3; i++) {            
+        for (int i = 1;i <= 3;i++) {
             loadBalancerStats.incrementSuccessiveConnectionFailureCount(createServer(1, "c"));
         }
         filtered = filter.getFilteredListOfServers(servers);
@@ -200,5 +200,5 @@ public class DefaultNIWSServerListFilterTest {
         filtered = filter.getFilteredListOfServers(servers);
         expected.add(createServer(4, "c"));
         assertEquals(expected, filtered);
-    } 
+    }
 }

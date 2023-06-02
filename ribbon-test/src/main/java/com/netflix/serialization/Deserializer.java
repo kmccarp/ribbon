@@ -21,5 +21,5 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public interface Deserializer<T> {
-    public T deserialize(InputStream in, TypeDef<T> type) throws IOException;    
+    public T deserialize(InputStream in, TypeDef<T> type) throws IOException;
 }

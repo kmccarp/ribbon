@@ -24,7 +24,7 @@ import org.junit.Test;
 import com.netflix.servo.monitor.Monitors;
 
 public class ServerStatsTest {
-    
+
     @Test
     public void testRegisterWithServo() {
         // Make sure annotations are correct:

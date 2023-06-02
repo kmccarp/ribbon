@@ -37,7 +37,7 @@ import com.google.common.annotations.VisibleForTesting;
  *
  */
 public class MonitoredConnectionManager extends ThreadSafeClientConnManager {
-    
+
     public MonitoredConnectionManager(String name) {
         super();
         initMonitors(name);
@@ -53,7 +53,7 @@ public class MonitoredConnectionManager extends ThreadSafeClientConnManager {
         super(schreg);
         initMonitors(name);
     }
-    
+
     void initMonitors(String name) {
         if (this.pool instanceof NamedConnectionPool) {
             ((NamedConnectionPool) this.pool).initMonitors(name);
@@ -63,7 +63,7 @@ public class MonitoredConnectionManager extends ThreadSafeClientConnManager {
     @Override
     @Deprecated
     protected AbstractConnPool createConnectionPool(HttpParams params) {
-         return new NamedConnectionPool(connOperator, params);
+        return new NamedConnectionPool(connOperator, params);
     }
 
     @Override

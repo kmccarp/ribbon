@@ -29,7 +29,7 @@ import java.net.ConnectException;
 public interface RetryHandler {
 
     public static final RetryHandler DEFAULT = new DefaultLoadBalancerRetryHandler();
-    
+
     /**
      * Test if an exception is retriable for the load balancer
      * 
@@ -48,7 +48,7 @@ public interface RetryHandler {
      * load balancer will also close the circuit upon getting such exception.
      */
     public boolean isCircuitTrippingException(Throwable e);
-        
+
     /**
      * @return Number of maximal retries to be done on one server
      */

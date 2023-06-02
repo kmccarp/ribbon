@@ -87,7 +87,7 @@ public class EurekaNotificationServerListUpdater implements ServerListUpdater {
                 return propSize;
             }
             return 2; // default
-        }        
+        }
     }
 
     public static ExecutorService getDefaultRefreshExecutor() {
@@ -147,8 +147,7 @@ public class EurekaNotificationServerListUpdater implements ServerListUpdater {
                                 logger.warn("Error submitting update task to executor, skipping one round of updates", e);
                                 updateQueued.set(false);  // if submit fails, need to reset updateQueued to false
                             }
-                        }
-                        else {
+                        }else {
                             logger.debug("stopping EurekaNotificationServerListUpdater, as refreshExecutor has been shut down");
                             stop();
                         }

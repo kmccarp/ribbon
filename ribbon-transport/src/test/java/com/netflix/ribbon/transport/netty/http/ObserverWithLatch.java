@@ -29,7 +29,7 @@ import static org.junit.Assert.fail;
 public class ObserverWithLatch<T> implements Observer<T> {
     public volatile T obj;
     public volatile Throwable error;
-    
+
     private CountDownLatch latch = new CountDownLatch(1);
     public AtomicInteger nextCounter = new AtomicInteger();
     public AtomicInteger errorCounter = new AtomicInteger();
@@ -51,7 +51,7 @@ public class ObserverWithLatch<T> implements Observer<T> {
         this.obj = obj;
         nextCounter.incrementAndGet();
     }
-    
+
     public void await() {
         boolean completed = false;
         try {

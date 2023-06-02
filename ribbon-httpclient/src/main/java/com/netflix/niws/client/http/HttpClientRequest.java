@@ -32,7 +32,7 @@ import com.netflix.client.http.HttpRequest;
  */
 @Deprecated
 public class HttpClientRequest extends ClientRequest {
-        
+
     public enum Verb {
         GET("GET"),
         PUT("PUT"),
@@ -56,25 +56,25 @@ public class HttpClientRequest extends ClientRequest {
     private MultivaluedMap<String, String> queryParams;
     private Object entity;
     private Verb verb;
-    
+
     private HttpClientRequest() {
         this.verb = Verb.GET;
     }
-    
+
     public static class Builder {
-        
-        private HttpClientRequest request = new HttpClientRequest(); 
-        
+
+        private HttpClientRequest request = new HttpClientRequest();
+
         public Builder setUri(URI uri) {
             request.setUri(uri);
             return this;
         }
-        
+
         public Builder setHeaders(MultivaluedMap<String, String> headers) {
             request.headers = headers;
             return this;
         }
-        
+
         public Builder setOverrideConfig(IClientConfig config) {
             request.setOverrideConfig(config);
             return this;
@@ -99,54 +99,54 @@ public class HttpClientRequest extends ClientRequest {
             request.verb = verb;
             return this;
         }
-        
+
         public Builder setLoadBalancerKey(Object loadBalancerKey) {
             request.setLoadBalancerKey(loadBalancerKey);
             return this;
         }
-        
+
         public HttpClientRequest build() {
-            return request;    
+            return request;
         }
     }
-    
+
     public MultivaluedMap<String, String> getQueryParams() {
         return queryParams;
     }
-    
+
     public Verb getVerb() {
         return verb;
     }
-    
+
     public MultivaluedMap<String, String> getHeaders() {
         return headers;
     }
-    
+
     public Object getEntity() {
         return entity;
     }
-        
-    @Override
-	public boolean isRetriable() {
-    	if (this.verb == Verb.GET && isRetriable == null) {
-    		return true;
-    	}
-		return super.isRetriable();
-	}
 
-	public static Builder newBuilder() {
+    @Override
+    public boolean isRetriable() {
+        if (this.verb == Verb.GET && isRetriable == null) {
+            return true;
+        }
+        return super.isRetriable();
+    }
+
+    public static Builder newBuilder() {
         return new Builder();
     }
 
     @Override
     public HttpClientRequest replaceUri(URI newURI) {
         return (new Builder()).setUri(newURI)
-        .setEntity(this.getEntity())
-        .setHeaders(this.getHeaders())
-        .setOverrideConfig(this.getOverrideConfig())
-        .setQueryParams(this.getQueryParams())
-        .setRetriable(this.isRetriable())
-        .setLoadBalancerKey(this.getLoadBalancerKey())
-        .setVerb(this.getVerb()).build();        
+                .setEntity(this.getEntity())
+                .setHeaders(this.getHeaders())
+                .setOverrideConfig(this.getOverrideConfig())
+                .setQueryParams(this.getQueryParams())
+                .setRetriable(this.isRetriable())
+                .setLoadBalancerKey(this.getLoadBalancerKey())
+                .setVerb(this.getVerb()).build();
     }
 }

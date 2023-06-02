@@ -65,7 +65,7 @@ public class PollingServerListUpdater implements ServerListUpdater {
     @Override
     public synchronized void start(final UpdateAction updateAction) {
         if (isActive.compareAndSet(false, true)) {
-            final Runnable wrapperRunnable = () ->  {
+            final Runnable wrapperRunnable = () -> {
                 if (!isActive.get()) {
                     if (scheduledFuture != null) {
                         scheduledFuture.cancel(true);

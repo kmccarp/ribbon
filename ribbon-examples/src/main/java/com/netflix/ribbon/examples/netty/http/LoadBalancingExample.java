@@ -22,9 +22,9 @@ public class LoadBalancingExample {
         List<Server> servers = Lists.newArrayList(new Server("www.google.com:80"), new Server("www.examples.com:80"), new Server("www.wikipedia.org:80"));
         BaseLoadBalancer lb = LoadBalancerBuilder.newBuilder()
                 .buildFixedServerListLoadBalancer(servers);
-            
+
         LoadBalancingHttpClient<ByteBuf, ByteBuf> client = RibbonTransport.newHttpClient(lb);
-        final CountDownLatch latch = new CountDownLatch(servers.size()); 
+        final CountDownLatch latch = new CountDownLatch(servers.size());
         Observer<HttpClientResponse<ByteBuf>> observer = new Observer<HttpClientResponse<ByteBuf>>() {
             @Override
             public void onCompleted() {
@@ -38,14 +38,14 @@ public class LoadBalancingExample {
             @Override
             public void onNext(HttpClientResponse<ByteBuf> args) {
                 latch.countDown();
-                System.out.println("Got response: " + args.getStatus()); 
+                System.out.println("Got response: " + args.getStatus());
             }
         };
-        for (int i = 0; i < servers.size(); i++) {
+        for (int i = 0;i < servers.size();i++) {
             HttpClientRequest<ByteBuf> request = HttpClientRequest.createGet("/");
             client.submit(request).subscribe(observer);
         }
-        latch.await();        
+        latch.await();
         System.out.println(lb.getLoadBalancerStats());
     }
 }

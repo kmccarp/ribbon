@@ -79,9 +79,9 @@ public class RibbonDynamicProxyTest {
     @Test
     public void testSetupWithResourceGroupNameInAnnotation() throws Exception {
         mockStatic(ProxyHttpResourceGroupFactory.class);
-        expectNew(ProxyHttpResourceGroupFactory.class, new Class[]{ClassTemplate.class, 
-            RibbonResourceFactory.class, AnnotationProcessorsProvider.class
-            }, anyObject(), anyObject(), anyObject()).andReturn(httpResourceGroupFactoryMock);
+        expectNew(ProxyHttpResourceGroupFactory.class, new Class[]{ClassTemplate.class,
+                RibbonResourceFactory.class, AnnotationProcessorsProvider.class
+        }, anyObject(), anyObject(), anyObject()).andReturn(httpResourceGroupFactoryMock);
 
         replayAll();
 

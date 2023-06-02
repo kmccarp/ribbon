@@ -29,6 +29,6 @@ public class TemplateParsingException extends Exception {
     public TemplateParsingException(String arg0) {
         super(arg0);
     }
-    
+
 
 }

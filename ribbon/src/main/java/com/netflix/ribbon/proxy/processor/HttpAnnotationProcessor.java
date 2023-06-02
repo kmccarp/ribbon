@@ -31,7 +31,7 @@ public class HttpAnnotationProcessor implements AnnotationProcessor<HttpResource
         final HttpMethod httpMethod = annotation.method();
         final String uriTemplate = annotation.uri();
         final Map<String, List<String>> headers = annotation.headers().length == 0 ? null : new HashMap<String, List<String>>();
-        for (Header h : annotation.headers()) {
+        for (Header h: annotation.headers()) {
             if (!headers.containsKey(h.name())) {
                 ArrayList<String> values = new ArrayList<String>();
                 values.add(h.value());
@@ -49,9 +49,9 @@ public class HttpAnnotationProcessor implements AnnotationProcessor<HttpResource
 
         // headers
         if (headers != null) {
-            for (Entry<String, List<String>> header : headers.entrySet()) {
+            for (Entry<String, List<String>> header: headers.entrySet()) {
                 String key = header.getKey();
-                for (String value : header.getValue()) {
+                for (String value: header.getValue()) {
                     templateBuilder.withHeader(key, value);
                 }
             }

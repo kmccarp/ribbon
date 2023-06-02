@@ -44,10 +44,10 @@ import com.netflix.loadbalancer.Server;
 public class RestClientTest {
     @ClassRule
     public static MockHttpServer server = new MockHttpServer();
-    
+
     @ClassRule
     public static MockHttpServer secureServer = new MockHttpServer().secure();
-    
+
     @Test
     public void testExecuteWithoutLB() throws Exception {
         RestClient client = (RestClient) ClientFactory.getNamedClient("google");
@@ -71,7 +71,7 @@ public class RestClientTest {
         expected.add(new URI(server.getServerPath("/")));
         Set<URI> result = new HashSet<URI>();
         HttpRequest request = HttpRequest.newBuilder().uri(new URI("/")).build();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0;i < 5;i++) {
             HttpResponse response = client.executeWithLoadBalancer(request);
             assertStatusIsOk(response.getStatus());
             assertTrue(response.isSuccess());
@@ -88,8 +88,8 @@ public class RestClientTest {
 
     @Test
     public void testVipAsURI()  throws Exception {
-    	ConfigurationManager.getConfigInstance().setProperty("test1.ribbon.DeploymentContextBasedVipAddresses", server.getServerPath("/"));
-    	ConfigurationManager.getConfigInstance().setProperty("test1.ribbon.InitializeNFLoadBalancer", "false");
+        ConfigurationManager.getConfigInstance().setProperty("test1.ribbon.DeploymentContextBasedVipAddresses", server.getServerPath("/"));
+        ConfigurationManager.getConfigInstance().setProperty("test1.ribbon.InitializeNFLoadBalancer", "false");
         RestClient client = (RestClient) ClientFactory.getNamedClient("test1");
         assertNull(client.getLoadBalancer());
         HttpRequest request = HttpRequest.newBuilder().uri(new URI("/")).build();
@@ -100,8 +100,8 @@ public class RestClientTest {
 
     @Test
     public void testSecureClient()  throws Exception {
-    	ConfigurationManager.getConfigInstance().setProperty("test2.ribbon.IsSecure", "true");
-    	RestClient client = (RestClient) ClientFactory.getNamedClient("test2");
+        ConfigurationManager.getConfigInstance().setProperty("test2.ribbon.IsSecure", "true");
+        RestClient client = (RestClient) ClientFactory.getNamedClient("test2");
         HttpRequest request = HttpRequest.newBuilder().uri(server.getServerURI()).build();
         HttpResponse response = client.executeWithLoadBalancer(request);
         assertStatusIsOk(response.getStatus());
@@ -112,17 +112,17 @@ public class RestClientTest {
         ConfigurationManager.getConfigInstance().setProperty("test3.ribbon." + CommonClientConfigKey.IsSecure, "true");
         ConfigurationManager.getConfigInstance().setProperty("test3.ribbon." + CommonClientConfigKey.TrustStore, secureServer.getTrustStore().getAbsolutePath());
         ConfigurationManager.getConfigInstance().setProperty("test3.ribbon." + CommonClientConfigKey.TrustStorePassword, SecureGetTest.PASSWORD);
-        
+
         RestClient client = (RestClient) ClientFactory.getNamedClient("test3");
         BaseLoadBalancer lb = new BaseLoadBalancer();
-        Server[] servers = new Server[]{new Server("localhost", secureServer.getServerPort())}; 
+        Server[] servers = new Server[]{new Server("localhost", secureServer.getServerPort())};
         lb.addServers(Arrays.asList(servers));
         client.setLoadBalancer(lb);
         HttpRequest request = HttpRequest.newBuilder().uri(new URI("/")).build();
         HttpResponse response = client.executeWithLoadBalancer(request);
         assertStatusIsOk(response.getStatus());
         assertEquals(secureServer.getServerPath("/"), response.getRequestedURI().toString());
-        
+
     }
 
     @Test
@@ -131,7 +131,7 @@ public class RestClientTest {
         HttpRequest request = HttpRequest.newBuilder().uri(server.getServerURI()).verb(HttpRequest.Verb.DELETE).build();
         HttpResponse response = client.execute(request);
         assertStatusIsOk(response.getStatus());
-        
+
         request = HttpRequest.newBuilder().uri(server.getServerURI()).verb(HttpRequest.Verb.DELETE).entity("").build();
         response = client.execute(request);
         assertStatusIsOk(response.getStatus());

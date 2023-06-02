@@ -33,27 +33,27 @@ import com.netflix.servo.monitor.Monitors;
  */
 public class NFHttpClientFactory {
 
-	private static Map<MultiKey,NFHttpClient> clientMap = new ConcurrentHashMap<MultiKey,NFHttpClient>();
-	
-	private static Map<String,NFHttpClient> namedClientMap = new ConcurrentHashMap<String,NFHttpClient>();
-	
-	private static NFHttpClient defaultClient = new NFHttpClient();	
-	
-	private static Object lock = new Object();
-	
-	public static NFHttpClient getNFHttpClient(String host, int port){
-		MultiKey mk = new MultiKey(host,port);
-		NFHttpClient client = clientMap.get(mk);
-		if (client == null){
-			client = new NFHttpClient(host, port);
-			clientMap.put(mk,client);
-		}
-		return client;			
-	}
+    private static Map<MultiKey, NFHttpClient> clientMap = new ConcurrentHashMap<MultiKey, NFHttpClient>();
+
+    private static Map<String, NFHttpClient> namedClientMap = new ConcurrentHashMap<String, NFHttpClient>();
+
+    private static NFHttpClient defaultClient = new NFHttpClient();
+
+    private static Object lock = new Object();
+
+    public static NFHttpClient getNFHttpClient(String host, int port) {
+        MultiKey mk = new MultiKey(host, port);
+        NFHttpClient client = clientMap.get(mk);
+        if (client == null) {
+            client = new NFHttpClient(host, port);
+            clientMap.put(mk, client);
+        }
+        return client;
+    }
 
     public static NFHttpClient getNamedNFHttpClient(String name) {
-		IClientConfig config = ClientConfigFactory.DEFAULT.newConfig();
-		config.loadProperties(name);
+        IClientConfig config = ClientConfigFactory.DEFAULT.newConfig();
+        config.loadProperties(name);
         return getNamedNFHttpClient(name, config, true);
     }
 
@@ -62,41 +62,41 @@ public class NFHttpClientFactory {
     }
 
     public static NFHttpClient getNamedNFHttpClient(String name, boolean registerMonitor) {
-		IClientConfig config = ClientConfigFactory.DEFAULT.newConfig();
-		config.loadProperties(name);
+        IClientConfig config = ClientConfigFactory.DEFAULT.newConfig();
+        config.loadProperties(name);
         return getNamedNFHttpClient(name, config, registerMonitor);
     }
-    
-	public static NFHttpClient getNamedNFHttpClient(String name, IClientConfig config, boolean registerMonitor) {		
-		NFHttpClient client = namedClientMap.get(name);		
-		//avoid creating multiple HttpClient instances 
-		if (client == null){
-		    synchronized (lock) {
-		        client = namedClientMap.get(name);       
-		        if (client == null){
-        			client = new NFHttpClient(name, config, registerMonitor);
-        			namedClientMap.put(name,client);
-		        }
-		    }
-		}
-		return client;	
-	}
-	
 
-	public static NFHttpClient getDefaultClient() {
-		return defaultClient;
-	}
+    public static NFHttpClient getNamedNFHttpClient(String name, IClientConfig config, boolean registerMonitor) {
+        NFHttpClient client = namedClientMap.get(name);
+        //avoid creating multiple HttpClient instances 
+        if (client == null) {
+            synchronized (lock) {
+                client = namedClientMap.get(name);
+                if (client == null) {
+                    client = new NFHttpClient(name, config, registerMonitor);
+                    namedClientMap.put(name, client);
+                }
+            }
+        }
+        return client;
+    }
 
-	public static void setDefaultClient(NFHttpClient defaultClient) {
-		NFHttpClientFactory.defaultClient = defaultClient;
-	}	
-	
-	public static void shutdownNFHttpClient(String name) {
-	    NFHttpClient c = namedClientMap.get(name);
-	    if (c != null) {
-	        c.shutdown();
-	        namedClientMap.remove(name);
-	        Monitors.unregisterObject(name, c);
-	    }
-	}
+
+    public static NFHttpClient getDefaultClient() {
+        return defaultClient;
+    }
+
+    public static void setDefaultClient(NFHttpClient defaultClient) {
+        NFHttpClientFactory.defaultClient = defaultClient;
+    }
+
+    public static void shutdownNFHttpClient(String name) {
+        NFHttpClient c = namedClientMap.get(name);
+        if (c != null) {
+            c.shutdown();
+            namedClientMap.remove(name);
+            Monitors.unregisterObject(name, c);
+        }
+    }
 }

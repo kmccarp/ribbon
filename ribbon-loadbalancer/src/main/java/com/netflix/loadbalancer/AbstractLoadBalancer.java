@@ -34,30 +34,30 @@ import java.util.List;
  * 
  */
 public abstract class AbstractLoadBalancer implements ILoadBalancer {
-    
-    public enum ServerGroup{
+
+    public enum ServerGroup {
         ALL,
         STATUS_UP,
-        STATUS_NOT_UP        
+        STATUS_NOT_UP
     }
-        
+
     /**
      * delegate to {@link #chooseServer(Object)} with parameter null.
      */
     public Server chooseServer() {
-    	return chooseServer(null);
+        return chooseServer(null);
     }
 
-    
+
     /**
      * List of servers that this Loadbalancer knows about
      * 
      * @param serverGroup Servers grouped by status, e.g., {@link ServerGroup#STATUS_UP}
      */
     public abstract List<Server> getServerList(ServerGroup serverGroup);
-    
+
     /**
      * Obtain LoadBalancer related Statistics
      */
-    public abstract LoadBalancerStats getLoadBalancerStats();    
+    public abstract LoadBalancerStats getLoadBalancerStats();
 }

@@ -28,7 +28,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import rx.functions.Func0;
 
 public class TestUtils {
-    
+
     public static void waitUntilTrueOrTimeout(int timeoutMilliseconds, final Func0<Boolean> func) {
         final Lock lock = new ReentrantLock();
         final Condition condition = lock.newCondition();

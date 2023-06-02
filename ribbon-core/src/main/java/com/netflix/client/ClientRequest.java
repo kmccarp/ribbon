@@ -34,10 +34,10 @@ public class ClientRequest implements Cloneable {
     protected Object loadBalancerKey = null;
     protected Boolean isRetriable = null;
     protected IClientConfig overrideConfig;
-        
+
     public ClientRequest() {
     }
-    
+
     public ClientRequest(URI uri) {
         this.uri = uri;
     }
@@ -66,7 +66,7 @@ public class ClientRequest implements Cloneable {
         this.loadBalancerKey = loadBalancerKey;
         this.isRetriable = isRetriable;
     }
-    
+
     public ClientRequest(ClientRequest request) {
         this.uri = request.uri;
         this.loadBalancerKey = request.loadBalancerKey;
@@ -77,7 +77,7 @@ public class ClientRequest implements Cloneable {
     public final URI getUri() {
         return uri;
     }
-    
+
 
     protected final ClientRequest setUri(URI uri) {
         this.uri = uri;
@@ -120,7 +120,7 @@ public class ClientRequest implements Cloneable {
         this.overrideConfig = overrideConfig;
         return this;
     }
-    
+
     /**
      * Create a client request using a new URI. This is used by {@code com.netflix.client.AbstractLoadBalancerAwareClient#computeFinalUriWithLoadBalancer(ClientRequest)}.
      * It first tries to clone the request and if that fails it will use the copy constructor {@link #ClientRequest(ClientRequest)}.

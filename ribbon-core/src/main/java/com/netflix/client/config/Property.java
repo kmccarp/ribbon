@@ -46,7 +46,7 @@ public interface Property<T> {
             }
 
             @Override
-            public String toString( ){
+            public String toString() {
                 return String.valueOf(value);
             }
         };

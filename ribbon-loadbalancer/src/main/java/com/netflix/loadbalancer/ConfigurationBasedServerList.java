@@ -35,38 +35,38 @@ import com.netflix.client.config.IClientConfig;
  * @author awang
  * 
  */
-public class ConfigurationBasedServerList extends AbstractServerList<Server>  {
+public class ConfigurationBasedServerList extends AbstractServerList<Server> {
 
-	private IClientConfig clientConfig;
-		
-	@Override
-	public List<Server> getInitialListOfServers() {
-	    return getUpdatedListOfServers();
-	}
+    private IClientConfig clientConfig;
 
-	@Override
-	public List<Server> getUpdatedListOfServers() {
+    @Override
+    public List<Server> getInitialListOfServers() {
+        return getUpdatedListOfServers();
+    }
+
+    @Override
+    public List<Server> getUpdatedListOfServers() {
         String listOfServers = clientConfig.get(CommonClientConfigKey.ListOfServers);
         return derive(listOfServers);
-	}
+    }
 
-	@Override
-	public void initWithNiwsConfig(IClientConfig clientConfig) {
-	    this.clientConfig = clientConfig;
-	}
-	
-	protected List<Server> derive(String value) {
-	    List<Server> list = Lists.newArrayList();
-		if (!Strings.isNullOrEmpty(value)) {
-			for (String s: value.split(",")) {
-				list.add(new Server(s.trim()));
-			}
-		}
+    @Override
+    public void initWithNiwsConfig(IClientConfig clientConfig) {
+        this.clientConfig = clientConfig;
+    }
+
+    protected List<Server> derive(String value) {
+        List<Server> list = Lists.newArrayList();
+        if (!Strings.isNullOrEmpty(value)) {
+            for (String s: value.split(",")) {
+                list.add(new Server(s.trim()));
+            }
+        }
         return list;
-	}
+    }
 
-	@Override
-	public String toString() {
-		return "ConfigurationBasedServerList:" + getUpdatedListOfServers();
-	}
+    @Override
+    public String toString() {
+        return "ConfigurationBasedServerList:" + getUpdatedListOfServers();
+    }
 }

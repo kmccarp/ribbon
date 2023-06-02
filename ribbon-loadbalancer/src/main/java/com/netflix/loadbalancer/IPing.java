@@ -23,7 +23,7 @@ package com.netflix.loadbalancer;
  *
  */
 public interface IPing {
-    
+
     /**
      * Checks whether the given <code>Server</code> is "alive" i.e. should be
      * considered a candidate while loadbalancing

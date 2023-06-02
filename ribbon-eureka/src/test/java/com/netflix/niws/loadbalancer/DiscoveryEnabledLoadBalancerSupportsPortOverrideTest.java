@@ -58,14 +58,14 @@ import static org.powermock.api.easymock.PowerMock.verify;
  * Created by jzarfoss on 1/7/14.
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest( {DiscoveryManager.class, DiscoveryClient.class} )
+@PrepareForTest({DiscoveryManager.class, DiscoveryClient.class})
 @PowerMockIgnore("javax.management.*")
 @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
 public class DiscoveryEnabledLoadBalancerSupportsPortOverrideTest {
 
 
     @Before
-    public void setupMock(){
+    public void setupMock() {
 
         List<InstanceInfo> dummyII = LoadBalancerTestUtils.getDummyInstanceInfo("dummy", "http://www.host.com", "1.1.1.1", 8001);
         List<InstanceInfo> secureDummyII = LoadBalancerTestUtils.getDummyInstanceInfo("secureDummy", "http://www.host.com", "1.1.1.1", 8002);
@@ -91,21 +91,20 @@ public class DiscoveryEnabledLoadBalancerSupportsPortOverrideTest {
     }
 
     @After
-    public void afterMock(){
+    public void afterMock() {
         verify(DiscoveryManager.class);
         verify(DiscoveryClient.class);
     }
 
 
     @Test
-    public void testDefaultHonorsVipPortDefinition() throws Exception{
+    public void testDefaultHonorsVipPortDefinition() throws Exception {
 
         ConfigurationManager.getConfigInstance().setProperty("DiscoveryEnabled.testDefaultHonorsVipPortDefinition.ribbon.DeploymentContextBasedVipAddresses", "dummy");
         ConfigurationManager.getConfigInstance().setProperty("DiscoveryEnabled.testDefaultHonorsVipPortDefinition.ribbon.IsSecure", "false");
         ConfigurationManager.getConfigInstance().setProperty("DiscoveryEnabled.testDefaultHonorsVipPortDefinition.ribbon.Port", "6999");
         ConfigurationManager.getConfigInstance().setProperty("DiscoveryEnabled.testDefaultHonorsVipPortDefinition.ribbon.TargetRegion", "region");
         ConfigurationManager.getConfigInstance().setProperty("DiscoveryEnabled.testDefaultHonorsVipPortDefinition.ribbon.NIWSServerListClassName", DiscoveryEnabledNIWSServerList.class.getName());
-
 
 
         DiscoveryEnabledNIWSServerList deList = new DiscoveryEnabledNIWSServerList();
@@ -123,14 +122,13 @@ public class DiscoveryEnabledLoadBalancerSupportsPortOverrideTest {
     }
 
     @Test
-    public void testDefaultHonorsVipSecurePortDefinition() throws Exception{
+    public void testDefaultHonorsVipSecurePortDefinition() throws Exception {
 
         ConfigurationManager.getConfigInstance().setProperty("DiscoveryEnabled.testDefaultHonorsVipSecurePortDefinition.ribbon.DeploymentContextBasedVipAddresses", "secureDummy");
         ConfigurationManager.getConfigInstance().setProperty("DiscoveryEnabled.testDefaultHonorsVipSecurePortDefinition.ribbon.IsSecure", "true");
         ConfigurationManager.getConfigInstance().setProperty("DiscoveryEnabled.testDefaultHonorsVipSecurePortDefinition.ribbon.SecurePort", "6002");
         ConfigurationManager.getConfigInstance().setProperty("DiscoveryEnabled.testDefaultHonorsVipSecurePortDefinition.ribbon.TargetRegion", "region");
         ConfigurationManager.getConfigInstance().setProperty("DiscoveryEnabled.testDefaultHonorsVipSecurePortDefinition.ribbon.NIWSServerListClassName", DiscoveryEnabledNIWSServerList.class.getName());
-
 
 
         DiscoveryEnabledNIWSServerList deList = new DiscoveryEnabledNIWSServerList();
@@ -148,7 +146,7 @@ public class DiscoveryEnabledLoadBalancerSupportsPortOverrideTest {
     }
 
     @Test
-    public void testVipPortCanBeOverriden() throws Exception{
+    public void testVipPortCanBeOverriden() throws Exception {
 
         ConfigurationManager.getConfigInstance().setProperty("DiscoveryEnabled.testVipPortCanBeOverriden.ribbon.DeploymentContextBasedVipAddresses", "dummy");
         ConfigurationManager.getConfigInstance().setProperty("DiscoveryEnabled.testVipPortCanBeOverriden.ribbon.IsSecure", "false");
@@ -174,7 +172,7 @@ public class DiscoveryEnabledLoadBalancerSupportsPortOverrideTest {
 
 
     @Test
-    public void testSecureVipPortCanBeOverriden() throws Exception{
+    public void testSecureVipPortCanBeOverriden() throws Exception {
 
         ConfigurationManager.getConfigInstance().setProperty("DiscoveryEnabled.testSecureVipPortCanBeOverriden.ribbon.DeploymentContextBasedVipAddresses", "secureDummy");
         ConfigurationManager.getConfigInstance().setProperty("DiscoveryEnabled.testSecureVipPortCanBeOverriden.ribbon.IsSecure", "true");
@@ -204,7 +202,7 @@ public class DiscoveryEnabledLoadBalancerSupportsPortOverrideTest {
      * @throws Exception for anything unexpected
      */
     @Test
-    public void testTwoInstancesDontStepOnEachOther() throws Exception{
+    public void testTwoInstancesDontStepOnEachOther() throws Exception {
 
         // setup override client
 

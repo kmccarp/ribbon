@@ -49,82 +49,82 @@ import com.google.common.io.Closeables;
 @Ignore
 public class SimpleSSLTestServer {
 
-	private static final String NL = System.getProperty("line.separator");
+    private static final String NL = System.getProperty("line.separator");
 
-	private static final String CANNED_RESPONSE =
-									"HTTP/1.0 200 OK" + NL +
-									"Content-Type: text/plain" + NL +
-									"Content-Length: 5" + NL + NL +
-									"hello" + NL;
+    private static final String CANNED_RESPONSE =
+            "HTTP/1.0 200 OK" + NL +
+                    "Content-Type: text/plain" + NL +
+                    "Content-Length: 5" + NL + NL +
+                    "hello" + NL;
 
-	private final ServerSocket ss;
+    private final ServerSocket ss;
 
-	@edu.umd.cs.findbugs.annotations.SuppressWarnings
-	public SimpleSSLTestServer(final File truststore, final String truststorePass,
-			final File keystore, final String keystorePass, final boolean clientAuthRequred) throws Exception{
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings
+    public SimpleSSLTestServer(final File truststore, final String truststorePass,
+            final File keystore, final String keystorePass, final boolean clientAuthRequred) throws Exception {
 
-			KeyStore ks = KeyStore.getInstance("JKS");
-			ks.load(new FileInputStream(keystore), keystorePass.toCharArray());
-			KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-			kmf.init(ks, keystorePass.toCharArray());
+        KeyStore ks = KeyStore.getInstance("JKS");
+        ks.load(new FileInputStream(keystore), keystorePass.toCharArray());
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        kmf.init(ks, keystorePass.toCharArray());
 
-			KeyStore ts = KeyStore.getInstance("JKS");
-			ts.load(new FileInputStream(truststore), keystorePass.toCharArray());
-			TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-			tmf.init(ts);
+        KeyStore ts = KeyStore.getInstance("JKS");
+        ts.load(new FileInputStream(truststore), keystorePass.toCharArray());
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        tmf.init(ts);
 
-			SSLContext sc = SSLContext.getInstance("TLS");
-			sc.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+        SSLContext sc = SSLContext.getInstance("TLS");
+        sc.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
 
-			ss = sc.getServerSocketFactory().createServerSocket(0);
+        ss = sc.getServerSocketFactory().createServerSocket(0);
 
-			((SSLServerSocket) ss).setNeedClientAuth(clientAuthRequred);
-	}
+        ((SSLServerSocket) ss).setNeedClientAuth(clientAuthRequred);
+    }
 
-	public void accept() throws Exception{
+    public void accept() throws Exception {
 
-		new Thread(){
+        new Thread(){
 
-			@Override
-			public void run(){
+            @Override
+            public void run() {
 
-				Socket sock = null;
-				BufferedReader reader = null;
-				BufferedWriter writer = null;
+                Socket sock = null;
+                BufferedReader reader = null;
+                BufferedWriter writer = null;
 
-				try{
-					sock = ss.accept();
+                try {
+                    sock = ss.accept();
 
-					reader = new BufferedReader(new InputStreamReader(sock.getInputStream(), Charset.defaultCharset()));
-					writer = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream(), Charset.defaultCharset()));
+                    reader = new BufferedReader(new InputStreamReader(sock.getInputStream(), Charset.defaultCharset()));
+                    writer = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream(), Charset.defaultCharset()));
 
-					reader.readLine(); // we really don't care what the client says, he's getting the special regardless...
+                    reader.readLine(); // we really don't care what the client says, he's getting the special regardless...
 
-					writer.write(CANNED_RESPONSE);
-					writer.flush();
+                    writer.write(CANNED_RESPONSE);
+                    writer.flush();
 
-				}catch(Exception e){
-					e.printStackTrace();
-				}finally{
-					try{
-						Closeables.close(reader, true);
-						Closeables.close(writer, true);
-						sock.close();
-					}catch(Exception e){
-						e.printStackTrace();
-					}
-				}
-			}
-		}.start();
-	}
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        Closeables.close(reader, true);
+                        Closeables.close(writer, true);
+                        sock.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }.start();
+    }
 
-	public void close() throws Exception{
-		ss.close();
-	}
+    public void close() throws Exception {
+        ss.close();
+    }
 
-	public int getPort() {
-		return ss.getLocalPort();
-	}
+    public int getPort() {
+        return ss.getLocalPort();
+    }
 
 
 }

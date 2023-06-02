@@ -64,7 +64,7 @@ public class ListenerTest {
         System.out.println(config);
 
         HttpClientRequest<ByteBuf> request = HttpClientRequest.createGet("/testAsync/person");
-        Server badServer  = new Server("localhost:12345");
+        Server badServer = new Server("localhost:12345");
         Server badServer2 = new Server("localhost:34567");
         List<Server> servers = Lists.newArrayList(badServer, badServer2);
 
@@ -72,7 +72,7 @@ public class ListenerTest {
                 .withRule(new AvailabilityFilteringRule())
                 .withPing(new DummyPing())
                 .buildFixedServerListLoadBalancer(servers);
-        
+
         IClientConfig overrideConfig = DefaultClientConfigImpl.getEmptyConfig();
         TestExecutionListener<ByteBuf, ByteBuf> listener = new TestExecutionListener<ByteBuf, ByteBuf>(request, overrideConfig);
         List<ExecutionListener<HttpClientRequest<ByteBuf>, HttpClientResponse<ByteBuf>>> listeners = Lists.<ExecutionListener<HttpClientRequest<ByteBuf>, HttpClientResponse<ByteBuf>>>newArrayList(listener);
@@ -80,7 +80,7 @@ public class ListenerTest {
         try {
             client.submit(request, null, overrideConfig).toBlocking().last();
             fail("Exception expected");
-        } catch(Exception e) {
+        } catch (Exception e) {
             assertNotNull(e);
         }
         assertEquals(1, listener.executionStartCounter.get());
@@ -118,7 +118,7 @@ public class ListenerTest {
         try {
             client.submit(request, null, overrideConfig).toBlocking().last();
             fail("Exception expected");
-        } catch(Exception e) {
+        } catch (Exception e) {
             assertNotNull(e);
         }
         assertEquals(1, listener.executionStartCounter.get());
@@ -149,7 +149,7 @@ public class ListenerTest {
         System.out.println(config);
 
         HttpClientRequest<ByteBuf> request = HttpClientRequest.createGet("/testAsync/person");
-        Server badServer  = new Server("localhost:12345");
+        Server badServer = new Server("localhost:12345");
         Server goodServer = new Server("localhost:" + server.getPort());
         List<Server> servers = Lists.newArrayList(goodServer, badServer);
 

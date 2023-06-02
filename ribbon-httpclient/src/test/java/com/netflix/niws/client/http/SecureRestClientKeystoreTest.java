@@ -41,94 +41,94 @@ import com.sun.jersey.core.util.Base64;
 public class SecureRestClientKeystoreTest {
 
 
-	@Test
-	public void testGetKeystoreWithClientAuth() throws Exception{
+    @Test
+    public void testGetKeystoreWithClientAuth() throws Exception {
 
-		// jks format
-		byte[] dummyTruststore = Base64.decode(SecureGetTest.TEST_TS1);
-		byte[] dummyKeystore = Base64.decode(SecureGetTest.TEST_KS1);
+        // jks format
+        byte[] dummyTruststore = Base64.decode(SecureGetTest.TEST_TS1);
+        byte[] dummyKeystore = Base64.decode(SecureGetTest.TEST_KS1);
 
-		File tempKeystore = File.createTempFile(this.getClass().getName(), ".keystore");
-		File tempTruststore = File.createTempFile(this.getClass().getName(), ".truststore");
+        File tempKeystore = File.createTempFile(this.getClass().getName(), ".keystore");
+        File tempTruststore = File.createTempFile(this.getClass().getName(), ".truststore");
 
-		FileOutputStream keystoreFileOut = new FileOutputStream(tempKeystore);
+        FileOutputStream keystoreFileOut = new FileOutputStream(tempKeystore);
         try {
             keystoreFileOut.write(dummyKeystore);
         } finally {
             keystoreFileOut.close();
         }
 
-		FileOutputStream truststoreFileOut = new FileOutputStream(tempTruststore);
+        FileOutputStream truststoreFileOut = new FileOutputStream(tempTruststore);
         try {
             truststoreFileOut.write(dummyTruststore);
         } finally {
             truststoreFileOut.close();
         }
 
-		AbstractConfiguration cm = ConfigurationManager.getConfigInstance();
+        AbstractConfiguration cm = ConfigurationManager.getConfigInstance();
 
-		String name = this.getClass().getName() + ".test1";
+        String name = this.getClass().getName() + ".test1";
 
-		String configPrefix = name + "." + "ribbon";
+        String configPrefix = name + "." + "ribbon";
 
-		cm.setProperty(configPrefix + "." +  CommonClientConfigKey.IsSecure, "true");
-		cm.setProperty(configPrefix + "." +  CommonClientConfigKey.IsClientAuthRequired, "true");
-		cm.setProperty(configPrefix + "." +  CommonClientConfigKey.KeyStore, tempKeystore.getAbsolutePath());
-		cm.setProperty(configPrefix + "." +  CommonClientConfigKey.KeyStorePassword, "changeit");
-		cm.setProperty(configPrefix + "." +  CommonClientConfigKey.TrustStore, tempTruststore.getAbsolutePath());
-		cm.setProperty(configPrefix + "." +  CommonClientConfigKey.TrustStorePassword, "changeit");
+        cm.setProperty(configPrefix + "." +  CommonClientConfigKey.IsSecure, "true");
+        cm.setProperty(configPrefix + "." +  CommonClientConfigKey.IsClientAuthRequired, "true");
+        cm.setProperty(configPrefix + "." +  CommonClientConfigKey.KeyStore, tempKeystore.getAbsolutePath());
+        cm.setProperty(configPrefix + "." +  CommonClientConfigKey.KeyStorePassword, "changeit");
+        cm.setProperty(configPrefix + "." +  CommonClientConfigKey.TrustStore, tempTruststore.getAbsolutePath());
+        cm.setProperty(configPrefix + "." +  CommonClientConfigKey.TrustStorePassword, "changeit");
 
-		RestClient client = (RestClient) ClientFactory.getNamedClient(name);
+        RestClient client = (RestClient) ClientFactory.getNamedClient(name);
 
-		KeyStore keyStore = client.getKeyStore();
+        KeyStore keyStore = client.getKeyStore();
 
-		Certificate cert = keyStore.getCertificate("ribbon_key");
+        Certificate cert = keyStore.getCertificate("ribbon_key");
 
-		assertNotNull(cert);
+        assertNotNull(cert);
 
-	}
+    }
 
-	@Test
-	public void testGetKeystoreWithNoClientAuth() throws Exception{
+    @Test
+    public void testGetKeystoreWithNoClientAuth() throws Exception {
 
-		// jks format
-		byte[] dummyTruststore = Base64.decode(SecureGetTest.TEST_TS1);
-		byte[] dummyKeystore = Base64.decode(SecureGetTest.TEST_KS1);
+        // jks format
+        byte[] dummyTruststore = Base64.decode(SecureGetTest.TEST_TS1);
+        byte[] dummyKeystore = Base64.decode(SecureGetTest.TEST_KS1);
 
-		File tempKeystore = File.createTempFile(this.getClass().getName(), ".keystore");
-		File tempTruststore = File.createTempFile(this.getClass().getName(), ".truststore");
+        File tempKeystore = File.createTempFile(this.getClass().getName(), ".keystore");
+        File tempTruststore = File.createTempFile(this.getClass().getName(), ".truststore");
 
-		FileOutputStream keystoreFileOut = new FileOutputStream(tempKeystore);
+        FileOutputStream keystoreFileOut = new FileOutputStream(tempKeystore);
         try {
             keystoreFileOut.write(dummyKeystore);
         } finally {
             keystoreFileOut.close();
         }
 
-		FileOutputStream truststoreFileOut = new FileOutputStream(tempTruststore);
+        FileOutputStream truststoreFileOut = new FileOutputStream(tempTruststore);
         try {
             truststoreFileOut.write(dummyTruststore);
         } finally {
             truststoreFileOut.close();
         }
 
-		AbstractConfiguration cm = ConfigurationManager.getConfigInstance();
+        AbstractConfiguration cm = ConfigurationManager.getConfigInstance();
 
-		String name = this.getClass().getName() + ".test2";
+        String name = this.getClass().getName() + ".test2";
 
-		String configPrefix = name + "." + "ribbon";
+        String configPrefix = name + "." + "ribbon";
 
-		cm.setProperty(configPrefix + "." +  CommonClientConfigKey.IsSecure, "true");
-		cm.setProperty(configPrefix + "." +  CommonClientConfigKey.KeyStore, tempKeystore.getAbsolutePath());
-		cm.setProperty(configPrefix + "." +  CommonClientConfigKey.KeyStorePassword, "changeit");
+        cm.setProperty(configPrefix + "." +  CommonClientConfigKey.IsSecure, "true");
+        cm.setProperty(configPrefix + "." +  CommonClientConfigKey.KeyStore, tempKeystore.getAbsolutePath());
+        cm.setProperty(configPrefix + "." +  CommonClientConfigKey.KeyStorePassword, "changeit");
 
-		RestClient client = (RestClient) ClientFactory.getNamedClient(name);
+        RestClient client = (RestClient) ClientFactory.getNamedClient(name);
 
-		KeyStore keyStore = client.getKeyStore();
+        KeyStore keyStore = client.getKeyStore();
 
-		Certificate cert = keyStore.getCertificate("ribbon_key");
+        Certificate cert = keyStore.getCertificate("ribbon_key");
 
-		assertNotNull(cert);
-	}
+        assertNotNull(cert);
+    }
 
 }

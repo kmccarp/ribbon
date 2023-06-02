@@ -35,46 +35,46 @@ import org.apache.commons.io.IOUtils;
 @Produces({"application/xml"})
 @Path("/test")
 public class TestResource {
-		
-	@Path("/getObject")
-	@GET
-	public Response getObject(@QueryParam ("name") String name) {
-		TestObject obj = new TestObject();
-		obj.name = name;
-		return Response.ok(obj).build();
-	}
 
-	@Path("/getJsonObject")
-	@Produces("application/json")
-	@GET
-	public Response getJsonObject(@QueryParam ("name") String name) throws Exception {
-	    TestObject obj = new TestObject();
-	    obj.name = name;
-	    ObjectMapper mapper = new ObjectMapper();
-	    String value = mapper.writeValueAsString(obj);
-	    return Response.ok(value).build();
-	}
+    @Path("/getObject")
+    @GET
+    public Response getObject(@QueryParam("name") String name) {
+        TestObject obj = new TestObject();
+        obj.name = name;
+        return Response.ok(obj).build();
+    }
+
+    @Path("/getJsonObject")
+    @Produces("application/json")
+    @GET
+    public Response getJsonObject(@QueryParam("name") String name) throws Exception {
+        TestObject obj = new TestObject();
+        obj.name = name;
+        ObjectMapper mapper = new ObjectMapper();
+        String value = mapper.writeValueAsString(obj);
+        return Response.ok(value).build();
+    }
 
 
-	@Path("/setObject")
-	@POST
-	@Consumes(MediaType.APPLICATION_XML)
-	public Response setObject(TestObject obj) {
-		return Response.ok(obj).build();
-	}
-	
-	@Path("/setJsonObject")
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
+    @Path("/setObject")
+    @POST
+    @Consumes(MediaType.APPLICATION_XML)
+    public Response setObject(TestObject obj) {
+        return Response.ok(obj).build();
+    }
+
+    @Path("/setJsonObject")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-	public Response setJsonObject(String obj) throws Exception {
-	    System.out.println("Get json string " + obj);
-	    return Response.ok(obj).build();
-	}
+    public Response setJsonObject(String obj) throws Exception {
+        System.out.println("Get json string " + obj);
+        return Response.ok(obj).build();
+    }
 
     @POST
     @Path("/postStream")
-    @Consumes( { MediaType.APPLICATION_OCTET_STREAM, MediaType.APPLICATION_XML})
+    @Consumes({MediaType.APPLICATION_OCTET_STREAM, MediaType.APPLICATION_XML})
     public Response handlePost(final InputStream in, @HeaderParam("Transfer-Encoding") String transferEncoding) {
         try {
             byte[] bytes = IOUtils.toByteArray(in);
@@ -83,14 +83,14 @@ public class TestResource {
         } catch (Exception e) {
             return Response.serverError().build();
         }
-    }    
-    
+    }
+
     @GET
     @Path("/get503")
     public Response get503() {
         return Response.status(503).build();
     }
-    
+
     @GET
     @Path("/get500")
     public Response get500() {
@@ -98,7 +98,7 @@ public class TestResource {
     }
 
     @GET
-    @Path("/getReadtimeout") 
+    @Path("/getReadtimeout")
     public Response getReadtimeout() {
         try {
             Thread.sleep(10000);
@@ -106,9 +106,9 @@ public class TestResource {
         }
         return Response.ok().build();
     }
-    
+
     @POST
-    @Path("/postReadtimeout") 
+    @Path("/postReadtimeout")
     public Response postReadtimeout() {
         try {
             Thread.sleep(10000);

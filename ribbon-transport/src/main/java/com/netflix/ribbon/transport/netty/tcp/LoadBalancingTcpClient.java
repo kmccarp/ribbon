@@ -36,7 +36,7 @@ import com.netflix.ribbon.transport.netty.LoadBalancingRxClientWithPoolOptions;
 import com.netflix.loadbalancer.ILoadBalancer;
 import com.netflix.loadbalancer.Server;
 
-public class LoadBalancingTcpClient<I, O> extends LoadBalancingRxClientWithPoolOptions<I, O, RxClient<I,O>> implements RxClient<I, O> {
+public class LoadBalancingTcpClient<I, O> extends LoadBalancingRxClientWithPoolOptions<I, O, RxClient<I, O>> implements RxClient<I, O> {
 
     public LoadBalancingTcpClient(ILoadBalancer lb, IClientConfig config,
             RetryHandler retryHandler,
@@ -61,8 +61,8 @@ public class LoadBalancingTcpClient<I, O> extends LoadBalancingRxClientWithPoolO
         builder.channelOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeout);
         if (isPoolEnabled()) {
             builder.withConnectionPoolLimitStrategy(poolStrategy)
-            .withIdleConnectionsTimeoutMillis(idleConnectionEvictionMills)
-            .withPoolIdleCleanupScheduler(poolCleanerScheduler);
+                    .withIdleConnectionsTimeoutMillis(idleConnectionEvictionMills)
+                    .withPoolIdleCleanupScheduler(poolCleanerScheduler);
         } else {
             builder.withNoConnectionPooling();
         }

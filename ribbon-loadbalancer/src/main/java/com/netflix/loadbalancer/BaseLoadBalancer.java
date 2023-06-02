@@ -98,9 +98,9 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
     private PrimeConnections primeConnections;
 
     private volatile boolean enablePrimingConnections = false;
-    
+
     private IClientConfig config;
-    
+
     private List<ServerListChangeListener> changeListeners = new CopyOnWriteArrayList<ServerListChangeListener>();
 
     private List<ServerStatusChangeListener> serverStatusListeners = new CopyOnWriteArrayList<ServerStatusChangeListener>();
@@ -139,12 +139,12 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
             IPing ping) {
         this(name, rule, stats, ping, DEFAULT_PING_STRATEGY);
     }
-    
+
     public BaseLoadBalancer(String name, IRule rule, LoadBalancerStats stats,
             IPing ping, IPingStrategy pingStrategy) {
-	
+
         logger.debug("LoadBalancer [{}]:  initialized", name);
-        
+
         this.name = name;
         this.ping = ping;
         this.pingStrategy = pingStrategy;
@@ -165,7 +165,7 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
     void initWithConfig(IClientConfig clientConfig, IRule rule, IPing ping) {
         initWithConfig(clientConfig, rule, ping, createLoadBalancerStatsFromConfig(config, ClientFactory::instantiateInstanceWithClientConfig));
     }
-    
+
     void initWithConfig(IClientConfig clientConfig, IRule rule, IPing ping, LoadBalancerStats stats) {
         this.config = clientConfig;
         this.name = clientConfig.getClientName();
@@ -198,7 +198,7 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         init();
 
     }
-    
+
     @Override
     public void initWithNiwsConfig(IClientConfig clientConfig) {
         try {
@@ -213,8 +213,8 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         String ruleClassName = clientConfig.getOrDefault(CommonClientConfigKey.NFLoadBalancerRuleClassName);
         String pingClassName = clientConfig.getOrDefault(CommonClientConfigKey.NFLoadBalancerPingClassName);
         try {
-            IRule rule = (IRule)factory.create(ruleClassName, clientConfig);
-            IPing ping = (IPing)factory.create(pingClassName, clientConfig);
+            IRule rule = (IRule) factory.create(ruleClassName, clientConfig);
+            IPing ping = (IPing) factory.create(pingClassName, clientConfig);
             LoadBalancerStats stats = createLoadBalancerStatsFromConfig(clientConfig, factory);
             initWithConfig(clientConfig, rule, ping, stats);
         } catch (Exception e) {
@@ -236,7 +236,7 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
     public void addServerListChangeListener(ServerListChangeListener listener) {
         changeListeners.add(listener);
     }
-    
+
     public void removeServerListChangeListener(ServerListChangeListener listener) {
         changeListeners.remove(listener);
     }
@@ -250,9 +250,9 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
     }
 
     public IClientConfig getClientConfig() {
-    	return config;
+        return config;
     }
-    
+
     private boolean canSkipPing() {
         if (ping == null
                 || ping.getClass().getName().equals(DummyPing.class.getName())) {
@@ -327,7 +327,7 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         this.pingIntervalSeconds = pingIntervalSeconds;
         if (logger.isDebugEnabled()) {
             logger.debug("LoadBalancer [{}]:  pingIntervalSeconds set to {}",
-        	    name, this.pingIntervalSeconds);
+                    name, this.pingIntervalSeconds);
         }
         setupPingTask(); // since ping data changed
     }
@@ -456,7 +456,7 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
                 ArrayList<Server> newList = new ArrayList<Server>();
                 newList.addAll(allServerList);
 
-                for (Object server : newServers) {
+                for (Object server: newServers) {
                     if (server != null) {
                         if (server instanceof String) {
                             server = new Server((String) server);
@@ -480,12 +480,12 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
     public void setServersList(List lsrv) {
         Lock writeLock = allServerLock.writeLock();
         logger.debug("LoadBalancer [{}]: clearing server list (SET op)", name);
-        
+
         ArrayList<Server> newServers = new ArrayList<Server>();
         writeLock.lock();
         try {
             ArrayList<Server> allServers = new ArrayList<Server>();
-            for (Object server : lsrv) {
+            for (Object server: lsrv) {
                 if (server == null) {
                     continue;
                 }
@@ -508,19 +508,19 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
             if (!allServerList.equals(allServers)) {
                 listChanged = true;
                 if (changeListeners != null && changeListeners.size() > 0) {
-                   List<Server> oldList = ImmutableList.copyOf(allServerList);
-                   List<Server> newList = ImmutableList.copyOf(allServers);                   
-                   for (ServerListChangeListener l: changeListeners) {
-                       try {
-                           l.serverListChanged(oldList, newList);
-                       } catch (Exception e) {
-                           logger.error("LoadBalancer [{}]: Error invoking server list change listener", name, e);
-                       }
-                   }
+                    List<Server> oldList = ImmutableList.copyOf(allServerList);
+                    List<Server> newList = ImmutableList.copyOf(allServers);
+                    for (ServerListChangeListener l: changeListeners) {
+                        try {
+                            l.serverListChanged(oldList, newList);
+                        } catch (Exception e) {
+                            logger.error("LoadBalancer [{}]: Error invoking server list change listener", name, e);
+                        }
+                    }
                 }
             }
             if (isEnablePrimingConnections()) {
-                for (Server server : allServers) {
+                for (Server server: allServers) {
                     if (!allServerList.contains(server)) {
                         server.setReadyToServe(false);
                         newServers.add((Server) server);
@@ -535,7 +535,7 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
             // previous priming connections are success or not
             allServerList = allServers;
             if (canSkipPing()) {
-                for (Server s : allServerList) {
+                for (Server s: allServerList) {
                     s.setAlive(true);
                 }
                 upServerList = allServerList;
@@ -555,7 +555,7 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
                 String[] serverArr = srvString.split(",");
                 ArrayList<Server> newList = new ArrayList<Server>();
 
-                for (String serverString : serverArr) {
+                for (String serverString: serverArr) {
                     if (serverString != null) {
                         serverString = serverString.trim();
                         if (serverString.length() > 0) {
@@ -604,16 +604,16 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
     @Override
     public List<Server> getServerList(ServerGroup serverGroup) {
         switch (serverGroup) {
-        case ALL:
-            return allServerList;
-        case STATUS_UP:
-            return upServerList;
-        case STATUS_NOT_UP:
-            ArrayList<Server> notAvailableServers = new ArrayList<Server>(
-                    allServerList);
-            ArrayList<Server> upServers = new ArrayList<Server>(upServerList);
-            notAvailableServers.removeAll(upServers);
-            return notAvailableServers;
+            case ALL:
+                return allServerList;
+            case STATUS_UP:
+                return upServerList;
+            case STATUS_NOT_UP:
+                ArrayList<Server> notAvailableServers = new ArrayList<Server>(
+                        allServerList);
+                ArrayList<Server> upServers = new ArrayList<Server>(upServerList);
+                notAvailableServers.removeAll(upServers);
+                return notAvailableServers;
         }
         return new ArrayList<Server>();
     }
@@ -634,7 +634,7 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
     class PingTask extends TimerTask {
         public void run() {
             try {
-            	new Pinger(pingStrategy).runPinger();
+                new Pinger(pingStrategy).runPinger();
             } catch (Exception e) {
                 logger.error("LoadBalancer [{}]: Error pinging", name, e);
             }
@@ -656,10 +656,10 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         }
 
         public void runPinger() throws Exception {
-            if (!pingInProgress.compareAndSet(false, true)) { 
+            if (!pingInProgress.compareAndSet(false, true)) {
                 return; // Ping in progress - nothing to do
             }
-            
+
             // we are "in" - we get to Ping
 
             Server[] allServers = null;
@@ -684,7 +684,7 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
                 final List<Server> newUpList = new ArrayList<Server>();
                 final List<Server> changedServers = new ArrayList<Server>();
 
-                for (int i = 0; i < numCandidates; i++) {
+                for (int i = 0;i < numCandidates;i++) {
                     boolean isAlive = results[i];
                     Server svr = allServers[i];
                     boolean oldIsAlive = svr.isAlive();
@@ -693,8 +693,8 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
 
                     if (oldIsAlive != isAlive) {
                         changedServers.add(svr);
-                        logger.debug("LoadBalancer [{}]:  Server [{}] status changed to {}", 
-                    		name, svr.getId(), (isAlive ? "ALIVE" : "DEAD"));
+                        logger.debug("LoadBalancer [{}]:  Server [{}] status changed to {}",
+                                name, svr.getId(), (isAlive ? "ALIVE" : "DEAD"));
                     }
 
                     if (isAlive) {
@@ -715,7 +715,7 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
 
     private void notifyServerStatusChangeListener(final Collection<Server> changedServers) {
         if (changedServers != null && !changedServers.isEmpty() && !serverStatusListeners.isEmpty()) {
-            for (ServerStatusChangeListener listener : serverStatusListeners) {
+            for (ServerStatusChangeListener listener: serverStatusListeners) {
                 try {
                     listener.serverStatusChanged(changedServers);
                 } catch (Exception e) {
@@ -788,11 +788,11 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         }
 
         Lock writeLock = upServerLock.writeLock();
-    	writeLock.lock();
+        writeLock.lock();
         try {
             final List<Server> changedServers = new ArrayList<Server>();
 
-            for (Server svr : upServerList) {
+            for (Server svr: upServerList) {
                 if (svr.isAlive() && (svr.getId().equals(id))) {
                     triggered = true;
                     svr.setAlive(false);
@@ -819,9 +819,9 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
             return;
         }
         logger.debug("LoadBalancer [{}]:  forceQuickPing invoking", name);
-        
+
         try {
-        	new Pinger(pingStrategy).runPinger();
+            new Pinger(pingStrategy).runPinger();
         } catch (Exception e) {
             logger.error("LoadBalancer [{}]: Error running forceQuickPing()", name, e);
         }
@@ -869,7 +869,7 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
             boolean enablePrimingConnections) {
         this.enablePrimingConnections = enablePrimingConnections;
     }
-    
+
     public void shutdown() {
         cancelPingTask();
         if (primeConnections != null) {
@@ -893,7 +893,7 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
 
             logger.debug("LoadBalancer:  PingTask executing [{}] servers configured", numCandidates);
 
-            for (int i = 0; i < numCandidates; i++) {
+            for (int i = 0;i < numCandidates;i++) {
                 results[i] = false; /* Default answer is DEAD. */
                 try {
                     // NOTE: IFF we were doing a real ping

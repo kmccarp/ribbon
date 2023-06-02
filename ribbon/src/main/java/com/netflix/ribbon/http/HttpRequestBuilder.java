@@ -42,43 +42,43 @@ public class HttpRequestBuilder<T> extends RequestBuilder<T> {
     private Observable rawContentSource;
     private ContentTransformer contentTransformer;
     private Map<String, String> extraHeaders = new HashMap<String, String>();
-    
+
     private static final ContentTransformer<ByteBuf> passThroughContentTransformer = new ContentTransformer<ByteBuf>() {
         @Override
         public ByteBuf call(ByteBuf t1, ByteBufAllocator t2) {
             return t1;
         }
-        
+
     };
-    
+
     HttpRequestBuilder(HttpRequestTemplate<T> requestTemplate) {
         this.requestTemplate = requestTemplate;
         this.parsedUriTemplate = requestTemplate.uriTemplate();
         vars = new ConcurrentHashMap<String, Object>();
     }
-    
+
     @Override
     public HttpRequestBuilder<T> withRequestProperty(
             String key, Object value) {
         vars.put(key, value);
         return this;
     }
-        
+
     public <S> HttpRequestBuilder<T> withRawContentSource(Observable<S> raw, ContentTransformer<S> transformer) {
         this.rawContentSource = raw;
         this.contentTransformer = transformer;
         return this;
     }
-    
+
     public HttpRequestBuilder<T> withContent(Observable<ByteBuf> content) {
         this.rawContentSource = content;
         this.contentTransformer = passThroughContentTransformer;
         return this;
     }
-    
+
     public HttpRequestBuilder<T> withHeader(String key, String value) {
-    	extraHeaders.put(key, value);
-    	return this;
+        extraHeaders.put(key, value);
+        return this;
     }
 
 
@@ -96,7 +96,7 @@ public class HttpRequestBuilder<T> extends RequestBuilder<T> {
             throw new IllegalArgumentException(e);
         }
     }
-        
+
     HttpClientRequest<ByteBuf> createClientRequest() {
         String uri;
         try {
@@ -104,36 +104,36 @@ public class HttpRequestBuilder<T> extends RequestBuilder<T> {
         } catch (TemplateParsingException e) {
             throw new HystrixBadRequestException("Problem parsing the URI template", e);
         }
-        HttpClientRequest<ByteBuf> request =  HttpClientRequest.create(requestTemplate.method(), uri);
+        HttpClientRequest<ByteBuf> request = HttpClientRequest.create(requestTemplate.method(), uri);
         for (Map.Entry<String, String> entry: requestTemplate.getHeaders().entries()) {
             request.withHeader(entry.getKey(), entry.getValue());
         }
         for (Map.Entry<String, String> entry: extraHeaders.entrySet()) {
-        	request.withHeader(entry.getKey(), entry.getValue());
+            request.withHeader(entry.getKey(), entry.getValue());
         }
         if (rawContentSource != null) {
             request.withRawContentSource(rawContentSource, contentTransformer);
         }
         return request;
     }
-    
+
     String hystrixCacheKey() throws TemplateParsingException {
         ParsedTemplate keyTemplate = requestTemplate.hystrixCacheKeyTemplate();
-        if (keyTemplate == null || 
+        if (keyTemplate == null ||
                 (keyTemplate.getTemplate() == null || keyTemplate.getTemplate().length() == 0)) {
             return null;
         }
         return TemplateParser.toData(vars, requestTemplate.hystrixCacheKeyTemplate());
     }
-     
+
     Map<String, Object> requestProperties() {
         return vars;
     }
-    
+
     CacheProviderWithKeyTemplate<T> cacheProvider() {
         return requestTemplate.cacheProvider();
     }
-    
+
     HttpRequestTemplate<T> template() {
         return requestTemplate;
     }

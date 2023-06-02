@@ -160,23 +160,26 @@ public class HttpRequestTemplate<T> extends RequestTemplate<T, HttpClientRespons
     public static class CacheProviderWithKeyTemplate<T> {
         private final ParsedTemplate keyTemplate;
         private final CacheProvider<T> provider;
+
         public CacheProviderWithKeyTemplate(ParsedTemplate keyTemplate,
                 CacheProvider<T> provider) {
             this.keyTemplate = keyTemplate;
             this.provider = provider;
         }
+
         public final ParsedTemplate getKeyTemplate() {
             return keyTemplate;
         }
+
         public final CacheProvider<T> getProvider() {
             return provider;
         }
     }
 
     protected HttpRequestTemplate(String name, HttpResourceGroup group, Class<? extends T> classType, HystrixObservableCommand.Setter setter,
-                        HttpMethod method, HttpHeaders headers, ParsedTemplate uriTemplate,
-                        FallbackHandler<T> fallbackHandler, ResponseValidator<HttpClientResponse<ByteBuf>> validator, CacheProviderWithKeyTemplate<T> cacheProvider,
-                        ParsedTemplate hystrixCacheKeyTemplate) {
+            HttpMethod method, HttpHeaders headers, ParsedTemplate uriTemplate,
+            FallbackHandler<T> fallbackHandler, ResponseValidator<HttpClientResponse<ByteBuf>> validator, CacheProviderWithKeyTemplate<T> cacheProvider,
+            ParsedTemplate hystrixCacheKeyTemplate) {
         this.group = group;
         this.name = name;
         this.classType = classType;

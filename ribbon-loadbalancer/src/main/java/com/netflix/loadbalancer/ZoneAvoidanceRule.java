@@ -36,20 +36,20 @@ import com.netflix.client.config.IClientConfig;
 public class ZoneAvoidanceRule extends PredicateBasedRule {
 
     private static final Random random = new Random();
-    
+
     private CompositePredicate compositePredicate;
-    
+
     public ZoneAvoidanceRule() {
         ZoneAvoidancePredicate zonePredicate = new ZoneAvoidancePredicate(this);
         AvailabilityPredicate availabilityPredicate = new AvailabilityPredicate(this);
         compositePredicate = createCompositePredicate(zonePredicate, availabilityPredicate);
     }
-    
+
     private CompositePredicate createCompositePredicate(ZoneAvoidancePredicate p1, AvailabilityPredicate p2) {
         return CompositePredicate.withPredicates(p1, p2)
-                             .addFallbackPredicate(p2)
-                             .addFallbackPredicate(AbstractServerPredicate.alwaysTrue())
-                             .build();
+                .addFallbackPredicate(p2)
+                .addFallbackPredicate(AbstractServerPredicate.alwaysTrue())
+                .build();
     }
 
     @Override
@@ -61,7 +61,7 @@ public class ZoneAvoidanceRule extends PredicateBasedRule {
 
     static Map<String, ZoneSnapshot> createSnapshot(LoadBalancerStats lbStats) {
         Map<String, ZoneSnapshot> map = new HashMap<String, ZoneSnapshot>();
-        for (String zone : lbStats.getAvailableZones()) {
+        for (String zone: lbStats.getAvailableZones()) {
             ZoneSnapshot snapshot = lbStats.getZoneSnapshot(zone);
             map.put(zone, snapshot);
         }
@@ -78,12 +78,12 @@ public class ZoneAvoidanceRule extends PredicateBasedRule {
             return selectedZone;
         }
         int totalServerCount = 0;
-        for (String zone : chooseFrom) {
+        for (String zone: chooseFrom) {
             totalServerCount += snapshot.get(zone).getInstanceCount();
         }
         int index = random.nextInt(totalServerCount) + 1;
         int sum = 0;
-        for (String zone : chooseFrom) {
+        for (String zone: chooseFrom) {
             sum += snapshot.get(zone).getInstanceCount();
             if (index <= sum) {
                 selectedZone = zone;
@@ -107,7 +107,7 @@ public class ZoneAvoidanceRule extends PredicateBasedRule {
         double maxLoadPerServer = 0;
         boolean limitedZoneAvailability = false;
 
-        for (Map.Entry<String, ZoneSnapshot> zoneEntry : snapshot.entrySet()) {
+        for (Map.Entry<String, ZoneSnapshot> zoneEntry: snapshot.entrySet()) {
             String zone = zoneEntry.getKey();
             ZoneSnapshot zoneSnapshot = zoneEntry.getValue();
             int instanceCount = zoneSnapshot.getInstanceCount();
@@ -160,5 +160,5 @@ public class ZoneAvoidanceRule extends PredicateBasedRule {
     @Override
     public AbstractServerPredicate getPredicate() {
         return compositePredicate;
-    }    
+    }
 }

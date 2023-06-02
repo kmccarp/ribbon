@@ -28,9 +28,9 @@ import com.netflix.client.config.IClientConfig;
  */
 public interface IClient<S extends ClientRequest, T extends IResponse> {
 
-	/**
-	 * Execute the request and return the response. It is expected that there is no retry and all exceptions
+    /**
+     * Execute the request and return the response. It is expected that there is no retry and all exceptions
      * are thrown directly.
-	 */
-    public T execute(S request, IClientConfig requestConfig) throws Exception; 
+     */
+    public T execute(S request, IClientConfig requestConfig) throws Exception;
 }

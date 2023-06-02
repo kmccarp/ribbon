@@ -37,10 +37,10 @@ public class ClientConfigEnabledRoundRobinRule extends AbstractLoadBalancerRule 
 
     @Override
     public void setLoadBalancer(ILoadBalancer lb) {
-    	super.setLoadBalancer(lb);
-    	roundRobinRule.setLoadBalancer(lb);
+        super.setLoadBalancer(lb);
+        roundRobinRule.setLoadBalancer(lb);
     }
-    
+
     @Override
     public Server choose(Object key) {
         if (roundRobinRule != null) {

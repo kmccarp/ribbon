@@ -32,27 +32,27 @@ import java.util.concurrent.TimeUnit;
  * @author stonse
  *
  */
-public class ConnectionPoolCleaner {   
+public class ConnectionPoolCleaner {
 
     private static final Logger logger = LoggerFactory.getLogger(ConnectionPoolCleaner.class);
-    
-    String name = "default";    
+
+    String name = "default";
     ClientConnectionManager connMgr;
     ScheduledExecutorService scheduler;
 
-    private Property<Integer> connIdleEvictTimeMilliSeconds = Property.of(30*1000);
-    
+    private Property<Integer> connIdleEvictTimeMilliSeconds = Property.of(30 * 1000);
+
     volatile boolean enableConnectionPoolCleanerTask = false;
     long connectionCleanerTimerDelay = 10;
-    long connectionCleanerRepeatInterval = 30*1000;
+    long connectionCleanerRepeatInterval = 30 * 1000;
     private volatile ScheduledFuture<?> scheduledFuture;
-    
-    public ConnectionPoolCleaner(String name, ClientConnectionManager connMgr, ScheduledExecutorService scheduler){
+
+    public ConnectionPoolCleaner(String name, ClientConnectionManager connMgr, ScheduledExecutorService scheduler) {
         this.name = name;
-        this.connMgr = connMgr;     
+        this.connMgr = connMgr;
         this.scheduler = scheduler;
     }
-    
+
     public Property<Integer> getConnIdleEvictTimeMilliSeconds() {
         return connIdleEvictTimeMilliSeconds;
     }
@@ -61,7 +61,7 @@ public class ConnectionPoolCleaner {
         this.connIdleEvictTimeMilliSeconds = connIdleEvictTimeMilliSeconds;
     }
 
-   
+
     public boolean isEnableConnectionPoolCleanerTask() {
         return enableConnectionPoolCleanerTask;
     }
@@ -88,7 +88,7 @@ public class ConnectionPoolCleaner {
         this.connectionCleanerRepeatInterval = connectionCleanerRepeatInterval;
     }
 
-    public void initTask(){
+    public void initTask() {
         if (enableConnectionPoolCleanerTask) {
             scheduledFuture = scheduler.scheduleWithFixedDelay(new Runnable() {
                 public void run() {
@@ -100,37 +100,36 @@ public class ConnectionPoolCleaner {
                             scheduledFuture.cancel(true);
                         }
                     } catch (Throwable e) {
-                        logger.error("Exception in ConnectionPoolCleanerThread",e);
+                        logger.error("Exception in ConnectionPoolCleanerThread", e);
                     }
                 }
             }, connectionCleanerTimerDelay, connectionCleanerRepeatInterval, TimeUnit.MILLISECONDS);
             logger.info("Initializing ConnectionPoolCleaner for NFHttpClient:" + name);
         }
     }
-    
-    void cleanupConnections(){
+
+    void cleanupConnections() {
         connMgr.closeExpiredConnections();
         connMgr.closeIdleConnections(connIdleEvictTimeMilliSeconds.getOrDefault(), TimeUnit.MILLISECONDS);
     }
-    
+
     public void shutdown() {
         enableConnectionPoolCleanerTask = false;
         if (scheduledFuture != null) {
             scheduledFuture.cancel(true);
         }
     }
-    
-    public String toString(){
+
+    public String toString() {
         StringBuilder sb = new StringBuilder();
-        
+
         sb.append("ConnectionPoolCleaner:" + name);
         sb.append(", connIdleEvictTimeMilliSeconds:" + connIdleEvictTimeMilliSeconds.get());
         sb.append(", connectionCleanerTimerDelay:" + connectionCleanerTimerDelay);
         sb.append(", connectionCleanerRepeatInterval:" + connectionCleanerRepeatInterval);
-        
+
         return sb.toString();
     }
-    
-    
-    
+
+
 }

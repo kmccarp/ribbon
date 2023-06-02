@@ -14,9 +14,9 @@ import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 
 public class JacksonCodec<T extends Object> implements Serializer<T>, Deserializer<T> {
-    
+
     private static final JacksonCodec instance = new JacksonCodec();
-    
+
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
@@ -27,7 +27,7 @@ public class JacksonCodec<T extends Object> implements Serializer<T>, Deserializ
         }
         return mapper.readValue(in, new TypeTokenBasedReference<T>(type));
     }
-    
+
     @Override
     public void serialize(OutputStream out, T object, TypeDef<?> type) throws IOException {
         if (type == null) {
@@ -37,18 +37,19 @@ public class JacksonCodec<T extends Object> implements Serializer<T>, Deserializ
             writer.writeValue(out, object);
         }
     }
-    
+
     public static final <T> JacksonCodec<T> getInstance() {
         return instance;
     }
 }
 
 class TypeTokenBasedReference<T> extends TypeReference<T> {
-    
+
     final Type type;
+
     public TypeTokenBasedReference(TypeDef<T> typeToken) {
-        type = typeToken.getType();    
-        
+        type = typeToken.getType();
+
     }
 
     @Override

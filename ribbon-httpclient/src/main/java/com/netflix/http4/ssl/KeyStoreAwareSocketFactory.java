@@ -38,55 +38,53 @@ import com.netflix.client.ssl.ClientSslSocketFactoryException;
  * @author jzarfoss
  *
  */
-public class KeyStoreAwareSocketFactory extends SSLSocketFactory{
+public class KeyStoreAwareSocketFactory extends SSLSocketFactory {
 
 
-	private final KeyStore keyStore;
-	private final KeyStore trustStore;
+    private final KeyStore keyStore;
+    private final KeyStore trustStore;
 
 
-	public KeyStoreAwareSocketFactory(X509HostnameVerifier hostnameVerifier) throws NoSuchAlgorithmException, KeyStoreException{
-		super(SSLContext.getDefault(), hostnameVerifier);
+    public KeyStoreAwareSocketFactory(X509HostnameVerifier hostnameVerifier) throws NoSuchAlgorithmException, KeyStoreException {
+        super(SSLContext.getDefault(), hostnameVerifier);
 
-		this.keyStore = null;
-		this.trustStore = null;
-	}
-
-
-
-	public KeyStoreAwareSocketFactory(final AbstractSslContextFactory abstractFactory) throws ClientSslSocketFactoryException, NoSuchAlgorithmException{
-		super(abstractFactory == null ? SSLContext.getDefault() : abstractFactory.getSSLContext());
-
-		if(abstractFactory == null){
-			this.keyStore = null;
-			this.trustStore = null;
-		}else{
-			this.keyStore = abstractFactory.getKeyStore();
-			this.trustStore = abstractFactory.getTrustStore();
-		}
-	}
+        this.keyStore = null;
+        this.trustStore = null;
+    }
 
 
-	public KeyStoreAwareSocketFactory(final AbstractSslContextFactory abstractFactory, X509HostnameVerifier hostnameVerifier) throws ClientSslSocketFactoryException, NoSuchAlgorithmException{
-		super(abstractFactory == null ? SSLContext.getDefault() : abstractFactory.getSSLContext(), hostnameVerifier);
+    public KeyStoreAwareSocketFactory(final AbstractSslContextFactory abstractFactory) throws ClientSslSocketFactoryException, NoSuchAlgorithmException {
+        super(abstractFactory == null ? SSLContext.getDefault() : abstractFactory.getSSLContext());
 
-		if(abstractFactory == null){
-			this.keyStore = null;
-			this.trustStore = null;
-		}else{
-			this.keyStore = abstractFactory.getKeyStore();
-			this.trustStore = abstractFactory.getTrustStore();
-		}
-	}
+        if (abstractFactory == null) {
+            this.keyStore = null;
+            this.trustStore = null;
+        } else {
+            this.keyStore = abstractFactory.getKeyStore();
+            this.trustStore = abstractFactory.getTrustStore();
+        }
+    }
 
-	public KeyStore getKeyStore(){
-		return this.keyStore;
-	}
 
-	public KeyStore getTrustStore(){
-		return this.trustStore;
-	}
+    public KeyStoreAwareSocketFactory(final AbstractSslContextFactory abstractFactory, X509HostnameVerifier hostnameVerifier) throws ClientSslSocketFactoryException, NoSuchAlgorithmException {
+        super(abstractFactory == null ? SSLContext.getDefault() : abstractFactory.getSSLContext(), hostnameVerifier);
 
+        if (abstractFactory == null) {
+            this.keyStore = null;
+            this.trustStore = null;
+        } else {
+            this.keyStore = abstractFactory.getKeyStore();
+            this.trustStore = abstractFactory.getTrustStore();
+        }
+    }
+
+    public KeyStore getKeyStore() {
+        return this.keyStore;
+    }
+
+    public KeyStore getTrustStore() {
+        return this.trustStore;
+    }
 
 
 }

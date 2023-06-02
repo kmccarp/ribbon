@@ -96,7 +96,7 @@ public class EvCacheProvider<T> implements CacheProvider<T> {
         @Override
         public void run() {
             while (true) {
-                for (Map.Entry<Future, Subscriber> f : futureMap.entrySet()) {
+                for (Map.Entry<Future, Subscriber> f: futureMap.entrySet()) {
                     Future<?> future = f.getKey();
                     Subscriber subscriber = f.getValue();
                     if (subscriber.isUnsubscribed()) {

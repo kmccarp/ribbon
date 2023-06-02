@@ -67,67 +67,70 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class NFHttpClient extends DefaultHttpClient {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(NFHttpClient.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(NFHttpClient.class);
 
-	private static IClientConfigKey<Integer> RETRIES = new CommonClientConfigKey<Integer>("%s.nfhttpclient.retries", 3) {};
-	private static IClientConfigKey<Integer> SLEEP_TIME_FACTOR_MS = new CommonClientConfigKey<Integer>("%s.nfhttpclient.sleepTimeFactorMs", 10) {};
-	private static IClientConfigKey<Integer> CONN_IDLE_EVICT_TIME_MILLIS = new CommonClientConfigKey<Integer>("%s.nfhttpclient.connIdleEvictTimeMilliSeconds", 30*1000) {};
+    private static IClientConfigKey<Integer> RETRIES = new CommonClientConfigKey<Integer>("%s.nfhttpclient.retries", 3) {
+    };
+    private static IClientConfigKey<Integer> SLEEP_TIME_FACTOR_MS = new CommonClientConfigKey<Integer>("%s.nfhttpclient.sleepTimeFactorMs", 10) {
+    };
+    private static IClientConfigKey<Integer> CONN_IDLE_EVICT_TIME_MILLIS = new CommonClientConfigKey<Integer>("%s.nfhttpclient.connIdleEvictTimeMilliSeconds", 30 * 1000) {
+    };
 
-	protected static final String EXECUTE_TRACER = "HttpClient-ExecuteTimer";
-	
-	private static ScheduledExecutorService connectionPoolCleanUpScheduler;
-	
-	private HttpHost httpHost = null;
-	private HttpRoute httpRoute = null;
+    protected static final String EXECUTE_TRACER = "HttpClient-ExecuteTimer";
 
-	private static AtomicInteger numNonNamedHttpClients = new AtomicInteger();
+    private static ScheduledExecutorService connectionPoolCleanUpScheduler;
 
-	private final String name;
+    private HttpHost httpHost = null;
+    private HttpRoute httpRoute = null;
 
-	ConnectionPoolCleaner connPoolCleaner;
+    private static AtomicInteger numNonNamedHttpClients = new AtomicInteger();
 
-	Property<Integer> connIdleEvictTimeMilliSeconds;
+    private final String name;
 
-	private Property<Integer> retriesProperty;
-	private Property<Integer> sleepTimeFactorMsProperty;
-	
-	private Timer tracer; 
+    ConnectionPoolCleaner connPoolCleaner;
 
-	private Property<Integer> maxTotalConnectionProperty;
-	private Property<Integer> maxConnectionPerHostProperty;
-	
-	static {
-	    ThreadFactory factory = (new ThreadFactoryBuilder()).setDaemon(true)
-	            .setNameFormat("Connection pool clean up thread")
-	            .build();
-	    connectionPoolCleanUpScheduler = Executors.newScheduledThreadPool(2, factory);
-	}
+    Property<Integer> connIdleEvictTimeMilliSeconds;
 
-	protected NFHttpClient(String host, int port){
-		super(new ThreadSafeClientConnManager());
-		this.name = "UNNAMED_" + numNonNamedHttpClients.incrementAndGet();
-		httpHost = new HttpHost(host, port);
-		httpRoute = new HttpRoute(httpHost);
+    private Property<Integer> retriesProperty;
+    private Property<Integer> sleepTimeFactorMsProperty;
 
-		init(createDefaultConfig(), false);
-	}   
+    private Timer tracer;
 
-	protected NFHttpClient(){
-		super(new ThreadSafeClientConnManager());
-		this.name = "UNNAMED_" + numNonNamedHttpClients.incrementAndGet();
+    private Property<Integer> maxTotalConnectionProperty;
+    private Property<Integer> maxConnectionPerHostProperty;
 
-		init(createDefaultConfig(), false);
-	}
+    static {
+        ThreadFactory factory = (new ThreadFactoryBuilder()).setDaemon(true)
+                .setNameFormat("Connection pool clean up thread")
+                .build();
+        connectionPoolCleanUpScheduler = Executors.newScheduledThreadPool(2, factory);
+    }
 
-	private static IClientConfig createDefaultConfig() {
-		IClientConfig config = ClientConfigFactory.DEFAULT.newConfig();
-		config.loadProperties("default");
-		return config;
-	}
+    protected NFHttpClient(String host, int port) {
+        super(new ThreadSafeClientConnManager());
+        this.name = "UNNAMED_" + numNonNamedHttpClients.incrementAndGet();
+        httpHost = new HttpHost(host, port);
+        httpRoute = new HttpRoute(httpHost);
 
-	protected NFHttpClient(String name) {
-	    this(name, createDefaultConfig(), true);
-	}
+        init(createDefaultConfig(), false);
+    }
+
+    protected NFHttpClient() {
+        super(new ThreadSafeClientConnManager());
+        this.name = "UNNAMED_" + numNonNamedHttpClients.incrementAndGet();
+
+        init(createDefaultConfig(), false);
+    }
+
+    private static IClientConfig createDefaultConfig() {
+        IClientConfig config = ClientConfigFactory.DEFAULT.newConfig();
+        config.loadProperties("default");
+        return config;
+    }
+
+    protected NFHttpClient(String name) {
+        this(name, createDefaultConfig(), true);
+    }
 
     protected NFHttpClient(String name, IClientConfig config) {
         this(name, config, true);
@@ -138,181 +141,181 @@ public class NFHttpClient extends DefaultHttpClient {
         this.name = name;
         init(config, registerMonitor);
     }
-	
-	void init(IClientConfig config, boolean registerMonitor) {
-		HttpParams params = getParams();
 
-		HttpProtocolParams.setContentCharset(params, "UTF-8");  
-		params.setParameter(ClientPNames.CONNECTION_MANAGER_FACTORY_CLASS_NAME, 
-				ThreadSafeClientConnManager.class.getName());
-		HttpClientParams.setRedirecting(params, config.get(CommonClientConfigKey.FollowRedirects, true));
-		// set up default headers
-		List<Header> defaultHeaders = new ArrayList<Header>();
-		defaultHeaders.add(new BasicHeader("Netflix.NFHttpClient.Version", "1.0"));
-		defaultHeaders.add(new BasicHeader("X-netflix-httpclientname", name));
-		params.setParameter(ClientPNames.DEFAULT_HEADERS, defaultHeaders);
+    void init(IClientConfig config, boolean registerMonitor) {
+        HttpParams params = getParams();
 
-		connPoolCleaner = new ConnectionPoolCleaner(name, this.getConnectionManager(), connectionPoolCleanUpScheduler);
+        HttpProtocolParams.setContentCharset(params, "UTF-8");
+        params.setParameter(ClientPNames.CONNECTION_MANAGER_FACTORY_CLASS_NAME,
+                ThreadSafeClientConnManager.class.getName());
+        HttpClientParams.setRedirecting(params, config.get(CommonClientConfigKey.FollowRedirects, true));
+        // set up default headers
+        List<Header> defaultHeaders = new ArrayList<Header>();
+        defaultHeaders.add(new BasicHeader("Netflix.NFHttpClient.Version", "1.0"));
+        defaultHeaders.add(new BasicHeader("X-netflix-httpclientname", name));
+        params.setParameter(ClientPNames.DEFAULT_HEADERS, defaultHeaders);
 
-		this.retriesProperty = config.getGlobalProperty(RETRIES.format(name));
+        connPoolCleaner = new ConnectionPoolCleaner(name, this.getConnectionManager(), connectionPoolCleanUpScheduler);
 
-		this.sleepTimeFactorMsProperty = config.getGlobalProperty(SLEEP_TIME_FACTOR_MS.format(name));
-		setHttpRequestRetryHandler(
-				new NFHttpMethodRetryHandler(this.name, this.retriesProperty.getOrDefault(), false,
-						this.sleepTimeFactorMsProperty.getOrDefault()));
-	    tracer = Monitors.newTimer(EXECUTE_TRACER + "-" + name, TimeUnit.MILLISECONDS);
-	    if (registerMonitor) {
+        this.retriesProperty = config.getGlobalProperty(RETRIES.format(name));
+
+        this.sleepTimeFactorMsProperty = config.getGlobalProperty(SLEEP_TIME_FACTOR_MS.format(name));
+        setHttpRequestRetryHandler(
+                new NFHttpMethodRetryHandler(this.name, this.retriesProperty.getOrDefault(), false,
+                        this.sleepTimeFactorMsProperty.getOrDefault()));
+        tracer = Monitors.newTimer(EXECUTE_TRACER + "-" + name, TimeUnit.MILLISECONDS);
+        if (registerMonitor) {
             Monitors.registerObject(name, this);
-	    }
-	    maxTotalConnectionProperty = config.getDynamicProperty(CommonClientConfigKey.MaxTotalHttpConnections);
-	    maxTotalConnectionProperty.onChange(newValue ->
-	    	((ThreadSafeClientConnManager) getConnectionManager()).setMaxTotal(newValue)
-	    );
-
-	    maxConnectionPerHostProperty = config.getDynamicProperty(CommonClientConfigKey.MaxHttpConnectionsPerHost);
-	    maxConnectionPerHostProperty.onChange(newValue ->
-			((ThreadSafeClientConnManager) getConnectionManager()).setDefaultMaxPerRoute(newValue)
+        }
+        maxTotalConnectionProperty = config.getDynamicProperty(CommonClientConfigKey.MaxTotalHttpConnections);
+        maxTotalConnectionProperty.onChange(newValue ->
+                ((ThreadSafeClientConnManager) getConnectionManager()).setMaxTotal(newValue)
         );
 
-		connIdleEvictTimeMilliSeconds = config.getGlobalProperty(CONN_IDLE_EVICT_TIME_MILLIS.format(name));
-	}
+        maxConnectionPerHostProperty = config.getDynamicProperty(CommonClientConfigKey.MaxHttpConnectionsPerHost);
+        maxConnectionPerHostProperty.onChange(newValue ->
+                ((ThreadSafeClientConnManager) getConnectionManager()).setDefaultMaxPerRoute(newValue)
+        );
 
-	public void initConnectionCleanerTask(){
+        connIdleEvictTimeMilliSeconds = config.getGlobalProperty(CONN_IDLE_EVICT_TIME_MILLIS.format(name));
+    }
 
-		//set the Properties
-		connPoolCleaner.setConnIdleEvictTimeMilliSeconds(getConnIdleEvictTimeMilliSeconds());// set FastProperty reference
-		// for this named httpclient - so we can override it later if we want to
-		//init the Timer Task
-		//note that we can change the idletime settings after the start of the Thread
-		connPoolCleaner.initTask();
+    public void initConnectionCleanerTask() {
 
-	}
+        //set the Properties
+        connPoolCleaner.setConnIdleEvictTimeMilliSeconds(getConnIdleEvictTimeMilliSeconds());// set FastProperty reference
+        // for this named httpclient - so we can override it later if we want to
+        //init the Timer Task
+        //note that we can change the idletime settings after the start of the Thread
+        connPoolCleaner.initTask();
 
-	@Monitor(name = "HttpClient-ConnPoolCleaner", type = DataSourceType.INFORMATIONAL)
-	public ConnectionPoolCleaner getConnPoolCleaner() {
-		return connPoolCleaner;
-	}
+    }
 
-	@Monitor(name = "HttpClient-ConnIdleEvictTimeMilliSeconds", type = DataSourceType.INFORMATIONAL)
-	public Property<Integer> getConnIdleEvictTimeMilliSeconds() {
-		return connIdleEvictTimeMilliSeconds;
-	}
+    @Monitor(name = "HttpClient-ConnPoolCleaner", type = DataSourceType.INFORMATIONAL)
+    public ConnectionPoolCleaner getConnPoolCleaner() {
+        return connPoolCleaner;
+    }
 
-	@Monitor(name="HttpClient-ConnectionsInPool", type = DataSourceType.GAUGE)    
-	public int getConnectionsInPool() {
-		ClientConnectionManager connectionManager = this.getConnectionManager();
-		if (connectionManager != null) {
-			return ((ThreadSafeClientConnManager)connectionManager).getConnectionsInPool();
-		} else {
-			return 0;
-		}
-	}
+    @Monitor(name = "HttpClient-ConnIdleEvictTimeMilliSeconds", type = DataSourceType.INFORMATIONAL)
+    public Property<Integer> getConnIdleEvictTimeMilliSeconds() {
+        return connIdleEvictTimeMilliSeconds;
+    }
 
-	@Monitor(name = "HttpClient-MaxTotalConnections", type = DataSourceType.INFORMATIONAL)
-	public int getMaxTotalConnnections() {
-		ClientConnectionManager connectionManager = this.getConnectionManager();
-		if (connectionManager != null) {
-			return ((ThreadSafeClientConnManager)connectionManager).getMaxTotal();
-		} else {
-			return 0;
-		}
-	}
+    @Monitor(name = "HttpClient-ConnectionsInPool", type = DataSourceType.GAUGE)
+    public int getConnectionsInPool() {
+        ClientConnectionManager connectionManager = this.getConnectionManager();
+        if (connectionManager != null) {
+            return ((ThreadSafeClientConnManager) connectionManager).getConnectionsInPool();
+        } else {
+            return 0;
+        }
+    }
 
-	@Monitor(name = "HttpClient-MaxConnectionsPerHost", type = DataSourceType.INFORMATIONAL)
-	public int getMaxConnectionsPerHost() {
-		ClientConnectionManager connectionManager = this.getConnectionManager();
-		if (connectionManager != null) {
-			if(httpRoute == null)
-				return ((ThreadSafeClientConnManager)connectionManager).getDefaultMaxPerRoute();
-			else
-				return ((ThreadSafeClientConnManager)connectionManager).getMaxForRoute(httpRoute);
-		} else {
-			return 0;
-		}
-	}
+    @Monitor(name = "HttpClient-MaxTotalConnections", type = DataSourceType.INFORMATIONAL)
+    public int getMaxTotalConnnections() {
+        ClientConnectionManager connectionManager = this.getConnectionManager();
+        if (connectionManager != null) {
+            return ((ThreadSafeClientConnManager) connectionManager).getMaxTotal();
+        } else {
+            return 0;
+        }
+    }
 
-	@Monitor(name = "HttpClient-NumRetries", type = DataSourceType.INFORMATIONAL)
-	public int getNumRetries() {
-		return this.retriesProperty.getOrDefault();
-	}
+    @Monitor(name = "HttpClient-MaxConnectionsPerHost", type = DataSourceType.INFORMATIONAL)
+    public int getMaxConnectionsPerHost() {
+        ClientConnectionManager connectionManager = this.getConnectionManager();
+        if (connectionManager != null) {
+            if (httpRoute == null)
+                return ((ThreadSafeClientConnManager) connectionManager).getDefaultMaxPerRoute();
+            else
+                return ((ThreadSafeClientConnManager) connectionManager).getMaxForRoute(httpRoute);
+        } else {
+            return 0;
+        }
+    }
 
-	public void setConnIdleEvictTimeMilliSeconds(Property<Integer> connIdleEvictTimeMilliSeconds) {
-		this.connIdleEvictTimeMilliSeconds = connIdleEvictTimeMilliSeconds;
-	}
+    @Monitor(name = "HttpClient-NumRetries", type = DataSourceType.INFORMATIONAL)
+    public int getNumRetries() {
+        return this.retriesProperty.getOrDefault();
+    }
 
-	@Monitor(name = "HttpClient-SleepTimeFactorMs", type = DataSourceType.INFORMATIONAL)
-	public int getSleepTimeFactorMs() {
-		return this.sleepTimeFactorMsProperty.getOrDefault();
-	}
+    public void setConnIdleEvictTimeMilliSeconds(Property<Integer> connIdleEvictTimeMilliSeconds) {
+        this.connIdleEvictTimeMilliSeconds = connIdleEvictTimeMilliSeconds;
+    }
 
-	// copied from httpclient source code
-	private static HttpHost determineTarget(HttpUriRequest request) throws ClientProtocolException {
-		// A null target may be acceptable if there is a default target.
-		// Otherwise, the null target is detected in the director.
-		HttpHost target = null;
-		URI requestURI = request.getURI();
-		if (requestURI.isAbsolute()) {
-			target = URIUtils.extractHost(requestURI);
-			if (target == null) {
-				throw new ClientProtocolException(
-						"URI does not specify a valid host name: " + requestURI);
-			}
-		}
-		return target;
-	}
-	
-	@Override
-	public <T> T execute(
-			final HttpUriRequest request,
-			final ResponseHandler<? extends T> responseHandler)
-					throws IOException, ClientProtocolException {
-		return this.execute(request, responseHandler, null);
-	}
+    @Monitor(name = "HttpClient-SleepTimeFactorMs", type = DataSourceType.INFORMATIONAL)
+    public int getSleepTimeFactorMs() {
+        return this.sleepTimeFactorMsProperty.getOrDefault();
+    }
 
-	@Override
-	public <T> T execute(
-			final HttpUriRequest request,
-			final ResponseHandler<? extends T> responseHandler,
-			final HttpContext context)
-					throws IOException, ClientProtocolException {
-		HttpHost target = null;
-		if(httpHost == null)
-			target = determineTarget(request);
-		else
-			target = httpHost;
-		return this.execute(target, request, responseHandler, context);
-	}
+    // copied from httpclient source code
+    private static HttpHost determineTarget(HttpUriRequest request) throws ClientProtocolException {
+        // A null target may be acceptable if there is a default target.
+        // Otherwise, the null target is detected in the director.
+        HttpHost target = null;
+        URI requestURI = request.getURI();
+        if (requestURI.isAbsolute()) {
+            target = URIUtils.extractHost(requestURI);
+            if (target == null) {
+                throw new ClientProtocolException(
+                        "URI does not specify a valid host name: " + requestURI);
+            }
+        }
+        return target;
+    }
 
-	@Override
-	public <T> T execute(
-			final HttpHost target,
-			final HttpRequest request,
-			final ResponseHandler<? extends T> responseHandler)
-					throws IOException, ClientProtocolException {
-		return this.execute(target, request, responseHandler, null);
-	}
+    @Override
+    public <T> T execute(
+            final HttpUriRequest request,
+            final ResponseHandler<? extends T> responseHandler)
+            throws IOException, ClientProtocolException {
+        return this.execute(request, responseHandler, null);
+    }
 
-	@Override
-	public <T> T execute(
-			final HttpHost target,
-			final HttpRequest request,
-			final ResponseHandler<? extends T> responseHandler,
-			final HttpContext context)
-					throws IOException, ClientProtocolException {
-	    Stopwatch sw = tracer.start();
-		try{
-			// TODO: replaced method.getQueryString() with request.getRequestLine().getUri()
-			LOGGER.debug("Executing HTTP method: {}, uri: {}", request.getRequestLine().getMethod(), request.getRequestLine().getUri());
-			return super.execute(target, request, responseHandler, context);
-		}finally{
-			sw.stop();
-		}
-	}
-	
-	public void shutdown() {
-	    if (connPoolCleaner != null) {
-	        connPoolCleaner.shutdown();
-	    }
-	    getConnectionManager().shutdown();
-	}
+    @Override
+    public <T> T execute(
+            final HttpUriRequest request,
+            final ResponseHandler<? extends T> responseHandler,
+            final HttpContext context)
+            throws IOException, ClientProtocolException {
+        HttpHost target = null;
+        if (httpHost == null)
+            target = determineTarget(request);
+        else
+            target = httpHost;
+        return this.execute(target, request, responseHandler, context);
+    }
+
+    @Override
+    public <T> T execute(
+            final HttpHost target,
+            final HttpRequest request,
+            final ResponseHandler<? extends T> responseHandler)
+            throws IOException, ClientProtocolException {
+        return this.execute(target, request, responseHandler, null);
+    }
+
+    @Override
+    public <T> T execute(
+            final HttpHost target,
+            final HttpRequest request,
+            final ResponseHandler<? extends T> responseHandler,
+            final HttpContext context)
+            throws IOException, ClientProtocolException {
+        Stopwatch sw = tracer.start();
+        try {
+            // TODO: replaced method.getQueryString() with request.getRequestLine().getUri()
+            LOGGER.debug("Executing HTTP method: {}, uri: {}", request.getRequestLine().getMethod(), request.getRequestLine().getUri());
+            return super.execute(target, request, responseHandler, context);
+        } finally {
+            sw.stop();
+        }
+    }
+
+    public void shutdown() {
+        if (connPoolCleaner != null) {
+            connPoolCleaner.shutdown();
+        }
+        getConnectionManager().shutdown();
+    }
 }

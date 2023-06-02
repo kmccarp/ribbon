@@ -71,7 +71,7 @@ public class SimpleVipAddressResolver implements VipAddressResolver {
         }
         return replaceMacrosFromConfig(vipAddressMacro);
     }
-    
+
     private static String replaceMacrosFromConfig(String macro) {
         String result = macro;
         Matcher matcher = VAR_PATTERN.matcher(result);
@@ -82,8 +82,8 @@ public class SimpleVipAddressResolver implements VipAddressResolver {
                 result = result.replaceAll("\\$\\{" + key + "\\}", value);
                 matcher = VAR_PATTERN.matcher(result);
             }
-        }        
-        return result.trim();        
+        }
+        return result.trim();
     }
 
 }

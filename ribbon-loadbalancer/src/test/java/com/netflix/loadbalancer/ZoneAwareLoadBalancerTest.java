@@ -42,23 +42,23 @@ import com.netflix.config.ConfigurationManager;
 public class ZoneAwareLoadBalancerTest {
 
     private Server createServer(String host, String zone) {
-        return createServer(host, 7001, zone);    
+        return createServer(host, 7001, zone);
     }
-    
+
     private Server createServer(String host, int port, String zone) {
         Server server = new Server(host, port);
         server.setZone(zone);
         server.setAlive(true);
         return server;
     }
-    
+
     private Server createServer(int hostId, String zoneSuffix) {
         return createServer(zoneSuffix + "-" + "server" + hostId, "us-eAst-1" + zoneSuffix);
     }
-    
+
     private void testChooseServer(ZoneAwareLoadBalancer<Server> balancer, String... expectedZones) {
         Set<String> result = new HashSet<String>();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0;i < 100;i++) {
             Server server = balancer.chooseServer(null);
             String zone = server.getZone().toLowerCase();
             result.add(zone);
@@ -67,8 +67,8 @@ public class ZoneAwareLoadBalancerTest {
         expected.addAll(Arrays.asList(expectedZones));
         assertEquals(expected, result);
     }
-    
-    
+
+
     @Test
     public void testChooseZone() throws Exception {
         ConfigurationManager.getConfigInstance().setProperty("niws.loadbalancer.serverStats.activeRequestsCount.effectiveWindowSeconds", 10);
@@ -78,12 +78,12 @@ public class ZoneAwareLoadBalancerTest {
         ZoneAwareLoadBalancer<Server> balancer = new ZoneAwareLoadBalancer<Server>();
         balancer.init();
         IRule globalRule = new RoundRobinRule();
-        balancer.setRule(globalRule);        
+        balancer.setRule(globalRule);
         LoadBalancerStats loadBalancerStats = balancer.getLoadBalancerStats();
         loadBalancerStats.initWithNiwsConfig(config);
         assertNotNull(loadBalancerStats);
         List<Server> servers = new ArrayList<Server>();
-        
+
         servers.add(createServer(1, "a"));
         servers.add(createServer(2, "a"));
         servers.add(createServer(3, "a"));
@@ -111,25 +111,25 @@ public class ZoneAwareLoadBalancerTest {
         assertEquals(2, loadBalancerStats.getActiveRequestsCount("us-east-1c"));
         assertEquals(0.5d, loadBalancerStats.getActiveRequestsPerServer("us-east-1c"), 0.0001d);
         testChooseServer(balancer, "us-east-1a", "us-east-1b");
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0;i < 3;i++) {
             loadBalancerStats.incrementSuccessiveConnectionFailureCount(createServer(1, "a"));
         }
 
 
         assertEquals(1, loadBalancerStats.getCircuitBreakerTrippedCount("us-east-1a"));
         loadBalancerStats.incrementSuccessiveConnectionFailureCount(createServer(2, "b"));
-        assertEquals(0, loadBalancerStats.getCircuitBreakerTrippedCount("us-east-1b"));        
+        assertEquals(0, loadBalancerStats.getCircuitBreakerTrippedCount("us-east-1b"));
         // loadPerServer on both zone a and b should still be 0
 
         testChooseServer(balancer, "us-east-1a", "us-east-1b");
-        
+
         // make a load on zone a
         loadBalancerStats.incrementActiveRequestsCount(createServer(2, "a"));
-        assertEquals(1d/3, loadBalancerStats.getActiveRequestsPerServer("us-east-1a"), 0.0001);
-        
+        assertEquals(1d / 3, loadBalancerStats.getActiveRequestsPerServer("us-east-1a"), 0.0001);
+
         // zone c will be dropped as the worst zone
         testChooseServer(balancer, "us-east-1b", "us-east-1a");
-                
+
         Thread.sleep(15000);
         assertEquals(0, loadBalancerStats.getCircuitBreakerTrippedCount("us-east-1a"));
         assertEquals(3, loadBalancerStats.getSingleServerStat(createServer(1, "a")).getSuccessiveConnectionFailureCount());
@@ -138,7 +138,7 @@ public class ZoneAwareLoadBalancerTest {
         loadBalancerStats.clearSuccessiveConnectionFailureCount(createServer(1, "a"));
         assertEquals(0, loadBalancerStats.getSingleServerStat(createServer(1, "a")).getSuccessiveConnectionFailureCount());
         assertEquals(0, loadBalancerStats.getCircuitBreakerTrippedCount("us-east-1a"));
-        
+
         loadBalancerStats.decrementActiveRequestsCount(createServer(2, "a"));
 
         assertEquals(0, loadBalancerStats.getActiveRequestsPerServer("us-east-1b"), 0.000001);
@@ -147,7 +147,7 @@ public class ZoneAwareLoadBalancerTest {
         assertEquals(0, loadBalancerStats.getActiveRequestsPerServer("us-east-1a"), 0.000001);
 
         testChooseServer(balancer, "us-east-1a", "us-east-1b", "us-east-1c");
-        
+
         List<Server> emptyList = Collections.emptyList();
         Map<String, List<Server>> map = new HashMap<String, List<Server>>();
         map.put("us-east-1a", emptyList);
@@ -164,7 +164,7 @@ public class ZoneAwareLoadBalancerTest {
         LoadBalancerStats loadBalancerStats = balancer.getLoadBalancerStats();
         assertNotNull(loadBalancerStats);
         List<Server> servers = new ArrayList<Server>();
-        
+
         servers.add(createServer(1, "a"));
         servers.add(createServer(2, "a"));
         servers.add(createServer(1, "b"));
@@ -173,9 +173,9 @@ public class ZoneAwareLoadBalancerTest {
         servers.add(createServer(2, "c"));
         balancer.setServersList(servers);
         balancer.setUpServerList(servers);
-        testChooseServer(balancer, "us-east-1a", "us-east-1b", "us-east-1c");        
-        
-        for (int i = 0; i < 3; i++) {
+        testChooseServer(balancer, "us-east-1a", "us-east-1b", "us-east-1c");
+
+        for (int i = 0;i < 3;i++) {
             loadBalancerStats.incrementSuccessiveConnectionFailureCount(createServer(1, "a"));
             loadBalancerStats.incrementSuccessiveConnectionFailureCount(createServer(2, "a"));
         }
@@ -183,12 +183,12 @@ public class ZoneAwareLoadBalancerTest {
         testChooseServer(balancer, "us-east-1b", "us-east-1c");
         loadBalancerStats.incrementActiveRequestsCount(createServer(1, "b"));
         loadBalancerStats.incrementActiveRequestsCount(createServer(1, "c"));
-        testChooseServer(balancer, "us-east-1b", "us-east-1c");        
+        testChooseServer(balancer, "us-east-1b", "us-east-1c");
         loadBalancerStats.decrementActiveRequestsCount(createServer(1, "b"));
         // zone a all instances are blacked out, zone c is worst in terms of load 
         testChooseServer(balancer, "us-east-1b");
     }
-    
+
     @Test
     public void testNonZoneOverride() {
         ZoneAwareLoadBalancer<Server> balancer = new ZoneAwareLoadBalancer<Server>();
@@ -196,11 +196,11 @@ public class ZoneAwareLoadBalancerTest {
         LoadBalancerStats loadBalancerStats = balancer.getLoadBalancerStats();
         assertNotNull(loadBalancerStats);
         List<Server> servers = new ArrayList<Server>();
-        
-        for (int i = 1; i <= 11; i++) {
+
+        for (int i = 1;i <= 11;i++) {
             servers.add(createServer(i, "a"));
-            servers.add(createServer(i, "b"));            
-            servers.add(createServer(i, "c"));            
+            servers.add(createServer(i, "b"));
+            servers.add(createServer(i, "c"));
         }
         balancer.setServersList(servers);
         balancer.setUpServerList(servers);
@@ -209,7 +209,7 @@ public class ZoneAwareLoadBalancerTest {
         loadBalancerStats.incrementActiveRequestsCount(createServer(1, "c"));
 
         testChooseServer(balancer, "us-east-1a", "us-east-1b", "us-east-1c");
-        
+
         loadBalancerStats.incrementActiveRequestsCount(createServer(1, "b"));
         loadBalancerStats.incrementActiveRequestsCount(createServer(1, "b"));
 
@@ -223,7 +223,7 @@ public class ZoneAwareLoadBalancerTest {
 
     }
 
-    
+
     @Test
     public void testAvailabilityFiltering() {
         ZoneAwareLoadBalancer balancer = new ZoneAwareLoadBalancer();
@@ -231,7 +231,7 @@ public class ZoneAwareLoadBalancerTest {
         balancer.setRule(new AvailabilityFilteringRule());
         LoadBalancerStats loadBalancerStats = balancer.getLoadBalancerStats();
         assertNotNull(loadBalancerStats);
-        List<Server> servers = new ArrayList<Server>();        
+        List<Server> servers = new ArrayList<Server>();
         servers.add(createServer(1, "a"));
         servers.add(createServer(2, "a"));
         servers.add(createServer(1, "b"));
@@ -241,9 +241,9 @@ public class ZoneAwareLoadBalancerTest {
         balancer.setServersList(servers);
         balancer.setUpServerList(servers);
         // cause both zone a and b outage 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0;i < 4;i++) {
             Server server = servers.get(i);
-            for (int j = 0; j < 3; j++) {
+            for (int j = 0;j < 3;j++) {
                 loadBalancerStats.getSingleServerStat(server).incrementSuccessiveConnectionFailureCount();
             }
         }
@@ -251,27 +251,27 @@ public class ZoneAwareLoadBalancerTest {
         expected.add(createServer(1, "c"));
         expected.add(createServer(2, "c"));
         Set<Server> result = new HashSet<Server>();
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0;i < 20;i++) {
             Server server = balancer.chooseServer(null);
             result.add(server);
         }
         assertEquals(expected, result);
         // cause one server in c circuit tripped
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0;i < 3;i++) {
             loadBalancerStats.getSingleServerStat(servers.get(4)).incrementSuccessiveConnectionFailureCount();
         }
         // should only use the other server in zone c
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0;i < 20;i++) {
             Server server = balancer.chooseServer(null);
             assertEquals(servers.get(5), server);
         }
         // now every server is tripped
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0;i < 3;i++) {
             loadBalancerStats.getSingleServerStat(servers.get(5)).incrementSuccessiveConnectionFailureCount();
         }
         expected = new HashSet<Server>(servers);
         result = new HashSet<Server>();
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0;i < 20;i++) {
             Server server = balancer.chooseServer(null);
             if (server == null) {
                 fail("Unexpected null server");
@@ -279,7 +279,7 @@ public class ZoneAwareLoadBalancerTest {
             result.add(server);
         }
         assertEquals(expected, result);
-        servers = new ArrayList<Server>();        
+        servers = new ArrayList<Server>();
         servers.add(createServer(1, "a"));
         servers.add(createServer(2, "a"));
         servers.add(createServer(1, "b"));
@@ -289,23 +289,23 @@ public class ZoneAwareLoadBalancerTest {
         AvailabilityFilteringRule rule = (AvailabilityFilteringRule) balancer.getLoadBalancer("us-east-1c").getRule();
         assertEquals(0, rule.getAvailableServersCount());
     }
-    
+
     @Test
     public void testConstruction() {
         ConfigurationManager.getConfigInstance().setProperty("mylb.ribbon.NFLoadBalancerRuleClassName", RandomRule.class.getName());
         ZoneAwareLoadBalancer lb = (ZoneAwareLoadBalancer) ClientFactory.getNamedLoadBalancer("mylb");
         assertTrue(lb.getLoadBalancer("myzone").getRule() instanceof RandomRule);
     }
-    
+
     @Test
     public void testActiveConnectionsLimit() {
         ConfigurationManager.getConfigInstance().clearProperty("niws.loadbalancer.serverStats.activeRequestsCount.effectiveWindowSeconds");
         ConfigurationManager.getConfigInstance().setProperty("testlb.ribbon.ActiveConnectionsLimit", 1);
 
-    	ZoneAwareLoadBalancer balancer = (ZoneAwareLoadBalancer) ClientFactory.getNamedLoadBalancer("testlb");
+        ZoneAwareLoadBalancer balancer = (ZoneAwareLoadBalancer) ClientFactory.getNamedLoadBalancer("testlb");
         LoadBalancerStats loadBalancerStats = balancer.getLoadBalancerStats();
         assertNotNull(loadBalancerStats);
-        List<Server> servers = new ArrayList<Server>();        
+        List<Server> servers = new ArrayList<Server>();
         servers.add(createServer(1, "a"));
         servers.add(createServer(2, "a"));
         servers.add(createServer(3, "a"));
@@ -327,9 +327,9 @@ public class ZoneAwareLoadBalancerTest {
         loadBalancerStats.getSingleServerStat(server).incrementActiveRequestsCount();
         server = servers.get(8);
         loadBalancerStats.getSingleServerStat(server).incrementActiveRequestsCount();
-        
+
         server = servers.get(servers.size() - 1);
-        for (int j = 0; j < 3; j++) {
+        for (int j = 0;j < 3;j++) {
             loadBalancerStats.getSingleServerStat(server).incrementSuccessiveConnectionFailureCount();
         }
 
@@ -351,9 +351,9 @@ public class ZoneAwareLoadBalancerTest {
         assertEquals(5, rule1.getAvailableServersCount());
         AvailabilityFilteringRule rule2 = (AvailabilityFilteringRule) balancer.getLoadBalancer("us-east-1b").getRule();
         assertEquals(6, rule2.getAvailableServersCount());
-        
+
         Set<Server> result = new HashSet<Server>();
-        for (int i = 0; i < 100; i++) {            
+        for (int i = 0;i < 100;i++) {
             result.add(balancer.chooseServer(null));
         }
         assertEquals(expected, result);

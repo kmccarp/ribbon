@@ -30,7 +30,7 @@ public class ServerListChangeListenerTest {
 
     private volatile List<Server> oldList;
     private volatile List<Server> newList;
-    
+
     @Test
     public void testListener() {
         BaseLoadBalancer lb = new BaseLoadBalancer();

@@ -34,30 +34,30 @@ import com.netflix.loadbalancer.Server;
 import com.netflix.niws.client.http.RestClient;
 
 public class ClientFactoryTest {
-	
-	private static RestClient client;
-	
-	@BeforeClass
-	public static void init() {
-		ConfigurationManager.getConfigInstance().setProperty("junit.ribbon.listOfServers", "www.example1.come:80,www.example2.come:80,www.example3.come:80");
-		client = (RestClient) ClientFactory.getNamedClient("junit");
-	}
-	
-	@Test
-	public void testChooseServers() {
-		assertNotNull(client);
-		DynamicServerListLoadBalancer lb = (DynamicServerListLoadBalancer) client.getLoadBalancer();
-		assertTrue(lb.getServerListImpl() instanceof ConfigurationBasedServerList);
-		Set<Server> expected = new HashSet<Server>();
-		expected.add(new Server("www.example1.come:80"));
-		expected.add(new Server("www.example2.come:80"));
-		expected.add(new Server("www.example3.come:80"));
-		Set<Server> result = new HashSet<Server>();
-		for (int i = 0; i <= 10; i++) {
-			Server s = lb.chooseServer();
-			result.add(s);			
-		}
-		assertEquals(expected, result);
-	}
+
+    private static RestClient client;
+
+    @BeforeClass
+    public static void init() {
+        ConfigurationManager.getConfigInstance().setProperty("junit.ribbon.listOfServers", "www.example1.come:80,www.example2.come:80,www.example3.come:80");
+        client = (RestClient) ClientFactory.getNamedClient("junit");
+    }
+
+    @Test
+    public void testChooseServers() {
+        assertNotNull(client);
+        DynamicServerListLoadBalancer lb = (DynamicServerListLoadBalancer) client.getLoadBalancer();
+        assertTrue(lb.getServerListImpl() instanceof ConfigurationBasedServerList);
+        Set<Server> expected = new HashSet<Server>();
+        expected.add(new Server("www.example1.come:80"));
+        expected.add(new Server("www.example2.come:80"));
+        expected.add(new Server("www.example3.come:80"));
+        Set<Server> result = new HashSet<Server>();
+        for (int i = 0;i <= 10;i++) {
+            Server s = lb.chooseServer();
+            result.add(s);
+        }
+        assertEquals(expected, result);
+    }
 
 }

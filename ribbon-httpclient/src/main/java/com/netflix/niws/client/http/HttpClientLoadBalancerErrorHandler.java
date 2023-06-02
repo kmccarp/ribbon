@@ -20,15 +20,15 @@ import com.netflix.client.http.HttpResponse;
 public class HttpClientLoadBalancerErrorHandler extends DefaultLoadBalancerRetryHandler {
 
     @SuppressWarnings("unchecked")
-    protected List<Class<? extends Throwable>> retriable = 
+    protected List<Class<? extends Throwable>> retriable =
             Lists.<Class<? extends Throwable>>newArrayList(ConnectException.class, SocketTimeoutException.class, ConnectTimeoutException.class,
                     NoHttpResponseException.class, ConnectionPoolTimeoutException.class, ConnectionClosedException.class, HttpHostConnectException.class);
-    
+
     @SuppressWarnings("unchecked")
-    protected List<Class<? extends Throwable>> circuitRelated = 
-            Lists.<Class<? extends Throwable>>newArrayList(SocketException.class, SocketTimeoutException.class, ConnectTimeoutException.class, 
+    protected List<Class<? extends Throwable>> circuitRelated =
+            Lists.<Class<? extends Throwable>>newArrayList(SocketException.class, SocketTimeoutException.class, ConnectTimeoutException.class,
                     ConnectionClosedException.class, HttpHostConnectException.class);
-    
+
     public HttpClientLoadBalancerErrorHandler() {
         super();
     }
@@ -71,7 +71,7 @@ public class HttpClientLoadBalancerErrorHandler extends DefaultLoadBalancerRetry
     protected List<Class<? extends Throwable>> getRetriableExceptions() {
         return retriable;
     }
-    
+
     @Override
     protected List<Class<? extends Throwable>>  getCircuitRelatedExceptions() {
         return circuitRelated;

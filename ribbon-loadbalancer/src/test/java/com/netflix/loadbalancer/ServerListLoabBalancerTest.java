@@ -36,48 +36,48 @@ import com.netflix.loadbalancer.Server;
 
 public class ServerListLoabBalancerTest {
 
-	static Server[] servers = {new Server("abc", 80), new Server("xyz", 90), new Server("www.netflix.com", 80)};
-	static List<Server> serverList = Arrays.asList(servers);
-	
-	public static class FixedServerList extends AbstractServerList<Server> {
-	    
-		@Override
-		public void initWithNiwsConfig(IClientConfig clientConfig) {
-		}
-		
-		@Override
-		public List<Server> getInitialListOfServers() {
-			return serverList;
-		}
+    static Server[] servers = {new Server("abc", 80), new Server("xyz", 90), new Server("www.netflix.com", 80)};
+    static List<Server> serverList = Arrays.asList(servers);
 
-		@Override
-		public List<Server> getUpdatedListOfServers() {
-			return serverList;
-		}
-		
-	}
-	
-	static DynamicServerListLoadBalancer<Server> lb;
-	
-	@BeforeClass
-	public static void init() {
-		Configuration config = ConfigurationManager.getConfigInstance();
-		config.setProperty("ServerListLoabBalancerTest.ribbon.NFLoadBalancerClassName", 
-				com.netflix.loadbalancer.DynamicServerListLoadBalancer.class.getName());
-		config.setProperty("ServerListLoabBalancerTest.ribbon.NIWSServerListClassName", FixedServerList.class.getName());
-		lb = (DynamicServerListLoadBalancer<Server>) ClientFactory.getNamedLoadBalancer("ServerListLoabBalancerTest");
-	}
-	
+    public static class FixedServerList extends AbstractServerList<Server> {
+
+        @Override
+        public void initWithNiwsConfig(IClientConfig clientConfig) {
+        }
+
+        @Override
+        public List<Server> getInitialListOfServers() {
+            return serverList;
+        }
+
+        @Override
+        public List<Server> getUpdatedListOfServers() {
+            return serverList;
+        }
+
+    }
+
+    static DynamicServerListLoadBalancer<Server> lb;
+
+    @BeforeClass
+    public static void init() {
+        Configuration config = ConfigurationManager.getConfigInstance();
+        config.setProperty("ServerListLoabBalancerTest.ribbon.NFLoadBalancerClassName",
+                com.netflix.loadbalancer.DynamicServerListLoadBalancer.class.getName());
+        config.setProperty("ServerListLoabBalancerTest.ribbon.NIWSServerListClassName", FixedServerList.class.getName());
+        lb = (DynamicServerListLoadBalancer<Server>) ClientFactory.getNamedLoadBalancer("ServerListLoabBalancerTest");
+    }
+
     @Test
     public void testChooseServer() {
-    	assertNotNull(lb);
-    	Set<Server> result = new HashSet<Server>();
-    	for (int i = 0; i < 100; i++) {
-    		Server s = lb.chooseServer(null);
-    		result.add(s);
-    	}
-    	Set<Server> expected = new HashSet<Server>();
-    	expected.addAll(serverList);
-    	assertEquals(expected, result);
+        assertNotNull(lb);
+        Set<Server> result = new HashSet<Server>();
+        for (int i = 0;i < 100;i++) {
+            Server s = lb.chooseServer(null);
+            result.add(s);
+        }
+        Set<Server> expected = new HashSet<Server>();
+        expected.addAll(serverList);
+        assertEquals(expected, result);
     }
 }

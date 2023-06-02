@@ -35,13 +35,16 @@ import javax.annotation.Nullable;
 public class AvailabilityPredicate extends  AbstractServerPredicate {
 
     private static final IClientConfigKey<Boolean> FILTER_CIRCUIT_TRIPPED = new CommonClientConfigKey<Boolean>(
-            "niws.loadbalancer.availabilityFilteringRule.filterCircuitTripped", true) {};
+            "niws.loadbalancer.availabilityFilteringRule.filterCircuitTripped", true) {
+    };
 
     private static final IClientConfigKey<Integer> DEFAULT_ACTIVE_CONNECTIONS_LIMIT = new CommonClientConfigKey<Integer>(
-            "niws.loadbalancer.availabilityFilteringRule.activeConnectionsLimit", -1) {};
+            "niws.loadbalancer.availabilityFilteringRule.activeConnectionsLimit", -1) {
+    };
 
     private static final IClientConfigKey<Integer> ACTIVE_CONNECTIONS_LIMIT = new CommonClientConfigKey<Integer>(
-            "ActiveConnectionsLimit", -1) {};
+            "ActiveConnectionsLimit", -1) {
+    };
 
     private Property<Boolean> circuitBreakerFiltering = Property.of(FILTER_CIRCUIT_TRIPPED.defaultValue());
     private Property<Integer> defaultActiveConnectionsLimit = Property.of(DEFAULT_ACTIVE_CONNECTIONS_LIMIT.defaultValue());
@@ -88,7 +91,7 @@ public class AvailabilityPredicate extends  AbstractServerPredicate {
         }
         return !shouldSkipServer(stats.getSingleServerStat(input.getServer()));
     }
-    
+
     private boolean shouldSkipServer(ServerStats stats) {
         if ((circuitBreakerFiltering.getOrDefault() && stats.isCircuitBreakerTripped())
                 || stats.getActiveRequestsCount() >= getActiveConnectionsLimit()) {

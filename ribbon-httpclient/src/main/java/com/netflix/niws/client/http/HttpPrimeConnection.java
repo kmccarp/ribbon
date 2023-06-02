@@ -40,12 +40,12 @@ import org.apache.http.params.HttpConnectionParams;
 public class HttpPrimeConnection implements IPrimeConnection {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpPrimeConnection.class);
-    
+
     private NFHttpClient client;
-    
+
     public HttpPrimeConnection() {
     }
-    
+
     @Override
     public boolean connect(Server server, String primeConnectionsURIPath) throws Exception {
         String url = "http://" + server.getHostPort() + primeConnectionsURIPath;
@@ -58,14 +58,14 @@ public class HttpPrimeConnection implements IPrimeConnection {
                 logger.debug("Response code:" + response.getStatusLine().getStatusCode());
             }
         } finally {
-           get.abort();
+            get.abort();
         }
         return true;
     }
 
     @Override
     public void initWithNiwsConfig(IClientConfig niwsClientConfig) {
-        client = NFHttpClientFactory.getNamedNFHttpClient(niwsClientConfig.getClientName() + "-PrimeConnsClient", false); 
-        HttpConnectionParams.setConnectionTimeout(client.getParams(), 2000);        
+        client = NFHttpClientFactory.getNamedNFHttpClient(niwsClientConfig.getClientName() + "-PrimeConnsClient", false);
+        HttpConnectionParams.setConnectionTimeout(client.getParams(), 2000);
     }
 }

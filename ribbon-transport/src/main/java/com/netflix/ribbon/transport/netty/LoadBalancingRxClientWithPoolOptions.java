@@ -34,7 +34,7 @@ import com.netflix.client.config.IClientConfigKey.Keys;
 import com.netflix.loadbalancer.ILoadBalancer;
 import com.netflix.loadbalancer.LoadBalancerBuilder;
 
-public abstract class LoadBalancingRxClientWithPoolOptions<I, O, T extends RxClient<I, O>> extends LoadBalancingRxClient<I, O, T>{
+public abstract class LoadBalancingRxClientWithPoolOptions<I, O, T extends RxClient<I, O>> extends LoadBalancingRxClient<I, O, T> {
     protected CompositePoolLimitDeterminationStrategy poolStrategy;
     protected MaxConnectionsBasedStrategy globalStrategy;
     protected int idleConnectionEvictionMills;
@@ -55,7 +55,7 @@ public abstract class LoadBalancingRxClientWithPoolOptions<I, O, T extends RxCli
             RetryHandler retryHandler,
             PipelineConfigurator<O, I> pipelineConfigurator, ScheduledExecutorService poolCleanerScheduler) {
         super(lb, config, retryHandler, pipelineConfigurator);
-        poolEnabled = config.get(CommonClientConfigKey.EnableConnectionPool, 
+        poolEnabled = config.get(CommonClientConfigKey.EnableConnectionPool,
                 DefaultClientConfigImpl.DEFAULT_ENABLE_CONNECTION_POOL);
         if (poolEnabled) {
             this.poolCleanerScheduler = poolCleanerScheduler;
@@ -64,7 +64,7 @@ public abstract class LoadBalancingRxClientWithPoolOptions<I, O, T extends RxCli
             int maxConnections = config.get(Keys.MaxConnectionsPerHost, DefaultClientConfigImpl.DEFAULT_MAX_CONNECTIONS_PER_HOST);
             MaxConnectionsBasedStrategy perHostStrategy = new DynamicPropertyBasedPoolStrategy(maxConnections,
                     config.getClientName() + "." + config.getNameSpace() + "." + CommonClientConfigKey.MaxConnectionsPerHost);
-            globalStrategy = new DynamicPropertyBasedPoolStrategy(maxTotalConnections, 
+            globalStrategy = new DynamicPropertyBasedPoolStrategy(maxTotalConnections,
                     config.getClientName() + "." + config.getNameSpace() + "." + CommonClientConfigKey.MaxTotalConnections);
             poolStrategy = new CompositePoolLimitDeterminationStrategy(perHostStrategy, globalStrategy);
             idleConnectionEvictionMills = config.get(Keys.ConnIdleEvictTimeMilliSeconds, DefaultClientConfigImpl.DEFAULT_CONNECTIONIDLE_TIME_IN_MSECS);
@@ -74,15 +74,15 @@ public abstract class LoadBalancingRxClientWithPoolOptions<I, O, T extends RxCli
     protected final PoolLimitDeterminationStrategy getPoolStrategy() {
         return globalStrategy;
     }
-    
+
     protected int getConnectionIdleTimeoutMillis() {
         return idleConnectionEvictionMills;
     }
-    
+
     protected boolean isPoolEnabled() {
         return poolEnabled;
     }
-    
+
     @Override
     public int getMaxConcurrentRequests() {
         if (poolEnabled) {

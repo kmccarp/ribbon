@@ -28,13 +28,13 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  */
 public final class ClientOptions {
-    
+
     private Map<IClientConfigKey<?>, Object> options;
-    
+
     private ClientOptions() {
         options = new ConcurrentHashMap<>();
     }
-    
+
     public static ClientOptions create() {
         return new ClientOptions();
     }
@@ -54,12 +54,12 @@ public final class ClientOptions {
         options.put(IClientConfigKey.Keys.DeploymentContextBasedVipAddresses, identifier);
         return this;
     }
-    
+
     public ClientOptions withConfigurationBasedServerList(String serverList) {
         options.put(IClientConfigKey.Keys.ListOfServers, serverList);
         return this;
     }
-        
+
     public ClientOptions withMaxAutoRetries(int value) {
         options.put(IClientConfigKey.Keys.MaxAutoRetries, value);
         return this;
@@ -67,47 +67,47 @@ public final class ClientOptions {
 
     public ClientOptions withMaxAutoRetriesNextServer(int value) {
         options.put(IClientConfigKey.Keys.MaxAutoRetriesNextServer, value);
-        return this;        
+        return this;
     }
-    
+
     public ClientOptions withRetryOnAllOperations(boolean value) {
         options.put(IClientConfigKey.Keys.OkToRetryOnAllOperations, value);
         return this;
     }
-        
+
     public ClientOptions withMaxConnectionsPerHost(int value) {
         options.put(IClientConfigKey.Keys.MaxConnectionsPerHost, value);
-        return this;        
+        return this;
     }
 
     public ClientOptions withMaxTotalConnections(int value) {
         options.put(IClientConfigKey.Keys.MaxTotalConnections, value);
-        return this;        
+        return this;
     }
-    
+
     public ClientOptions withConnectTimeout(int value) {
         options.put(IClientConfigKey.Keys.ConnectTimeout, value);
-        return this;                
+        return this;
     }
 
     public ClientOptions withReadTimeout(int value) {
         options.put(IClientConfigKey.Keys.ReadTimeout, value);
-        return this;        
+        return this;
     }
 
     public ClientOptions withFollowRedirects(boolean value) {
         options.put(IClientConfigKey.Keys.FollowRedirects, value);
-        return this;                
+        return this;
     }
-            
+
     public ClientOptions withConnectionPoolIdleEvictTimeMilliseconds(int value) {
         options.put(IClientConfigKey.Keys.ConnIdleEvictTimeMilliSeconds, value);
-        return this;                        
+        return this;
     }
-    
+
     public ClientOptions withLoadBalancerEnabled(boolean value) {
         options.put(IClientConfigKey.Keys.InitializeNFLoadBalancer, value);
-        return this;                                
+        return this;
     }
 
     Map<IClientConfigKey<?>, Object> getOptions() {

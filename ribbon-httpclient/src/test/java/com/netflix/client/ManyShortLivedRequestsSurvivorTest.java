@@ -44,7 +44,7 @@ public class ManyShortLivedRequestsSurvivorTest {
         MockWebServer server1 = new MockWebServer();
         MockWebServer server2 = new MockWebServer();
 
-        for (int i = 0; i < nbHitsPerServer; i++) {
+        for (int i = 0;i < nbHitsPerServer;i++) {
             server1.enqueue(new MockResponse().setResponseCode(200).setBody("server1 success <" + i + ">!"));
             server2.enqueue(new MockResponse().setResponseCode(200).setBody("server2 success <" + i + ">!"));
         }
@@ -56,7 +56,7 @@ public class ManyShortLivedRequestsSurvivorTest {
 
         RestClient client = (RestClient) ClientFactory.getNamedClient(clientName);
         HttpRequest request;
-        for (int i = 0; i < nbHitsPerServer * 2; i++) {
+        for (int i = 0;i < nbHitsPerServer * 2;i++) {
             request = HttpRequest.newBuilder().uri(new URI("/")).build();
             HttpResponse response = client.executeWithLoadBalancer(request);
             response.close();

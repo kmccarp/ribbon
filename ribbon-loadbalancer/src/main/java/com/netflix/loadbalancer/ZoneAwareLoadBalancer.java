@@ -55,17 +55,20 @@ For each request, the steps above will be repeated. That is to say, each zone re
 public class ZoneAwareLoadBalancer<T extends Server> extends DynamicServerListLoadBalancer<T> {
 
     private ConcurrentHashMap<String, BaseLoadBalancer> balancers = new ConcurrentHashMap<String, BaseLoadBalancer>();
-    
+
     private static final Logger logger = LoggerFactory.getLogger(ZoneAwareLoadBalancer.class);
 
     private static final IClientConfigKey<Boolean> ENABLED = new CommonClientConfigKey<Boolean>(
-            "ZoneAwareNIWSDiscoveryLoadBalancer.enabled", true){};
+            "ZoneAwareNIWSDiscoveryLoadBalancer.enabled", true){
+    };
 
     private static final IClientConfigKey<Double> TRIGGERING_LOAD_PER_SERVER_THRESHOLD = new CommonClientConfigKey<Double>(
-            "ZoneAwareNIWSDiscoveryLoadBalancer.%s.triggeringLoadPerServerThreshold", 0.2d){};
+            "ZoneAwareNIWSDiscoveryLoadBalancer.%s.triggeringLoadPerServerThreshold", 0.2d){
+    };
 
     private static final IClientConfigKey<Double> AVOID_ZONE_WITH_BLACKOUT_PERCENTAGE = new CommonClientConfigKey<Double>(
-            "ZoneAwareNIWSDiscoveryLoadBalancer.%s.avoidZoneWithBlackoutPercetage", 0.99999d){};
+            "ZoneAwareNIWSDiscoveryLoadBalancer.%s.avoidZoneWithBlackoutPercetage", 0.99999d){
+    };
 
 
     private Property<Double> triggeringLoad = Property.of(TRIGGERING_LOAD_PER_SERVER_THRESHOLD.defaultValue());
@@ -91,8 +94,8 @@ public class ZoneAwareLoadBalancer<T extends Server> extends DynamicServerListLo
     }
 
     public ZoneAwareLoadBalancer(IClientConfig clientConfig, IRule rule,
-                                 IPing ping, ServerList<T> serverList, ServerListFilter<T> filter,
-                                 ServerListUpdater serverListUpdater) {
+            IPing ping, ServerList<T> serverList, ServerListFilter<T> filter,
+            ServerListUpdater serverListUpdater) {
         super(clientConfig, rule, ping, serverList, filter, serverListUpdater);
 
         String name = Optional.ofNullable(getName()).orElse("default");
@@ -124,7 +127,7 @@ public class ZoneAwareLoadBalancer<T extends Server> extends DynamicServerListLo
             balancers = new ConcurrentHashMap<String, BaseLoadBalancer>();
         }
         for (Map.Entry<String, List<Server>> entry: zoneServersMap.entrySet()) {
-        	String zone = entry.getKey().toLowerCase();
+            String zone = entry.getKey().toLowerCase();
             getLoadBalancer(zone).setServersList(entry.getValue());
         }
         // check if there is any zone that no longer has a server
@@ -135,8 +138,8 @@ public class ZoneAwareLoadBalancer<T extends Server> extends DynamicServerListLo
                 existingLBEntry.getValue().setServersList(Collections.emptyList());
             }
         }
-    }    
-        
+    }
+
     @Override
     public Server chooseServer(Object key) {
         if (!enabled.getOrDefault() || getLoadBalancerStats().getAvailableZones().size() <= 1) {
@@ -168,39 +171,39 @@ public class ZoneAwareLoadBalancer<T extends Server> extends DynamicServerListLo
             return super.chooseServer(key);
         }
     }
-     
+
     @VisibleForTesting
     BaseLoadBalancer getLoadBalancer(String zone) {
         zone = zone.toLowerCase();
         BaseLoadBalancer loadBalancer = balancers.get(zone);
         if (loadBalancer == null) {
-        	// We need to create rule object for load balancer for each zone
-        	IRule rule = cloneRule(this.getRule());
+            // We need to create rule object for load balancer for each zone
+            IRule rule = cloneRule(this.getRule());
             loadBalancer = new BaseLoadBalancer(this.getName() + "_" + zone, rule, this.getLoadBalancerStats());
             BaseLoadBalancer prev = balancers.putIfAbsent(zone, loadBalancer);
             if (prev != null) {
-            	loadBalancer = prev;
+                loadBalancer = prev;
             }
-        } 
-        return loadBalancer;        
+        }
+        return loadBalancer;
     }
 
     private IRule cloneRule(IRule toClone) {
-    	IRule rule;
-    	if (toClone == null) {
-    		rule = new AvailabilityFilteringRule();
-    	} else {
-    		String ruleClass = toClone.getClass().getName();        		
-    		try {
-				rule = (IRule) ClientFactory.instantiateInstanceWithClientConfig(ruleClass, this.getClientConfig());
-			} catch (Exception e) {
-				throw new RuntimeException("Unexpected exception creating rule for ZoneAwareLoadBalancer", e);
-			}
-    	}
-    	return rule;
+        IRule rule;
+        if (toClone == null) {
+            rule = new AvailabilityFilteringRule();
+        } else {
+            String ruleClass = toClone.getClass().getName();
+            try {
+                rule = (IRule) ClientFactory.instantiateInstanceWithClientConfig(ruleClass, this.getClientConfig());
+            } catch (Exception e) {
+                throw new RuntimeException("Unexpected exception creating rule for ZoneAwareLoadBalancer", e);
+            }
+        }
+        return rule;
     }
-    
-       
+
+
     @Override
     public void setRule(IRule rule) {
         super.setRule(rule);

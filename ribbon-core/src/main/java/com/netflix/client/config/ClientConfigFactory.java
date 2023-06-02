@@ -28,7 +28,9 @@ public interface ClientConfigFactory {
 
     ClientConfigFactory DEFAULT = findDefaultConfigFactory();
 
-    default int getPriority() { return 0; }
+    default int getPriority() {
+        return 0;
+    }
 
     static ClientConfigFactory findDefaultConfigFactory() {
         return StreamSupport.stream(ServiceLoader.load(ClientConfigFactory.class).spliterator(), false)

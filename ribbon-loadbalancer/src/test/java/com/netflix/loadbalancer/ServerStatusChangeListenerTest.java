@@ -44,12 +44,13 @@ public class ServerStatusChangeListenerTest {
      */
     private class NoPingTaskLoadBalancer extends BaseLoadBalancer {
         @Override
-        void setupPingTask() {}
+        void setupPingTask() {
+        }
     }
 
     private final Server server1 = new Server("server1");
     private final Server server2 = new Server("server2");
-    
+
     private BaseLoadBalancer lb;
     private AtomicReference<List<Server>> serversReceivedByListener;
 

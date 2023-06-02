@@ -48,112 +48,112 @@ import java.io.IOException;
 public class PingUrl implements IPing {
     private static final Logger LOGGER = LoggerFactory.getLogger(PingUrl.class);
 
-		String pingAppendString = "";
-		boolean isSecure = false;
-		
-		String expectedContent = null;
+    String pingAppendString = "";
+    boolean isSecure = false;
 
-		/*
-		 *
-		 * Send one ping only.
-		 *
-		 * Well, send what you need to determine whether or not the
-		 * server is still alive.  Should return within a "reasonable"
-		 * time.
-		 */
-		
-		public PingUrl() {
-		}
-		
-		public PingUrl(boolean isSecure, String pingAppendString) {
-			this.isSecure = isSecure;
-			this.pingAppendString = (pingAppendString != null) ? pingAppendString : "";
-		}
+    String expectedContent = null;
 
-		public void setPingAppendString(String pingAppendString) {
-				this.pingAppendString = (pingAppendString != null) ? pingAppendString : "";
-		}
+    /*
+     *
+     * Send one ping only.
+     *
+     * Well, send what you need to determine whether or not the
+     * server is still alive.  Should return within a "reasonable"
+     * time.
+     */
+        
+    public PingUrl() {
+    }
 
-		public String getPingAppendString() {
-				return pingAppendString;
-		}
+    public PingUrl(boolean isSecure, String pingAppendString) {
+        this.isSecure = isSecure;
+        this.pingAppendString = (pingAppendString != null) ? pingAppendString : "";
+    }
 
-		public boolean isSecure() {
-			return isSecure;
-		}
+    public void setPingAppendString(String pingAppendString) {
+        this.pingAppendString = (pingAppendString != null) ? pingAppendString : "";
+    }
 
-		/**
-		 * Should the Secure protocol be used to Ping
-		 * @param isSecure
-		 */
-		public void setSecure(boolean isSecure) {
-			this.isSecure = isSecure;
-		}
-		
+    public String getPingAppendString() {
+        return pingAppendString;
+    }
 
-		public String getExpectedContent() {
-			return expectedContent;
-		}
+    public boolean isSecure() {
+        return isSecure;
+    }
 
-		/**
-		 * Is there a particular content you are hoping to see?
-		 * If so -set this here.
-		 * for e.g. the WCS server sets the content body to be 'true'
-		 * Please be advised that this content should match the actual 
-		 * content exactly for this to work. Else yo may get false status.
-		 * @param expectedContent
-		 */
-		public void setExpectedContent(String expectedContent) {
-			this.expectedContent = expectedContent;
-		}
+    /**
+     * Should the Secure protocol be used to Ping
+     * @param isSecure
+         */
+    public void setSecure(boolean isSecure) {
+        this.isSecure = isSecure;
+    }
 
-		public boolean isAlive(Server server) {
-				String urlStr   = "";
-				if (isSecure){
-					urlStr = "https://";
-				}else{
-					urlStr = "http://";
-				}
-				urlStr += server.getId();
-				urlStr += getPingAppendString();
 
-				boolean isAlive = false;
+    public String getExpectedContent() {
+        return expectedContent;
+    }
 
-				HttpClient httpClient = new DefaultHttpClient();
-				HttpUriRequest getRequest = new HttpGet(urlStr);
-				String content=null;
-				try {
-					HttpResponse response = httpClient.execute(getRequest);
-					content = EntityUtils.toString(response.getEntity());
-					isAlive = (response.getStatusLine().getStatusCode() == 200);
-					if (getExpectedContent()!=null){
-						LOGGER.debug("content:" + content);
-						if (content == null){
-							isAlive = false;
-						}else{
-							if (content.equals(getExpectedContent())){
-								isAlive = true;
-							}else{
-								isAlive = false;
-							}
-						}
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}finally{
-					// Release the connection.
-					getRequest.abort();
-				}
+    /**
+     * Is there a particular content you are hoping to see?
+     * If so -set this here.
+     * for e.g. the WCS server sets the content body to be 'true'
+     * Please be advised that this content should match the actual 
+     * content exactly for this to work. Else yo may get false status.
+     * @param expectedContent
+         */
+    public void setExpectedContent(String expectedContent) {
+        this.expectedContent = expectedContent;
+    }
 
-				return isAlive;
-		}
-		
-		public static void main(String[] args){
-		    PingUrl p = new PingUrl(false,"/cs/hostRunning");
-		    p.setExpectedContent("true");
-		    Server s = new Server("ec2-75-101-231-85.compute-1.amazonaws.com", 7101);
-		    
-		    boolean isAlive = p.isAlive(s);
-		    System.out.println("isAlive:" + isAlive);
-		}
+    public boolean isAlive(Server server) {
+        String urlStr = "";
+        if (isSecure) {
+            urlStr = "https://";
+        } else {
+            urlStr = "http://";
+        }
+        urlStr += server.getId();
+        urlStr += getPingAppendString();
+
+        boolean isAlive = false;
+
+        HttpClient httpClient = new DefaultHttpClient();
+        HttpUriRequest getRequest = new HttpGet(urlStr);
+        String content = null;
+        try {
+            HttpResponse response = httpClient.execute(getRequest);
+            content = EntityUtils.toString(response.getEntity());
+            isAlive = (response.getStatusLine().getStatusCode() == 200);
+            if (getExpectedContent() != null) {
+                LOGGER.debug("content:" + content);
+                if (content == null) {
+                    isAlive = false;
+                } else {
+                    if (content.equals(getExpectedContent())) {
+                        isAlive = true;
+                    } else {
+                        isAlive = false;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            // Release the connection.
+            getRequest.abort();
+        }
+
+        return isAlive;
+    }
+
+    public static void main(String[] args) {
+        PingUrl p = new PingUrl(false, "/cs/hostRunning");
+        p.setExpectedContent("true");
+        Server s = new Server("ec2-75-101-231-85.compute-1.amazonaws.com", 7101);
+
+        boolean isAlive = p.isAlive(s);
+        System.out.println("isAlive:" + isAlive);
+    }
 }

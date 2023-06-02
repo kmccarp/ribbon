@@ -69,7 +69,7 @@ public class ExecutionContextListenerInvoker<I, O> {
     }
 
     public void onExecutionStart(ExecutionContext<I> context) {
-        for (ExecutionListener<I, O> listener : listeners) {
+        for (ExecutionListener<I, O> listener: listeners) {
             try {
                 if (!isListenerDisabled(listener)) {
                     listener.onExecutionStart(context.getChildContext(listener));

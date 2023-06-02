@@ -31,7 +31,7 @@ import io.reactivex.netty.client.MaxConnectionsBasedStrategy;
 public class DynamicPropertyBasedPoolStrategy extends MaxConnectionsBasedStrategy {
 
     private final DynamicProperty poolSizeProperty;
-    
+
     public DynamicPropertyBasedPoolStrategy(final int maxConnections, String propertyName) {
         super(maxConnections);
         poolSizeProperty = DynamicProperty.getInstance(propertyName);
@@ -40,10 +40,10 @@ public class DynamicPropertyBasedPoolStrategy extends MaxConnectionsBasedStrateg
             @Override
             public void run() {
                 setMaxConnections(poolSizeProperty.getInteger(maxConnections));
-            };
+            }
         });
     }
-    
+
     protected void setMaxConnections(int max) {
         int diff = max - getMaxConnections();
         incrementMaxConnections(diff);

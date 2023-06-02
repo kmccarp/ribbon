@@ -42,9 +42,9 @@ public class ClientPropertiesTest {
     }
 
     @ClientProperties(properties = {
-            @Property(name="ReadTimeout", value="3000"),
-            @Property(name="ConnectTimeout", value="1000"),
-            @Property(name="MaxAutoRetriesNextServer", value="0")
+            @Property(name = "ReadTimeout", value = "3000"),
+            @Property(name = "ConnectTimeout", value = "1000"),
+            @Property(name = "MaxAutoRetriesNextServer", value = "0")
     })
     public static interface MovieService extends SampleMovieService {
     }

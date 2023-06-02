@@ -13,6 +13,7 @@ import java.lang.annotation.Target;
 public @interface ClientProperties {
     @interface Property {
         String name();
+
         String value();
     }
 

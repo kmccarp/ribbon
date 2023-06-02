@@ -78,8 +78,8 @@ public abstract class ReloadableClientConfig implements IClientConfig {
      * @deprecated Use {@link #loadProperties(String)}
      */
     @Deprecated
-    public void setClientName(String clientName){
-        this.clientName  = clientName;
+    public void setClientName(String clientName) {
+        this.clientName = clientName;
     }
 
     @Override
@@ -147,7 +147,7 @@ public abstract class ReloadableClientConfig implements IClientConfig {
                 final Optional<T> next = valueSupplier.get();
                 if (!next.equals(previous.get())) {
                     LOG.info("[{}] new value for {}: {} -> {}", clientName, key.key(), previous.get(), next);
-                    previous.set(next); 
+                    previous.set(next);
                     internalProperties.put(key, next);
                 }
             };
@@ -161,50 +161,50 @@ public abstract class ReloadableClientConfig implements IClientConfig {
     private synchronized <T> Property<T> getOrCreateProperty(final IClientConfigKey<T> key, final Supplier<Optional<T>> valueSupplier, final Supplier<T> defaultSupplier) {
         Preconditions.checkNotNull(valueSupplier, "defaultValueSupplier cannot be null");
 
-        return (Property<T>)dynamicProperties.computeIfAbsent(key, ignore -> new ReloadableProperty<T>() {
-                private volatile Optional<T> current = Optional.empty();
-                private List<Consumer<T>> consumers = new CopyOnWriteArrayList<>();
+        return (Property<T>) dynamicProperties.computeIfAbsent(key, ignore -> new ReloadableProperty<T>() {
+            private volatile Optional<T> current = Optional.empty();
+            private List<Consumer<T>> consumers = new CopyOnWriteArrayList<>();
 
-                {
-                    reload();
+            {
+                reload();
+            }
+
+            @Override
+            public void onChange(Consumer<T> consumer) {
+                consumers.add(consumer);
+            }
+
+            @Override
+            public Optional<T> get() {
+                return current;
+            }
+
+            @Override
+            public T getOrDefault() {
+                return current.orElse(defaultSupplier.get());
+            }
+
+            @Override
+            public void reload() {
+                refreshCounter.incrementAndGet();
+
+                Optional<T> next = valueSupplier.get();
+                if (!next.equals(current)) {
+                    current = next;
+                    consumers.forEach(consumer -> consumer.accept(next.orElseGet(defaultSupplier::get)));
                 }
+            }
 
-                @Override
-                public void onChange(Consumer<T> consumer) {
-                    consumers.add(consumer);
-                }
-
-                @Override
-                public Optional<T> get() {
-                    return current;
-                }
-
-                @Override
-                public T getOrDefault() {
-                    return current.orElse(defaultSupplier.get());
-                }
-
-                @Override
-                public void reload() {
-                    refreshCounter.incrementAndGet();
-
-                    Optional<T> next = valueSupplier.get();
-                    if (!next.equals(current)) {
-                        current = next;
-                        consumers.forEach(consumer -> consumer.accept(next.orElseGet(defaultSupplier::get)));
-                    }
-                }
-
-                @Override
-                public String toString() {
-                    return String.valueOf(get());
-                }
-            });
+            @Override
+            public String toString() {
+                return String.valueOf(get());
+            }
+        });
     }
 
     @Override
     public final <T> T get(IClientConfigKey<T> key) {
-        Optional<T> value = (Optional<T>)internalProperties.get(key);
+        Optional<T> value = (Optional<T>) internalProperties.get(key);
         if (value == null) {
             if (!isDynamic) {
                 return null;
@@ -235,7 +235,7 @@ public abstract class ReloadableClientConfig implements IClientConfig {
 
         return getOrCreateProperty(
                 key,
-                () -> (Optional<T>)internalProperties.getOrDefault(key, Optional.empty()),
+                () -> (Optional<T>) internalProperties.getOrDefault(key, Optional.empty()),
                 key::defaultValue);
     }
 
@@ -268,7 +268,7 @@ public abstract class ReloadableClientConfig implements IClientConfig {
 
     @Override
     public <T> Optional<T> getIfSet(IClientConfigKey<T> key) {
-        return (Optional<T>)internalProperties.getOrDefault(key, Optional.empty());
+        return (Optional<T>) internalProperties.getOrDefault(key, Optional.empty());
     }
 
     private <T> T resolveValueToType(IClientConfigKey<T> key, Object value) {
@@ -309,7 +309,7 @@ public abstract class ReloadableClientConfig implements IClientConfig {
                 throw new IllegalArgumentException("Error parsing value '" + value + "' for '" + key.key() + "'", e);
             }
         } else {
-            return (T)value;
+            return (T) value;
         }
     }
 
@@ -331,7 +331,7 @@ public abstract class ReloadableClientConfig implements IClientConfig {
             }
 
             try {
-                return Optional.ofNullable((T)method.invoke(null, values));
+                return Optional.ofNullable((T) method.invoke(null, values));
             } catch (Exception e) {
                 LOG.warn("Unable to map value for '{}'", key.key(), e);
                 return Optional.empty();
@@ -455,12 +455,12 @@ public abstract class ReloadableClientConfig implements IClientConfig {
 
     private String generateToString() {
         return "ClientConfig:" + internalProperties.entrySet().stream()
-                    .map(t -> {
-                        if (t.getKey().key().endsWith("Password") && t.getValue().isPresent()) {
-                            return t.getKey() + ":***";
-                        }
-                        return t.getKey() + ":" + t.getValue().orElse(null);
-                    })
+                .map(t -> {
+                    if (t.getKey().key().endsWith("Password") && t.getValue().isPresent()) {
+                        return t.getKey() + ":***";
+                    }
+                    return t.getKey() + ":" + t.getValue().orElse(null);
+                })
                 .collect(Collectors.joining(", "));
     }
 }

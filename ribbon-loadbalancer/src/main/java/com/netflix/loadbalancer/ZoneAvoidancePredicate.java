@@ -40,18 +40,21 @@ public class ZoneAvoidancePredicate extends AbstractServerPredicate {
     private static final Logger logger = LoggerFactory.getLogger(ZoneAvoidancePredicate.class);
 
     private static final IClientConfigKey<Double> TRIGGERING_LOAD_PER_SERVER_THRESHOLD = new CommonClientConfigKey<Double>(
-            "ZoneAwareNIWSDiscoveryLoadBalancer.%s.triggeringLoadPerServerThreshold", 0.2d) {};
+            "ZoneAwareNIWSDiscoveryLoadBalancer.%s.triggeringLoadPerServerThreshold", 0.2d) {
+    };
 
     private static final IClientConfigKey<Double> AVOID_ZONE_WITH_BLACKOUT_PERCENTAGE = new CommonClientConfigKey<Double>(
-            "ZoneAwareNIWSDiscoveryLoadBalancer.%s.avoidZoneWithBlackoutPercetage", 0.99999d) {};
+            "ZoneAwareNIWSDiscoveryLoadBalancer.%s.avoidZoneWithBlackoutPercetage", 0.99999d) {
+    };
 
     private static final IClientConfigKey<Boolean> ENABLED = new CommonClientConfigKey<Boolean>(
-            "niws.loadbalancer.zoneAvoidanceRule.enabled", true) {};
+            "niws.loadbalancer.zoneAvoidanceRule.enabled", true) {
+    };
 
     private Property<Double> triggeringLoad = Property.of(TRIGGERING_LOAD_PER_SERVER_THRESHOLD.defaultValue());
 
     private Property<Double> triggeringBlackoutPercentage = Property.of(AVOID_ZONE_WITH_BLACKOUT_PERCENTAGE.defaultValue());
-    
+
     private Property<Boolean> enabled = Property.of(ENABLED.defaultValue());
 
     public ZoneAvoidancePredicate(IRule rule, IClientConfig clientConfig) {
@@ -109,5 +112,5 @@ public class ZoneAvoidancePredicate extends AbstractServerPredicate {
         } else {
             return false;
         }
-    }    
+    }
 }

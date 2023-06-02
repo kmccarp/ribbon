@@ -35,14 +35,14 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 
 public class TemplateBuilderTest {
-    
+
     private static class FakeCacheProvider implements CacheProvider<ByteBuf> {
         String id;
-        
+
         FakeCacheProvider(String id) {
             this.id = id;
         }
-        
+
         @Override
         public Observable<ByteBuf> get(final String key,
                 Map<String, Object> requestProperties) {
@@ -52,13 +52,13 @@ public class TemplateBuilderTest {
             } else {
                 return Observable.error(new IllegalArgumentException());
             }
-        };
-    }        
+        }
+    }
 
     @Test
     public void testVarReplacement() {
         HttpResourceGroup group = Ribbon.createHttpResourceGroupBuilder("test").build();
-        
+
         HttpRequestTemplate<ByteBuf> template = group.newTemplateBuilder("testVarReplacement", ByteBuf.class)
                 .withMethod("GET")
                 .withUriTemplate("/foo/{id}?name={name}").build();
@@ -69,36 +69,36 @@ public class TemplateBuilderTest {
                 .createClientRequest();
         assertEquals("/foo/3?name=netflix", request.getUri());
     }
-    
+
     @Test
     public void testCacheKeyTemplates() {
         HttpResourceGroup group = Ribbon.createHttpResourceGroupBuilder("test").build();
-        
+
         HttpRequestTemplate<ByteBuf> template = group.newTemplateBuilder("testCacheKeyTemplates", ByteBuf.class)
                 .withUriTemplate("/foo/{id}")
                 .withMethod("GET")
                 .withCacheProvider("/cache/{id}", new FakeCacheProvider("/cache/5"))
                 .build();
-        
+
         RibbonRequest<ByteBuf> request = template.requestBuilder().withRequestProperty("id", 5).build();
         ByteBuf result = request.execute();
         assertEquals("/cache/5", result.toString(Charset.defaultCharset()));
     }
-    
+
     @Test
     public void testHttpHeaders() {
         HttpResourceGroup group = Ribbon.createHttpResourceGroupBuilder("test")
-            .withHeader("header1", "group").build();
-        
+                .withHeader("header1", "group").build();
+
         HttpRequestTemplate<String> template = group.newTemplateBuilder("testHttpHeaders", String.class)
-            .withUriTemplate("/foo/bar")
-            .withMethod("GET")
-            .withHeader("header2", "template")
-            .withHeader("header1", "template").build();
-        
+                .withUriTemplate("/foo/bar")
+                .withMethod("GET")
+                .withHeader("header2", "template")
+                .withHeader("header1", "template").build();
+
         HttpRequestBuilder<String> requestBuilder = template.requestBuilder();
         requestBuilder.withHeader("header3", "builder").withHeader("header1", "builder");
-		HttpClientRequest<ByteBuf> request = requestBuilder.createClientRequest();
+        HttpClientRequest<ByteBuf> request = requestBuilder.createClientRequest();
         HttpRequestHeaders headers = request.getHeaders();
         List<String> header1 = headers.getAll("header1");
         assertEquals(3, header1.size());
@@ -126,7 +126,7 @@ public class TemplateBuilderTest {
                 .withMethod("GET")
                 .withUriTemplate("/foo/bar").build();
         HttpRequest<ByteBuf> request = (HttpRequest<ByteBuf>) template
-            .requestBuilder().build();
+                .requestBuilder().build();
         HystrixObservableCommandChain<ByteBuf> hystrixCommandChain = request.createHystrixCommandChain();
         HystrixCommandProperties props = hystrixCommandChain.getCommands().get(0).getProperties();
         assertEquals(400, props.executionIsolationSemaphoreMaxConcurrentRequests().get().intValue());

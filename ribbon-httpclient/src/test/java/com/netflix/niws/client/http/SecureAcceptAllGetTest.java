@@ -96,11 +96,11 @@ public class SecureAcceptAllGetTest {
     }
 
     @AfterClass
-    public static void shutDown(){
+    public static void shutDown() {
 
-        try{
+        try {
             TEST_SERVER.close();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -108,7 +108,7 @@ public class SecureAcceptAllGetTest {
 
 
     @Test
-    public void testPositiveAcceptAllSSLSocketFactory() throws Exception{
+    public void testPositiveAcceptAllSSLSocketFactory() throws Exception {
 
         // test connection succeeds connecting to a random SSL endpoint with allow all SSL factory
 
@@ -131,7 +131,7 @@ public class SecureAcceptAllGetTest {
     }
 
     @Test
-    public void testNegativeAcceptAllSSLSocketFactoryCannotWorkWithTrustStore() throws Exception{
+    public void testNegativeAcceptAllSSLSocketFactoryCannotWorkWithTrustStore() throws Exception {
 
         // test config exception happens before we even try to connect to anything
 
@@ -149,14 +149,14 @@ public class SecureAcceptAllGetTest {
 
         try {
             ClientFactory.getNamedClient(name);
-        } catch(Throwable t){
-             while (t != null && ! foundCause){
-                 if (t instanceof IllegalArgumentException && t.getMessage().startsWith("Invalid value for property:CustomSSLSocketFactoryClassName")){
-                     foundCause = true;
-                     break;
-                 }
-                 t = t.getCause();
-             }
+        } catch (Throwable t) {
+            while (t != null && !foundCause) {
+                if (t instanceof IllegalArgumentException && t.getMessage().startsWith("Invalid value for property:CustomSSLSocketFactoryClassName")) {
+                    foundCause = true;
+                    break;
+                }
+                t = t.getCause();
+            }
         }
 
         assertTrue(foundCause);
@@ -164,7 +164,7 @@ public class SecureAcceptAllGetTest {
 
 
     @Test
-    public void testNegativeAcceptAllSSLSocketFactory() throws Exception{
+    public void testNegativeAcceptAllSSLSocketFactory() throws Exception {
 
         // test exception is thrown connecting to a random SSL endpoint without explicitly setting factory to allow all
 
@@ -183,9 +183,9 @@ public class SecureAcceptAllGetTest {
 
         try {
             rc.execute(request);
-        } catch(Throwable t){
-            while (t != null && ! foundCause){
-                if (t instanceof SSLPeerUnverifiedException && t.getMessage().startsWith("peer not authenticated")){
+        } catch (Throwable t) {
+            while (t != null && !foundCause) {
+                if (t instanceof SSLPeerUnverifiedException && t.getMessage().startsWith("peer not authenticated")) {
                     foundCause = true;
                     break;
                 }

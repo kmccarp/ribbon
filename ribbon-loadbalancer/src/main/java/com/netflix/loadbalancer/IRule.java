@@ -25,7 +25,7 @@ package com.netflix.loadbalancer;
  * @author stonse
  * 
  */
-public interface IRule{
+public interface IRule {
     /*
      * choose one alive server from lb.allServers or
      * lb.upServers according to key
@@ -35,8 +35,8 @@ public interface IRule{
      */
 
     public Server choose(Object key);
-    
+
     public void setLoadBalancer(ILoadBalancer lb);
-    
-    public ILoadBalancer getLoadBalancer();    
+
+    public ILoadBalancer getLoadBalancer();
 }

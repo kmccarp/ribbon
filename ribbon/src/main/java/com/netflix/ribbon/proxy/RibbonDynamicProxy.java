@@ -46,7 +46,7 @@ public class RibbonDynamicProxy<T> implements InvocationHandler {
     }
 
     public RibbonDynamicProxy(Class<T> clientInterface, RibbonResourceFactory resourceGroupFactory, ClientConfigFactory configFactory,
-                              RibbonTransportFactory transportFactory, AnnotationProcessorsProvider processors) {
+            RibbonTransportFactory transportFactory, AnnotationProcessorsProvider processors) {
         registerAnnotationProcessors(processors);
         ClassTemplate<T> classTemplate = ClassTemplate.from(clientInterface);
         HttpResourceGroup httpResourceGroup = new ProxyHttpResourceGroupFactory<T>(classTemplate, resourceGroupFactory, processors).createResourceGroup();
@@ -133,7 +133,7 @@ public class RibbonDynamicProxy<T> implements InvocationHandler {
 
     @SuppressWarnings("unchecked")
     public static <T> T newInstance(Class<T> clientInterface, RibbonResourceFactory resourceGroupFactory,
-                                    ClientConfigFactory configFactory, RibbonTransportFactory transportFactory, AnnotationProcessorsProvider processors) {
+            ClientConfigFactory configFactory, RibbonTransportFactory transportFactory, AnnotationProcessorsProvider processors) {
         if (!clientInterface.isInterface()) {
             throw new IllegalArgumentException(clientInterface.getName() + " is a class not interface");
         }
@@ -145,7 +145,7 @@ public class RibbonDynamicProxy<T> implements InvocationHandler {
     }
 
     public static <T> T newInstance(Class<T> clientInterface, RibbonResourceFactory resourceGroupFactory,
-                                    ClientConfigFactory configFactory, RibbonTransportFactory transportFactory) {
+            ClientConfigFactory configFactory, RibbonTransportFactory transportFactory) {
         return newInstance(clientInterface, resourceGroupFactory, configFactory, transportFactory, AnnotationProcessorsProvider.DEFAULT);
     }
 }

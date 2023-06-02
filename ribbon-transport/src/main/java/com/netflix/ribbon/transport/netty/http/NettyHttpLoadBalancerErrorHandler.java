@@ -32,17 +32,17 @@ import com.netflix.client.http.UnexpectedHttpResponseException;
 public class NettyHttpLoadBalancerErrorHandler extends DefaultLoadBalancerRetryHandler {
 
     @SuppressWarnings("unchecked")
-    private List<Class<? extends Throwable>> retriable = 
-            Lists.<Class<? extends Throwable>>newArrayList(ConnectException.class, SocketTimeoutException.class, 
-                    io.netty.handler.timeout.ReadTimeoutException.class, io.netty.channel.ConnectTimeoutException.class, 
-                    io.reactivex.netty.client.PoolExhaustedException.class);
-    
-    @SuppressWarnings("unchecked")
-    private List<Class<? extends Throwable>> circuitRelated = 
-            Lists.<Class<? extends Throwable>>newArrayList(SocketException.class, SocketTimeoutException.class, 
+    private List<Class<? extends Throwable>> retriable =
+            Lists.<Class<? extends Throwable>>newArrayList(ConnectException.class, SocketTimeoutException.class,
                     io.netty.handler.timeout.ReadTimeoutException.class, io.netty.channel.ConnectTimeoutException.class,
                     io.reactivex.netty.client.PoolExhaustedException.class);
-    
+
+    @SuppressWarnings("unchecked")
+    private List<Class<? extends Throwable>> circuitRelated =
+            Lists.<Class<? extends Throwable>>newArrayList(SocketException.class, SocketTimeoutException.class,
+                    io.netty.handler.timeout.ReadTimeoutException.class, io.netty.channel.ConnectTimeoutException.class,
+                    io.reactivex.netty.client.PoolExhaustedException.class);
+
     public NettyHttpLoadBalancerErrorHandler() {
         super();
     }
@@ -50,11 +50,11 @@ public class NettyHttpLoadBalancerErrorHandler extends DefaultLoadBalancerRetryH
     public NettyHttpLoadBalancerErrorHandler(IClientConfig clientConfig) {
         super(clientConfig);
     }
-    
+
     public NettyHttpLoadBalancerErrorHandler(int retrySameServer, int retryNextServer, boolean retryEnabled) {
         super(retrySameServer, retryNextServer, retryEnabled);
     }
-    
+
     /**
      * @return true if the Throwable has one of the following exception type as a cause: 
      * {@link SocketException}, {@link SocketTimeoutException}
@@ -68,7 +68,7 @@ public class NettyHttpLoadBalancerErrorHandler extends DefaultLoadBalancerRetryH
         }
         return super.isCircuitTrippingException(e);
     }
-    
+
     @Override
     public boolean isRetriableException(Throwable e, boolean sameServer) {
         if (e instanceof ClientException) {

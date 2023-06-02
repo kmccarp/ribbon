@@ -15,7 +15,7 @@ import static org.powermock.api.easymock.PowerMock.createMock;
 
 public class LoadBalancerTestUtils
 {
-    static List<InstanceInfo> getDummyInstanceInfo(String appName, String host, String ipAddr, int port){
+    static List<InstanceInfo> getDummyInstanceInfo(String appName, String host, String ipAddr, int port) {
         List<InstanceInfo> list = new ArrayList<InstanceInfo>();
 
         InstanceInfo info = InstanceInfo.Builder.newBuilder().setAppName(appName)

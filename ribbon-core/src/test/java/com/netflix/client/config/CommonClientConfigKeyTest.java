@@ -7,7 +7,7 @@ import org.junit.Test;
 import com.google.common.collect.Sets;
 
 public class CommonClientConfigKeyTest {
-    
+
     @Test
     public void testCommonKeys() {
         IClientConfigKey[] keys = CommonClientConfigKey.values();

@@ -163,7 +163,7 @@ public class EurekaDynamicServerListLoadBalancerTest {
         long stepSize = TimeUnit.MILLISECONDS.convert(50l, TimeUnit.MILLISECONDS);
         long maxTime = TimeUnit.MILLISECONDS.convert(2l, TimeUnit.SECONDS);
 
-        for (int i = 0; i < maxTime; i += stepSize) {
+        for (int i = 0;i < maxTime;i += stepSize) {
             if (finalCount == lb.getServerCount(false)) {
                 return true;
             } else {

@@ -24,21 +24,21 @@ package com.netflix.loadbalancer;
  *
  */
 public class PingConstant implements IPing {
-		boolean constant = true;
+    boolean constant = true;
 
-		public void setConstant(String constantStr) {
-				constant = (constantStr != null) && (constantStr.toLowerCase().equals("true"));
-		}
+    public void setConstant(String constantStr) {
+        constant = (constantStr != null) && (constantStr.toLowerCase().equals("true"));
+    }
 
-		public void setConstant(boolean constant) {
-				this.constant = constant;
-		}
+    public void setConstant(boolean constant) {
+        this.constant = constant;
+    }
 
-		public boolean getConstant() {
-				return constant;
-		}
+    public boolean getConstant() {
+        return constant;
+    }
 
-		public boolean isAlive(Server server) {
-				return constant;
-		}
+    public boolean isAlive(Server server) {
+        return constant;
+    }
 }

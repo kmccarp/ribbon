@@ -39,18 +39,18 @@ import static org.powermock.api.easymock.PowerMock.createMock;
 import static org.powermock.api.easymock.PowerMock.replay;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest( {DiscoveryManager.class, DiscoveryClient.class} )
+@PrepareForTest({DiscoveryManager.class, DiscoveryClient.class})
 @PowerMockIgnore({"javax.management.*", "com.sun.jersey.*", "com.sun.*", "org.apache.*", "weblogic.*", "com.netflix.config.*", "com.sun.jndi.dns.*",
-    "javax.naming.*", "com.netflix.logging.*", "javax.ws.*"})
+        "javax.naming.*", "com.netflix.logging.*", "javax.ws.*"})
 
 @Ignore
 public abstract class MockedDiscoveryServerListTest {
     protected abstract List<Server> getMockServerList();
-    
+
     protected abstract String getVipAddress();
 
-    
-    static List<InstanceInfo> getDummyInstanceInfo(String appName, List<Server> serverList){
+
+    static List<InstanceInfo> getDummyInstanceInfo(String appName, List<Server> serverList) {
         List<InstanceInfo> list = new ArrayList<InstanceInfo>();
         for (Server server: serverList) {
             InstanceInfo info = InstanceInfo.Builder.newBuilder().setAppName(appName)
@@ -62,9 +62,9 @@ public abstract class MockedDiscoveryServerListTest {
         }
         return list;
     }
-        
+
     @Before
-    public void setupMock(){
+    public void setupMock() {
         List<InstanceInfo> instances = getDummyInstanceInfo("dummy", getMockServerList());
         PowerMock.mockStatic(DiscoveryManager.class);
         PowerMock.mockStatic(DiscoveryClient.class);

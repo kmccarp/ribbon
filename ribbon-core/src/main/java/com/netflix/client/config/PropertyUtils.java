@@ -11,7 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PropertyUtils {
     private static Logger LOG = LoggerFactory.getLogger(PropertyUtils.class);
 
-    private PropertyUtils() {}
+    private PropertyUtils() {
+    }
 
     /**
      * Returns the internal property to the desiredn type
@@ -30,7 +31,7 @@ public class PropertyUtils {
             }
         }).map(method -> {
             try {
-                return (T)method.invoke(null, value);
+                return (T) method.invoke(null, value);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

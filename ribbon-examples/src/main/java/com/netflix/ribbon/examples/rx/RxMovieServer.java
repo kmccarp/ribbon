@@ -100,7 +100,7 @@ public class RxMovieServer {
         }
 
         StringBuilder builder = new StringBuilder();
-        for (String movieId : userRecommendations.get(userId)) {
+        for (String movieId: userRecommendations.get(userId)) {
             System.out.println("    returning: " + movies.get(movieId));
             builder.append(movies.get(movieId)).append('\n');
         }
@@ -123,7 +123,7 @@ public class RxMovieServer {
 
         boolean any = false;
         StringBuilder builder = new StringBuilder();
-        for (Movie movie : movies.values()) {
+        for (Movie movie: movies.values()) {
             if (movie.getCategory().equals(category.get(0)) && movie.getAgeGroup().equals(ageGroup.get(0))) {
                 System.out.println("    returning: " + movie);
                 builder.append(movie).append('\n');
@@ -132,7 +132,7 @@ public class RxMovieServer {
         }
         if (!any) {
             System.out.println("No movie matched the given criteria:");
-            for (Movie movie : movies.values()) {
+            for (Movie movie: movies.values()) {
                 System.out.print("    ");
                 System.out.println(movie);
             }

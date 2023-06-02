@@ -29,7 +29,7 @@ public final class Utils {
     }
 
     public static <T> Method methodByName(Class<T> aClass, String name) {
-        for (Method m : aClass.getMethods()) {
+        for (Method m: aClass.getMethods()) {
             if (m.getName().equals(name)) {
                 return m;
             }

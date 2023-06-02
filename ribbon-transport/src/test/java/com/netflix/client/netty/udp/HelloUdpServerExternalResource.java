@@ -22,17 +22,17 @@ import rx.functions.Func1;
 
 public class HelloUdpServerExternalResource extends ExternalResource {
     private static final Logger LOG = LoggerFactory.getLogger(HelloUdpServerExternalResource.class);
-    
+
     static final String WELCOME_MSG = "Welcome to the broadcast world!";
     static final byte[] WELCOME_MSG_BYTES = WELCOME_MSG.getBytes(Charset.defaultCharset());
-    
+
     private UdpServer<DatagramPacket, DatagramPacket> server;
-    
+
     private int timeout = 0;
-    
+
     public HelloUdpServerExternalResource() {
     }
-    
+
     private int choosePort() throws SocketException {
         DatagramSocket serverSocket = new DatagramSocket();
         int port = serverSocket.getLocalPort();
@@ -51,7 +51,7 @@ public class HelloUdpServerExternalResource extends ExternalResource {
         } catch (SocketException e) {
             throw new RuntimeException("Error choosing point", e);
         }
-        
+
         server = RxNetty.createUdpServer(port, new ConnectionHandler<DatagramPacket, DatagramPacket>() {
             @Override
             public Observable<Void> handle(final ObservableConnection<DatagramPacket, DatagramPacket> newConnection) {
@@ -72,9 +72,9 @@ public class HelloUdpServerExternalResource extends ExternalResource {
                 });
             }
         });
-        
+
         server.start();
-        
+
         LOG.info("UDP hello server started at port: " + port);
     }
 
@@ -90,7 +90,7 @@ public class HelloUdpServerExternalResource extends ExternalResource {
             }
         }
     }
-    
+
     public int getServerPort() {
         return server.getServerPort();
     }

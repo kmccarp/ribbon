@@ -28,6 +28,6 @@ import com.netflix.hystrix.HystrixInvokableInfo;
  */
 public abstract class RibbonResponse<T> {
     public abstract T content();
-    
-    public abstract HystrixInvokableInfo<?> getHystrixInfo();   
+
+    public abstract HystrixInvokableInfo<?> getHystrixInfo();
 }

@@ -69,7 +69,7 @@ public class DynamicServerListLoadBalancer<T extends Server> extends BaseLoadBal
     }
 
     @Deprecated
-    public DynamicServerListLoadBalancer(IClientConfig clientConfig, IRule rule, IPing ping, 
+    public DynamicServerListLoadBalancer(IClientConfig clientConfig, IRule rule, IPing ping,
             ServerList<T> serverList, ServerListFilter<T> filter) {
         this(
                 clientConfig,
@@ -82,8 +82,8 @@ public class DynamicServerListLoadBalancer<T extends Server> extends BaseLoadBal
     }
 
     public DynamicServerListLoadBalancer(IClientConfig clientConfig, IRule rule, IPing ping,
-                                         ServerList<T> serverList, ServerListFilter<T> filter,
-                                         ServerListUpdater serverListUpdater) {
+            ServerList<T> serverList, ServerListFilter<T> filter,
+            ServerListUpdater serverListUpdater) {
         super(clientConfig, rule, ping);
         this.serverListImpl = serverList;
         this.filter = filter;
@@ -97,7 +97,7 @@ public class DynamicServerListLoadBalancer<T extends Server> extends BaseLoadBal
     public DynamicServerListLoadBalancer(IClientConfig clientConfig) {
         initWithNiwsConfig(clientConfig);
     }
-    
+
     @Override
     public void initWithNiwsConfig(IClientConfig clientConfig) {
         this.initWithNiwsConfig(clientConfig, ClientFactory::instantiateInstanceWithClientConfig);
@@ -148,14 +148,14 @@ public class DynamicServerListLoadBalancer<T extends Server> extends BaseLoadBal
         this.setEnablePrimingConnections(primeConnection);
         LOGGER.info("DynamicServerListLoadBalancer for client {} initialized: {}", clientConfig.getClientName(), this.toString());
     }
-    
-    
+
+
     @Override
     public void setServersList(List lsrv) {
         super.setServersList(lsrv);
         List<T> serverList = (List<T>) lsrv;
         Map<String, List<Server>> serversInZones = new HashMap<String, List<Server>>();
-        for (Server server : serverList) {
+        for (Server server: serverList) {
             // make sure ServerStats is created to avoid creating them on hot
             // path
             getLoadBalancerStats().getSingleServerStat(server);
@@ -258,10 +258,10 @@ public class DynamicServerListLoadBalancer<T extends Server> extends BaseLoadBal
         // other threads might be doing this - in which case, we pass
         if (serverListUpdateInProgress.compareAndSet(false, true)) {
             try {
-                for (T s : ls) {
+                for (T s: ls) {
                     s.setAlive(true); // set so that clients can start using these
-                                      // servers right away instead
-                                      // of having to wait out the ping cycle.
+                    // servers right away instead
+                    // of having to wait out the ping cycle.
                 }
                 setServersList(ls);
                 super.forceQuickPing();
@@ -278,30 +278,30 @@ public class DynamicServerListLoadBalancer<T extends Server> extends BaseLoadBal
         sb.append("ServerList:" + String.valueOf(serverListImpl));
         return sb.toString();
     }
-    
-    @Override 
+
+    @Override
     public void shutdown() {
         super.shutdown();
         stopServerListRefreshing();
     }
 
 
-    @Monitor(name="LastUpdated", type=DataSourceType.INFORMATIONAL)
+    @Monitor(name = "LastUpdated", type = DataSourceType.INFORMATIONAL)
     public String getLastUpdate() {
         return serverListUpdater.getLastUpdate();
     }
 
-    @Monitor(name="DurationSinceLastUpdateMs", type= DataSourceType.GAUGE)
+    @Monitor(name = "DurationSinceLastUpdateMs", type = DataSourceType.GAUGE)
     public long getDurationSinceLastUpdateMs() {
         return serverListUpdater.getDurationSinceLastUpdateMs();
     }
 
-    @Monitor(name="NumUpdateCyclesMissed", type=DataSourceType.GAUGE)
+    @Monitor(name = "NumUpdateCyclesMissed", type = DataSourceType.GAUGE)
     public int getNumberMissedCycles() {
         return serverListUpdater.getNumberMissedCycles();
     }
 
-    @Monitor(name="NumThreads", type=DataSourceType.GAUGE)
+    @Monitor(name = "NumThreads", type = DataSourceType.GAUGE)
     public int getCoreThreads() {
         return serverListUpdater.getCoreThreads();
     }

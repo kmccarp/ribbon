@@ -28,13 +28,13 @@ import com.google.common.base.Optional;
  *
  */
 public abstract class PredicateBasedRule extends ClientConfigEnabledRoundRobinRule {
-   
+
     /**
      * Method that provides an instance of {@link AbstractServerPredicate} to be used by this class.
      * 
      */
     public abstract AbstractServerPredicate getPredicate();
-        
+
     /**
      * Get a server by calling {@link AbstractServerPredicate#chooseRandomlyAfterFiltering(java.util.List, Object)}.
      * The performance for this method is O(n) where n is number of servers to be filtered.
@@ -47,6 +47,6 @@ public abstract class PredicateBasedRule extends ClientConfigEnabledRoundRobinRu
             return server.get();
         } else {
             return null;
-        }       
+        }
     }
 }

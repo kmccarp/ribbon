@@ -66,7 +66,7 @@ public class Recommendations {
             throw new IllegalArgumentException("Syntax error in recommendations string: " + formatted);
         }
         List<Movie> movies = new ArrayList<Movie>();
-        for (int i = 1; i <= matcher.groupCount(); i++) {
+        for (int i = 1;i <= matcher.groupCount();i++) {
             String movie = matcher.group(i);
             if (movie.startsWith(",")) {
                 movie = movie.substring(1).trim();

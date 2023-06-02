@@ -29,7 +29,7 @@ import com.netflix.loadbalancer.Server;
  *
  */
 @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "EQ_DOESNT_OVERRIDE_EQUALS")
-public class DiscoveryEnabledServer extends Server{
+public class DiscoveryEnabledServer extends Server {
 
     private final InstanceInfo instanceInfo;
     private final MetaInfo serviceInfo;
@@ -40,8 +40,8 @@ public class DiscoveryEnabledServer extends Server{
 
     public DiscoveryEnabledServer(final InstanceInfo instanceInfo, boolean useSecurePort, boolean useIpAddr) {
         super(useIpAddr ? instanceInfo.getIPAddr() : instanceInfo.getHostName(), instanceInfo.getPort());
-    	if(useSecurePort && instanceInfo.isPortEnabled(PortType.SECURE))
-    		super.setPort(instanceInfo.getSecurePort());
+        if (useSecurePort && instanceInfo.isPortEnabled(PortType.SECURE))
+            super.setPort(instanceInfo.getSecurePort());
         this.instanceInfo = instanceInfo;
         this.serviceInfo = new MetaInfo() {
             @Override
@@ -65,7 +65,7 @@ public class DiscoveryEnabledServer extends Server{
             }
         };
     }
-    
+
     public InstanceInfo getInstanceInfo() {
         return instanceInfo;
     }

@@ -87,8 +87,8 @@ public class RandomRule extends AbstractLoadBalancerRule {
         return ThreadLocalRandom.current().nextInt(serverCount);
     }
 
-	@Override
-	public Server choose(Object key) {
-		return choose(getLoadBalancer(), key);
-	}
+    @Override
+    public Server choose(Object key) {
+        return choose(getLoadBalancer(), key);
+    }
 }

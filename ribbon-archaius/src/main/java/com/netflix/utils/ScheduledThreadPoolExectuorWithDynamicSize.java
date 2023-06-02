@@ -35,7 +35,7 @@ import com.netflix.config.DynamicIntProperty;
 public class ScheduledThreadPoolExectuorWithDynamicSize extends ScheduledThreadPoolExecutor {
 
     private final Thread shutdownThread;
-    
+
     public ScheduledThreadPoolExectuorWithDynamicSize(final DynamicIntProperty corePoolSize, ThreadFactory threadFactory) {
         super(corePoolSize.get(), threadFactory);
         corePoolSize.addCallback(new Runnable() {

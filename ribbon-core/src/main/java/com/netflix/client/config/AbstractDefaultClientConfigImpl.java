@@ -181,7 +181,7 @@ public abstract class AbstractDefaultClientConfigImpl extends ReloadableClientCo
     }
 
     @Override
-    public String resolveDeploymentContextbasedVipAddresses(){
+    public String resolveDeploymentContextbasedVipAddresses() {
         String deploymentContextBasedVipAddressesMacro = get(CommonClientConfigKey.DeploymentContextBasedVipAddresses);
         if (deploymentContextBasedVipAddressesMacro == null) {
             return null;
@@ -190,12 +190,12 @@ public abstract class AbstractDefaultClientConfigImpl extends ReloadableClientCo
     }
 
     @Deprecated
-    public String getAppName(){
+    public String getAppName() {
         return get(CommonClientConfigKey.AppName);
     }
 
     @Deprecated
-    public String getVersion(){
+    public String getVersion() {
         return get(CommonClientConfigKey.Version);
     }
 

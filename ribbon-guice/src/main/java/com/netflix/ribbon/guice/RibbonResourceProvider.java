@@ -34,11 +34,11 @@ public class RibbonResourceProvider<T> implements ProviderWithExtensionVisitor<T
 
     private RibbonResourceFactory factory;
     private final Class<T> contract;
-    
+
     public RibbonResourceProvider(Class<T> contract) {
         this.contract = contract;
     }
-    
+
     @Override
     public T get() {
         // TODO: Get name from annotations (not only class name of contract)

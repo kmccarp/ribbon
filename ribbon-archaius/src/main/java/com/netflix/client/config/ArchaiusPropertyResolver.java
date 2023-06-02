@@ -62,7 +62,7 @@ public class ArchaiusPropertyResolver implements PropertyResolver {
                     .map(ar -> Arrays.stream(ar).collect(Collectors.joining(",")))
                     .map(value -> {
                         if (type.equals(String.class)) {
-                            return (T)value;
+                            return (T) value;
                         } else {
                             return PropertyUtils.resolveWithValueOf(type, value)
                                     .orElseThrow(() -> new IllegalArgumentException("Unable to convert value to desired type " + type));

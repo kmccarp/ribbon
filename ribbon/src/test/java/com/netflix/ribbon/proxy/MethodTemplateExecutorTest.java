@@ -107,6 +107,7 @@ public class MethodTemplateExecutorTest {
 
         assertEquals(ribbonRequestMock, ribbonRequest);
     }
+
     @Test
     public void testGetQueryWithByteBufResult() throws Exception {
         expectUrlBase("GET", "/rawMovies/{id}");

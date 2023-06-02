@@ -27,26 +27,26 @@ import org.junit.Test;
 import com.google.common.collect.Lists;
 
 public class BestAvailableRuleTest {
-    
+
     @Test
     public void testRule() {
         List<Server> servers = Lists.newArrayList();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0;i < 10;i++) {
             servers.add(new Server(String.valueOf(i), 80));
         }
         IRule rule = new BestAvailableRule();
         BaseLoadBalancer lb = LoadBalancerBuilder.newBuilder().withRule(rule).buildFixedServerListLoadBalancer(servers);
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0;i < 10;i++) {
             ServerStats stats = lb.getLoadBalancerStats().getSingleServerStat(servers.get(i));
-            for (int j = 0; j < 10 - i; j++) {
+            for (int j = 0;j < 10 - i;j++) {
                 stats.incrementActiveRequestsCount();
             }
         }
         Server server = lb.chooseServer();
         assertEquals(servers.get(9), server);
         ServerStats stats = lb.getLoadBalancerStats().getSingleServerStat(servers.get(9));
-        for (int i = 0; i < 3; i++) {
-            stats.incrementSuccessiveConnectionFailureCount();            
+        for (int i = 0;i < 3;i++) {
+            stats.incrementSuccessiveConnectionFailureCount();
         }
         server = lb.chooseServer();
         // server 9 has tripped circuit breaker

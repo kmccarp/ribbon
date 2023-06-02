@@ -15,7 +15,7 @@ import com.netflix.config.ConfigurationManager;
 import org.junit.rules.TestName;
 
 public class DefaultClientConfigImplTest {
-    
+
     class NewConfigKey<T> extends CommonClientConfigKey<T> {
         protected NewConfigKey(String configKey) {
             super(configKey);
@@ -24,7 +24,7 @@ public class DefaultClientConfigImplTest {
 
     @Rule
     public TestName testName = new TestName();
-    
+
     @Test
     public void testTypedValue() {
         ConfigurationManager.getConfigInstance().setProperty("myclient.ribbon." + CommonClientConfigKey.ConnectTimeout, "1500");
@@ -38,14 +38,16 @@ public class DefaultClientConfigImplTest {
 
     @Test
     public void testNewType() {
-        CommonClientConfigKey<Date> key = new CommonClientConfigKey<Date>("date") {};
+        CommonClientConfigKey<Date> key = new CommonClientConfigKey<Date>("date") {
+        };
         assertEquals(Date.class, key.type());
     }
-    
+
     @Test
     public void testSubClass() {
-        NewConfigKey<Date> key = new NewConfigKey<Date>("date") {};
-        assertEquals(Date.class, key.type());        
+        NewConfigKey<Date> key = new NewConfigKey<Date>("date") {
+        };
+        assertEquals(Date.class, key.type());
     }
 
     public static class CustomType {
@@ -60,7 +62,8 @@ public class DefaultClientConfigImplTest {
         }
     }
 
-    final CommonClientConfigKey<CustomType> CustomTypeKey = new CommonClientConfigKey<CustomType>("customMapped", new CustomType(Collections.emptyMap())) {};
+    final CommonClientConfigKey<CustomType> CustomTypeKey = new CommonClientConfigKey<CustomType>("customMapped", new CustomType(Collections.emptyMap())) {
+    };
 
     @Test
     public void testMappedProperties() {

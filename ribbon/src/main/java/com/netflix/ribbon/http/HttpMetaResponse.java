@@ -27,7 +27,7 @@ class HttpMetaResponse<O> extends RibbonResponse<O> {
         this.content = content;
         this.hystrixInfo = hystrixInfo;
     }
-    
+
     @Override
     public O content() {
         return content;
@@ -36,5 +36,5 @@ class HttpMetaResponse<O> extends RibbonResponse<O> {
     @Override
     public HystrixInvokableInfo<?> getHystrixInfo() {
         return hystrixInfo;
-    }        
+    }
 }

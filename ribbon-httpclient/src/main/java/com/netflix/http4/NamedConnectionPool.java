@@ -56,7 +56,7 @@ public class NamedConnectionPool extends ConnPoolByRoute {
     private Timer requestTimer;
     private Timer creationTimer;
     private String name;
-    
+
     public NamedConnectionPool(String name, ClientConnectionOperator operator,
             ConnPerRoute connPerRoute, int maxTotalConnections, long connTTL,
             TimeUnit connTTLTimeUnit) {
@@ -69,13 +69,13 @@ public class NamedConnectionPool extends ConnPoolByRoute {
         super(operator, connPerRoute, maxTotalConnections);
         initMonitors(name);
     }
-    
+
     public NamedConnectionPool(String name, ClientConnectionOperator operator,
             HttpParams params) {
         super(operator, params);
         initMonitors(name);
     }
-    
+
     NamedConnectionPool(ClientConnectionOperator operator,
             ConnPerRoute connPerRoute, int maxTotalConnections, long connTTL,
             TimeUnit connTTLTimeUnit) {
@@ -86,12 +86,12 @@ public class NamedConnectionPool extends ConnPoolByRoute {
             ConnPerRoute connPerRoute, int maxTotalConnections) {
         super(operator, connPerRoute, maxTotalConnections);
     }
-    
+
     NamedConnectionPool(ClientConnectionOperator operator,
             HttpParams params) {
         super(operator, params);
     }
-    
+
     void initMonitors(String name) {
         Preconditions.checkNotNull(name);
         freeEntryCounter = Monitors.newCounter(name + "_Reuse");
@@ -131,7 +131,7 @@ public class NamedConnectionPool extends ConnPoolByRoute {
             stopWatch.stop();
         }
     }
-    
+
     @Override
     protected BasicPoolEntry getEntryBlocking(HttpRoute route, Object state,
             long timeout, TimeUnit tunit, WaitingThreadAborter aborter)
@@ -160,28 +160,28 @@ public class NamedConnectionPool extends ConnPoolByRoute {
     public final long getFreeEntryCount() {
         return freeEntryCounter.getValue().longValue();
     }
-    
+
     public final long getCreatedEntryCount() {
         return createEntryCounter.getValue().longValue();
     }
-    
+
     public final long getRequestsCount() {
         return requestCounter.getValue().longValue();
-    }   
-    
+    }
+
     public final long getReleaseCount() {
         return releaseCounter.getValue().longValue();
     }
-    
+
     public final long getDeleteCount() {
         return deleteCounter.getValue().longValue();
     }
-    
-    @Monitor(name="connectionCount", type=DataSourceType.GAUGE)
+
+    @Monitor(name = "connectionCount", type = DataSourceType.GAUGE)
     public int getConnectionCount() {
         return this.getConnectionsInPool();
     }
-    
+
     @Override
     public void shutdown() {
         super.shutdown();

@@ -44,7 +44,7 @@ import javax.inject.Provider;
  * @author stonse
  *
  */
-public class DiscoveryEnabledNIWSServerList extends AbstractServerList<DiscoveryEnabledServer>{
+public class DiscoveryEnabledNIWSServerList extends AbstractServerList<DiscoveryEnabledServer> {
 
     private static final Logger logger = LoggerFactory.getLogger(DiscoveryEnabledNIWSServerList.class);
 
@@ -131,7 +131,7 @@ public class DiscoveryEnabledNIWSServerList extends AbstractServerList<Discovery
                 if (port != null) {
                     overridePort = port;
                     shouldUseOverridePort = true;
-                } else{
+                } else {
                     logger.warn(clientName + " set to force client port but no port is set, so ignoring");
                 }
             }
@@ -139,12 +139,12 @@ public class DiscoveryEnabledNIWSServerList extends AbstractServerList<Discovery
     }
 
     @Override
-    public List<DiscoveryEnabledServer> getInitialListOfServers(){
+    public List<DiscoveryEnabledServer> getInitialListOfServers() {
         return obtainServersViaDiscovery();
     }
 
     @Override
-    public List<DiscoveryEnabledServer> getUpdatedListOfServers(){
+    public List<DiscoveryEnabledServer> getUpdatedListOfServers() {
         return obtainServersViaDiscovery();
     }
 
@@ -157,15 +157,15 @@ public class DiscoveryEnabledNIWSServerList extends AbstractServerList<Discovery
         }
 
         EurekaClient eurekaClient = eurekaClientProvider.get();
-        if (vipAddresses!=null){
-            for (String vipAddress : vipAddresses.split(",")) {
+        if (vipAddresses != null) {
+            for (String vipAddress: vipAddresses.split(",")) {
                 // if targetRegion is null, it will be interpreted as the same region of client
                 List<InstanceInfo> listOfInstanceInfo = eurekaClient.getInstancesByVipAddress(vipAddress, isSecure, targetRegion);
-                for (InstanceInfo ii : listOfInstanceInfo) {
+                for (InstanceInfo ii: listOfInstanceInfo) {
                     if (ii.getStatus().equals(InstanceStatus.UP)) {
 
-                        if(shouldUseOverridePort){
-                            if(logger.isDebugEnabled()){
+                        if (shouldUseOverridePort) {
+                            if (logger.isDebugEnabled()) {
                                 logger.debug("Overriding port on client name: " + clientName + " to " + overridePort);
                             }
 
@@ -174,9 +174,9 @@ public class DiscoveryEnabledNIWSServerList extends AbstractServerList<Discovery
                             // used by other clients in our system
                             InstanceInfo copy = new InstanceInfo(ii);
 
-                            if(isSecure){
+                            if (isSecure) {
                                 ii = new InstanceInfo.Builder(copy).setSecurePort(overridePort).build();
-                            }else{
+                            } else {
                                 ii = new InstanceInfo.Builder(copy).setPort(overridePort).build();
                             }
                         }
@@ -185,7 +185,7 @@ public class DiscoveryEnabledNIWSServerList extends AbstractServerList<Discovery
                         serverList.add(des);
                     }
                 }
-                if (serverList.size()>0 && prioritizeVipAddressBasedServers){
+                if (serverList.size() > 0 && prioritizeVipAddressBasedServers) {
                     break; // if the current vipAddress has servers, we dont use subsequent vipAddress based servers
                 }
             }
@@ -213,7 +213,7 @@ public class DiscoveryEnabledNIWSServerList extends AbstractServerList<Discovery
         this.vipAddresses = vipAddresses;
     }
 
-    public String toString(){
+    public String toString() {
         StringBuilder sb = new StringBuilder("DiscoveryEnabledNIWSServerList:");
         sb.append("; clientName:").append(clientName);
         sb.append("; Effective vipAddresses:").append(vipAddresses);

@@ -29,9 +29,9 @@ import com.netflix.client.config.IClientConfig;
  * to filter the servers returned from {@link #getUpdatedListOfServers()} or {@link #getInitialListOfServers()}.
  *
  */
-public abstract class AbstractServerList<T extends Server> implements ServerList<T>, IClientConfigAware {   
-     
-    
+public abstract class AbstractServerList<T extends Server> implements ServerList<T>, IClientConfigAware {
+
+
     /**
      * Get a ServerListFilter instance. It uses {@link ClientFactory#instantiateInstanceWithClientConfig(String, IClientConfig)}
      * which in turn uses reflection to initialize the filter instance. 
@@ -42,10 +42,10 @@ public abstract class AbstractServerList<T extends Server> implements ServerList
         String niwsServerListFilterClassName = null;
         try {
             niwsServerListFilterClassName = niwsClientConfig.get(
-                            CommonClientConfigKey.NIWSServerListFilterClassName,
-                            ZoneAffinityServerListFilter.class.getName());
+                    CommonClientConfigKey.NIWSServerListFilterClassName,
+                    ZoneAffinityServerListFilter.class.getName());
 
-            AbstractServerListFilter<T> abstractNIWSServerListFilter = 
+            AbstractServerListFilter<T> abstractNIWSServerListFilter =
                     (AbstractServerListFilter<T>) ClientFactory.instantiateInstanceWithClientConfig(niwsServerListFilterClassName, niwsClientConfig);
             return abstractNIWSServerListFilter;
         } catch (Throwable e) {

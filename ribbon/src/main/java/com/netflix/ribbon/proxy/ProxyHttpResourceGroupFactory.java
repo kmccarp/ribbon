@@ -37,7 +37,7 @@ public class ProxyHttpResourceGroupFactory<T> {
     }
 
     ProxyHttpResourceGroupFactory(ClassTemplate<T> classTemplate, RibbonResourceFactory httpResourceGroupFactory,
-                                  AnnotationProcessorsProvider processors) {
+            AnnotationProcessorsProvider processors) {
         this.classTemplate = classTemplate;
         this.httpResourceGroupFactory = httpResourceGroupFactory;
         this.processors = processors;

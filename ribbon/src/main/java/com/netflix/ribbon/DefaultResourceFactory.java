@@ -24,7 +24,7 @@ public class DefaultResourceFactory extends RibbonResourceFactory {
 
     @Inject
     public DefaultResourceFactory(ClientConfigFactory clientConfigFactory, RibbonTransportFactory transportFactory,
-                                  AnnotationProcessorsProvider annotationProcessorsProvider) {
+            AnnotationProcessorsProvider annotationProcessorsProvider) {
         super(clientConfigFactory, transportFactory, annotationProcessorsProvider);
     }
 

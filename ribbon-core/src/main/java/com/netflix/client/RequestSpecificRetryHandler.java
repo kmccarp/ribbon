@@ -21,14 +21,14 @@ public class RequestSpecificRetryHandler implements RetryHandler {
     private int retryNextServer = -1;
     private final boolean okToRetryOnConnectErrors;
     private final boolean okToRetryOnAllErrors;
-    
-    protected List<Class<? extends Throwable>> connectionRelated = 
+
+    protected List<Class<? extends Throwable>> connectionRelated =
             Lists.<Class<? extends Throwable>>newArrayList(SocketException.class);
 
     public RequestSpecificRetryHandler(boolean okToRetryOnConnectErrors, boolean okToRetryOnAllErrors) {
-        this(okToRetryOnConnectErrors, okToRetryOnAllErrors, RetryHandler.DEFAULT, null);    
+        this(okToRetryOnConnectErrors, okToRetryOnAllErrors, RetryHandler.DEFAULT, null);
     }
-    
+
     public RequestSpecificRetryHandler(boolean okToRetryOnConnectErrors, boolean okToRetryOnAllErrors, RetryHandler baseRetryHandler, @Nullable IClientConfig requestConfig) {
         Preconditions.checkNotNull(baseRetryHandler);
         this.okToRetryOnConnectErrors = okToRetryOnConnectErrors;
@@ -43,7 +43,7 @@ public class RequestSpecificRetryHandler implements RetryHandler {
             );
         }
     }
-    
+
     public boolean isConnectionException(Throwable e) {
         return Utils.isPresentAsCause(e, connectionRelated);
     }
@@ -52,16 +52,14 @@ public class RequestSpecificRetryHandler implements RetryHandler {
     public boolean isRetriableException(Throwable e, boolean sameServer) {
         if (okToRetryOnAllErrors) {
             return true;
-        } 
-        else if (e instanceof ClientException) {
+        }else if (e instanceof ClientException) {
             ClientException ce = (ClientException) e;
             if (ce.getErrorType() == ClientException.ErrorType.SERVER_THROTTLED) {
                 return !sameServer;
             } else {
                 return false;
             }
-        } 
-        else  {
+        }else {
             return okToRetryOnConnectErrors && isConnectionException(e);
         }
     }
@@ -85,5 +83,5 @@ public class RequestSpecificRetryHandler implements RetryHandler {
             return retryNextServer;
         }
         return fallback.getMaxRetriesOnNextServer();
-    }    
+    }
 }

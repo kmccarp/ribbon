@@ -46,10 +46,14 @@ import java.util.List;
 public class ZoneAffinityServerListFilter<T extends Server> extends
         AbstractServerListFilter<T> implements IClientConfigAware {
 
-    private static IClientConfigKey<String> ZONE = new CommonClientConfigKey<String>("@zone", "") {};
-    private static IClientConfigKey<Double> MAX_LOAD_PER_SERVER = new CommonClientConfigKey<Double>("zoneAffinity.maxLoadPerServer", 0.6d) {};
-    private static IClientConfigKey<Double> MAX_BLACKOUT_SERVER_PERCENTAGE = new CommonClientConfigKey<Double>("zoneAffinity.maxBlackOutServesrPercentage", 0.8d) {};
-    private static IClientConfigKey<Integer> MIN_AVAILABLE_SERVERS = new CommonClientConfigKey<Integer>("zoneAffinity.minAvailableServers", 2) {};
+    private static IClientConfigKey<String> ZONE = new CommonClientConfigKey<String>("@zone", "") {
+    };
+    private static IClientConfigKey<Double> MAX_LOAD_PER_SERVER = new CommonClientConfigKey<Double>("zoneAffinity.maxLoadPerServer", 0.6d) {
+    };
+    private static IClientConfigKey<Double> MAX_BLACKOUT_SERVER_PERCENTAGE = new CommonClientConfigKey<Double>("zoneAffinity.maxBlackOutServesrPercentage", 0.8d) {
+    };
+    private static IClientConfigKey<Integer> MIN_AVAILABLE_SERVERS = new CommonClientConfigKey<Integer>("zoneAffinity.minAvailableServers", 2) {
+    };
 
     private boolean zoneAffinity;
     private boolean zoneExclusive;
@@ -60,7 +64,7 @@ public class ZoneAffinityServerListFilter<T extends Server> extends
     private ZoneAffinityPredicate zoneAffinityPredicate;
 
     private static Logger logger = LoggerFactory.getLogger(ZoneAffinityServerListFilter.class);
-    
+
     private String zone;
 
     /**
@@ -90,8 +94,8 @@ public class ZoneAffinityServerListFilter<T extends Server> extends
 
         Monitors.registerObject("NIWSServerListFilter_" + niwsClientConfig.getClientName());
     }
-    
-    private boolean shouldEnableZoneAffinity(List<T> filtered) {    
+
+    private boolean shouldEnableZoneAffinity(List<T> filtered) {
         if (!zoneAffinity && !zoneExclusive) {
             return false;
         }
@@ -105,24 +109,24 @@ public class ZoneAffinityServerListFilter<T extends Server> extends
             logger.debug("Determining if zone affinity should be enabled with given server list: {}", filtered);
             ZoneSnapshot snapshot = stats.getZoneSnapshot(filtered);
             double loadPerServer = snapshot.getLoadPerServer();
-            int instanceCount = snapshot.getInstanceCount();            
+            int instanceCount = snapshot.getInstanceCount();
             int circuitBreakerTrippedCount = snapshot.getCircuitTrippedCount();
             if (((double) circuitBreakerTrippedCount) / instanceCount >= blackOutServerPercentageThreshold.getOrDefault()
                     || loadPerServer >= activeReqeustsPerServerThreshold.getOrDefault()
                     || (instanceCount - circuitBreakerTrippedCount) < availableServersThreshold.getOrDefault()) {
-                logger.debug("zoneAffinity is overriden. blackOutServerPercentage: {}, activeReqeustsPerServer: {}, availableServers: {}", 
-                        new Object[] {(double) circuitBreakerTrippedCount / instanceCount,  loadPerServer, instanceCount - circuitBreakerTrippedCount});
+                logger.debug("zoneAffinity is overriden. blackOutServerPercentage: {}, activeReqeustsPerServer: {}, availableServers: {}",
+                        new Object[]{(double) circuitBreakerTrippedCount / instanceCount, loadPerServer, instanceCount - circuitBreakerTrippedCount});
                 return false;
             } else {
                 return true;
             }
-            
+
         }
     }
-        
+
     @Override
     public List<T> getFilteredListOfServers(List<T> servers) {
-        if (zone != null && (zoneAffinity || zoneExclusive) && servers !=null && servers.size() > 0){
+        if (zone != null && (zoneAffinity || zoneExclusive) && servers != null && servers.size() > 0) {
             List<T> filteredServers = Lists.newArrayList(Iterables.filter(
                     servers, this.zoneAffinityPredicate.getServerOnlyPredicate()));
             if (shouldEnableZoneAffinity(filteredServers)) {
@@ -135,11 +139,11 @@ public class ZoneAffinityServerListFilter<T extends Server> extends
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         StringBuilder sb = new StringBuilder("ZoneAffinityServerListFilter:");
         sb.append(", zone: ").append(zone).append(", zoneAffinity:").append(zoneAffinity);
         sb.append(", zoneExclusivity:").append(zoneExclusive);
-        return sb.toString();       
+        return sb.toString();
     }
 
 }

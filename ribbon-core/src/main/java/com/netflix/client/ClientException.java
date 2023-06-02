@@ -22,22 +22,22 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 
 
-public class ClientException extends Exception{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -7697654244064441234L;
-	
-	/**
+public class ClientException extends Exception {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -7697654244064441234L;
+
+    /**
      * define your error codes here
      * 
      */
-    public enum ErrorType{
-        GENERAL, 
-        CONFIGURATION, 
-        NUMBEROF_RETRIES_EXEEDED, 
-        NUMBEROF_RETRIES_NEXTSERVER_EXCEEDED, 
-        SOCKET_TIMEOUT_EXCEPTION, 
+    public enum ErrorType {
+        GENERAL,
+        CONFIGURATION,
+        NUMBEROF_RETRIES_EXEEDED,
+        NUMBEROF_RETRIES_NEXTSERVER_EXCEEDED,
+        SOCKET_TIMEOUT_EXCEPTION,
         READ_TIMEOUT_EXCEPTION,
         UNKNOWN_HOST_EXCEPTION,
         CONNECT_EXCEPTION,
@@ -49,15 +49,15 @@ public class ClientException extends Exception{
         // https://www.gamlor.info/wordpress/2017/08/javas-enum-values-hidden-allocations/
         private static final ErrorType[] ERROR_TYPE_VALUES = values();
 
-        static String getName(int errorCode){
-            if (ERROR_TYPE_VALUES.length >= errorCode){
+        static String getName(int errorCode) {
+            if (ERROR_TYPE_VALUES.length >= errorCode) {
                 return ERROR_TYPE_VALUES[errorCode].name();
-            }else{
+            } else {
                 return "UNKNOWN ERROR CODE";
             }
         }
     }
-    
+
     protected int errorCode;
     protected String message;
     protected Object errorObject;
@@ -84,12 +84,12 @@ public class ClientException extends Exception{
     }
 
     public ClientException(int errorCode, String message, Throwable chainedException) {
-        super((message == null && errorCode != 0) ? ", code=" + errorCode + "->" + ErrorType.getName(errorCode): message,
-              chainedException);
+        super((message == null && errorCode != 0) ? ", code=" + errorCode + "->" + ErrorType.getName(errorCode) : message,
+                chainedException);
         this.errorCode = errorCode;
         this.message = message;
     }
-    
+
     public ClientException(ErrorType error) {
         this(error.ordinal(), null, null);
         this.errorType = error;
@@ -99,17 +99,17 @@ public class ClientException extends Exception{
         this(error.ordinal(), message, null);
         this.errorType = error;
     }
-    
-    public ClientException( ErrorType error, String message, Throwable chainedException) {
+
+    public ClientException(ErrorType error, String message, Throwable chainedException) {
         super((message == null && error.ordinal() != 0) ? ", code=" + error.ordinal() + "->" + error.name() : message,
-              chainedException);
+                chainedException);
         this.errorCode = error.ordinal();
         this.message = message;
         this.errorType = error;
     }
 
-    public ErrorType getErrorType(){
-        return errorType; 
+    public ErrorType getErrorType() {
+        return errorType;
     }
 
     public int getErrorCode() {
@@ -143,7 +143,7 @@ public class ClientException extends Exception{
      * @return a message asssociated with current exception
      */
 
-    public String getInternalMessage () {    
+    public String getInternalMessage() {
         return "{no message: " + errorCode + "}";
     }
 
@@ -154,7 +154,7 @@ public class ClientException extends Exception{
      * @param clazz  a class that is a subclass of us.
      * @return a hashmap of int error codes mapped to the string names.
      */
-    static public HashMap getErrorCodes ( Class clazz ) {
+    static public HashMap getErrorCodes(Class clazz) {
 
         HashMap map = new HashMap(23);
 
@@ -163,7 +163,7 @@ public class ClientException extends Exception{
 
         Field flds[] = clazz.getDeclaredFields();
 
-        for (int i = 0; i < flds.length; i++) {
+        for (int i = 0;i < flds.length;i++) {
             int mods = flds[i].getModifiers();
 
             if (Modifier.isFinal(mods) && Modifier.isStatic(mods) && Modifier.isPublic(mods)) {
@@ -175,5 +175,5 @@ public class ClientException extends Exception{
             }
         }
         return map;
-    }    
+    }
 }

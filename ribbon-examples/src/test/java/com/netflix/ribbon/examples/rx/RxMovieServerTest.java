@@ -136,7 +136,7 @@ public class RxMovieServerTest {
                             public Movie[] call(ByteBuf byteBuf) {
                                 String[] lines = byteBuf.toString(Charset.defaultCharset()).split("\n");
                                 Movie[] movies = new Movie[lines.length];
-                                for (int i = 0; i < movies.length; i++) {
+                                for (int i = 0;i < movies.length;i++) {
                                     movies[i] = Movie.from(lines[i]);
                                 }
                                 return movies;

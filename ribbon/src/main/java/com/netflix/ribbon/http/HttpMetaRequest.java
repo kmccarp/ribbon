@@ -44,7 +44,7 @@ class HttpMetaRequest<T> implements RequestWithMetaData<T> {
         HystrixInvokableInfo<?> info;
 
         public ResponseWithSubject(Subject<T, T> subject,
-                                   HystrixInvokableInfo<?> info) {
+                HystrixInvokableInfo<?> info) {
             this.subject = subject;
             this.info = info;
         }

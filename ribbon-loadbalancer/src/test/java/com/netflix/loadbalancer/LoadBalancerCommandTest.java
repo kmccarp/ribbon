@@ -21,7 +21,7 @@ public class LoadBalancerCommandTest {
     static Server server1 = new Server("1", 80);
     static Server server2 = new Server("2", 80);
     static Server server3 = new Server("3", 80);
-    
+
     static List<Server> list = Lists.newArrayList(server1, server2, server3);
 
     @Test
@@ -51,7 +51,7 @@ public class LoadBalancerCommandTest {
                 .withRetryHandler(handler)
                 .withServer(server1)
                 .build();
-        
+
         ServerOperation<String> operation = new ServerOperation<String>() {
             AtomicInteger count = new AtomicInteger();
             @Override
@@ -69,7 +69,7 @@ public class LoadBalancerCommandTest {
                 });
             }
         };
-        
+
         String result = command.submit(operation).toBlocking().single();
         assertEquals(3, loadBalancer.getLoadBalancerStats().getSingleServerStat(server1).getTotalRequestsCount());
         assertEquals("1", result);

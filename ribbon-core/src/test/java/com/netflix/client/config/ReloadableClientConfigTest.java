@@ -15,7 +15,8 @@ public class ReloadableClientConfigTest {
 
     @Before
     public void before() {
-        this.testKey = new CommonClientConfigKey<Integer>(getClass().getName() + "." + testName.getMethodName(), -1) {};
+        this.testKey = new CommonClientConfigKey<Integer>(getClass().getName() + "." + testName.getMethodName(), -1) {
+        };
     }
 
     @Test

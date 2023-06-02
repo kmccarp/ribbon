@@ -30,7 +30,7 @@ public class EvCacheOptions {
     private final String cacheKeyTemplate;
 
     public EvCacheOptions(String appName, String cacheName, boolean enableZoneFallback, int timeToLive,
-                          EVCacheTranscoder<?> transcoder, String cacheKeyTemplate) {
+            EVCacheTranscoder<?> transcoder, String cacheKeyTemplate) {
         this.appName = appName;
         this.cacheName = cacheName;
         this.enableZoneFallback = enableZoneFallback;

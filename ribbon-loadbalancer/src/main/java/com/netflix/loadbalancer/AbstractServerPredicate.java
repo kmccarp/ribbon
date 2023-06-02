@@ -40,23 +40,23 @@ import com.netflix.client.config.IClientConfig;
  *
  */
 public abstract class AbstractServerPredicate implements Predicate<PredicateKey> {
-    
+
     protected IRule rule;
     private volatile LoadBalancerStats lbStats;
-    
+
     private final Random random = new Random();
-    
+
     private final AtomicInteger nextIndex = new AtomicInteger();
 
-    private final Predicate<Server> serverOnlyPredicate =  new Predicate<Server>() {
+    private final Predicate<Server> serverOnlyPredicate = new Predicate<Server>() {
         @Override
-        public boolean apply(@Nullable Server input) {                    
+        public boolean apply(@Nullable Server input) {
             return AbstractServerPredicate.this.apply(new PredicateKey(input));
         }
     };
 
     public static AbstractServerPredicate alwaysTrue() {
-        return new AbstractServerPredicate() {        
+        return new AbstractServerPredicate() {
             @Override
             public boolean apply(@Nullable PredicateKey input) {
                 return true;
@@ -65,9 +65,9 @@ public abstract class AbstractServerPredicate implements Predicate<PredicateKey>
     }
 
     public AbstractServerPredicate() {
-        
+
     }
-    
+
     public AbstractServerPredicate(IRule rule) {
         this.rule = rule;
     }
@@ -92,7 +92,7 @@ public abstract class AbstractServerPredicate implements Predicate<PredicateKey>
         } else if (rule != null) {
             ILoadBalancer lb = rule.getLoadBalancer();
             if (lb instanceof AbstractLoadBalancer) {
-                LoadBalancerStats stats =  ((AbstractLoadBalancer) lb).getLoadBalancerStats();
+                LoadBalancerStats stats = ((AbstractLoadBalancer) lb).getLoadBalancerStats();
                 setLoadBalancerStats(stats);
                 return stats;
             } else {
@@ -102,11 +102,11 @@ public abstract class AbstractServerPredicate implements Predicate<PredicateKey>
             return null;
         }
     }
-    
+
     public void setLoadBalancerStats(LoadBalancerStats stats) {
         this.lbStats = stats;
     }
-    
+
     /**
      * Get the predicate to filter list of servers. The load balancer key is treated as null
      * as the input of this predicate.
@@ -114,7 +114,7 @@ public abstract class AbstractServerPredicate implements Predicate<PredicateKey>
     public Predicate<Server> getServerOnlyPredicate() {
         return serverOnlyPredicate;
     }
-    
+
     /**
      * Get servers filtered by this predicate from list of servers. Load balancer key
      * is presumed to be null. 
@@ -125,13 +125,13 @@ public abstract class AbstractServerPredicate implements Predicate<PredicateKey>
     public List<Server> getEligibleServers(List<Server> servers) {
         return getEligibleServers(servers, null);
     }
- 
+
     /**
      * Get servers filtered by this predicate from list of servers. 
      */
     public List<Server> getEligibleServers(List<Server> servers, Object loadBalancerKey) {
         if (loadBalancerKey == null) {
-            return ImmutableList.copyOf(Iterables.filter(servers, this.getServerOnlyPredicate()));            
+            return ImmutableList.copyOf(Iterables.filter(servers, this.getServerOnlyPredicate()));
         } else {
             List<Server> results = Lists.newArrayList();
             for (Server server: servers) {
@@ -139,7 +139,7 @@ public abstract class AbstractServerPredicate implements Predicate<PredicateKey>
                     results.add(server);
                 }
             }
-            return results;            
+            return results;
         }
     }
 
@@ -158,7 +158,7 @@ public abstract class AbstractServerPredicate implements Predicate<PredicateKey>
                 return current;
         }
     }
-    
+
     /**
      * Choose a random server after the predicate filters a list of servers. Load balancer key 
      * is presumed to be null.
@@ -171,7 +171,7 @@ public abstract class AbstractServerPredicate implements Predicate<PredicateKey>
         }
         return Optional.of(eligible.get(random.nextInt(eligible.size())));
     }
-    
+
     /**
      * Choose a server in a round robin fashion after the predicate filters a list of servers. Load balancer key 
      * is presumed to be null.
@@ -183,7 +183,7 @@ public abstract class AbstractServerPredicate implements Predicate<PredicateKey>
         }
         return Optional.of(eligible.get(incrementAndGetModulo(eligible.size())));
     }
-    
+
     /**
      * Choose a random server after the predicate filters list of servers given list of servers and
      * load balancer key. 
@@ -196,7 +196,7 @@ public abstract class AbstractServerPredicate implements Predicate<PredicateKey>
         }
         return Optional.of(eligible.get(random.nextInt(eligible.size())));
     }
-    
+
     /**
      * Choose a server in a round robin fashion after the predicate filters a given list of servers and load balancer key. 
      */
@@ -207,7 +207,7 @@ public abstract class AbstractServerPredicate implements Predicate<PredicateKey>
         }
         return Optional.of(eligible.get(incrementAndGetModulo(eligible.size())));
     }
-        
+
     /**
      * Create an instance from a predicate.
      */
@@ -217,10 +217,10 @@ public abstract class AbstractServerPredicate implements Predicate<PredicateKey>
             @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP")
             public boolean apply(PredicateKey input) {
                 return p.apply(input);
-            }            
-        };        
+            }
+        };
     }
-    
+
     /**
      * Create an instance from a predicate.
      */
@@ -230,7 +230,7 @@ public abstract class AbstractServerPredicate implements Predicate<PredicateKey>
             @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP")
             public boolean apply(PredicateKey input) {
                 return p.apply(input.getServer());
-            }            
-        };        
+            }
+        };
     }
 }

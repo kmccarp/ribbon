@@ -41,13 +41,13 @@ import static org.powermock.api.easymock.PowerMock.createMock;
 import static org.powermock.api.easymock.PowerMock.replay;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest( {DiscoveryManager.class, DiscoveryClient.class} )
+@PrepareForTest({DiscoveryManager.class, DiscoveryClient.class})
 @PowerMockIgnore({"javax.management.*", "com.sun.jersey.*", "com.sun.*", "org.apache.*", "weblogic.*", "com.netflix.config.*", "com.sun.jndi.dns.*",
-    "javax.naming.*", "com.netflix.logging.*", "javax.ws.*", "com.google.*"})
+        "javax.naming.*", "com.netflix.logging.*", "javax.ws.*", "com.google.*"})
 public class LBBuilderTest {
-    
+
     static Server expected = new Server("www.example.com", 8001);
-    
+
     static class NiwsClientConfig extends DefaultClientConfigImpl {
         public NiwsClientConfig() {
             super();
@@ -58,9 +58,9 @@ public class LBBuilderTest {
             return "niws.client";
         }
     }
-    
+
     @Before
-    public void setupMock(){
+    public void setupMock() {
         List<InstanceInfo> instances = LoadBalancerTestUtils.getDummyInstanceInfo("dummy", expected.getHost(), "127.0.0.1", expected.getPort());
         PowerMock.mockStatic(DiscoveryManager.class);
         PowerMock.mockStatic(DiscoveryClient.class);

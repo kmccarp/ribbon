@@ -45,15 +45,15 @@ import java.util.Map.Entry;
  *
  */
 class HttpClientResponse implements HttpResponse {
-    
+
     private final ClientResponse bcr;
-            
+
     private final Multimap<String, String> headers = ArrayListMultimap.<String, String>create();
     private final HttpHeaders httpHeaders;
     private final URI requestedURI;
     private final IClientConfig overrideConfig;
 
-    public HttpClientResponse(ClientResponse cr, URI requestedURI, IClientConfig config){
+    public HttpClientResponse(ClientResponse cr, URI requestedURI, IClientConfig config) {
         bcr = cr;
         this.requestedURI = requestedURI;
         this.overrideConfig = config;
@@ -62,7 +62,7 @@ class HttpClientResponse implements HttpResponse {
                 headers.putAll(entry.getKey(), entry.getValue());
             }
         }
-        httpHeaders =  new HttpHeaders() {
+        httpHeaders = new HttpHeaders() {
             @Override
             public String getFirstValue(String headerName) {
                 return bcr.getHeaders().getFirst(headerName);
@@ -92,16 +92,16 @@ class HttpClientResponse implements HttpResponse {
 
     }
 
-     /**
-        * Returns the raw entity if available from the response 
-        * @return
+    /**
+     * Returns the raw entity if available from the response 
+     * @return
         * @throws IllegalArgumentException
         */
     public InputStream getRawEntity() {
         return bcr.getEntityInputStream();
     }
-       
-    
+
+
     public <T> T getEntity(Class<T> c) throws Exception {
         return bcr.getEntity(c);
     }
@@ -119,8 +119,8 @@ class HttpClientResponse implements HttpResponse {
     @Override
     public boolean isSuccess() {
         boolean isSuccess = false;
-        ClientResponse.Status s = bcr != null? bcr.getClientResponseStatus(): null;
-        isSuccess = s!=null? (s.getFamily() == javax.ws.rs.core.Response.Status.Family.SUCCESSFUL): false;
+        ClientResponse.Status s = bcr != null ? bcr.getClientResponseStatus() : null;
+        isSuccess = s != null ? (s.getFamily() == javax.ws.rs.core.Response.Status.Family.SUCCESSFUL) : false;
         return isSuccess;
     }
 
@@ -128,12 +128,12 @@ class HttpClientResponse implements HttpResponse {
     public boolean hasEntity() {
         return bcr.hasEntity();
     }
-        
+
     @Override
     public URI getRequestedURI() {
-       return requestedURI;
+        return requestedURI;
     }
-    
+
     @Override
     public Object getPayload() throws ClientException {
         if (hasEntity()) {
@@ -145,13 +145,13 @@ class HttpClientResponse implements HttpResponse {
 
     @Override
     public boolean hasPayload() {
-        return hasEntity();        
+        return hasEntity();
     }
-    
+
     public ClientResponse getJerseyClientResponse() {
         return bcr;
     }
-    
+
     @Override
     public void close() {
         bcr.close();

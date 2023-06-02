@@ -29,25 +29,25 @@ import java.util.function.BiConsumer;
  */
 
 public interface IClientConfig {
-	
-	String getClientName();
-		
-	String getNameSpace();
 
-	void setNameSpace(String nameSpace);
+    String getClientName();
 
-	/**
-	 * Load the properties for a given client and/or load balancer. 
-	 * @param clientName
-	 */
-	void loadProperties(String clientName);
-	
-	/**
-	 * load default values for this configuration
-	 */
-	void loadDefaultValues();
+    String getNameSpace();
 
-	Map<String, Object> getProperties();
+    void setNameSpace(String nameSpace);
+
+    /**
+     * Load the properties for a given client and/or load balancer. 
+     * @param clientName
+     */
+    void loadProperties(String clientName);
+
+    /**
+     * load default values for this configuration
+     */
+    void loadDefaultValues();
+
+    Map<String, Object> getProperties();
 
     /**
      * Iterate all properties and report the final value.  Can be null if a default value is not specified.
@@ -60,41 +60,41 @@ public interface IClientConfig {
     /**
      * @deprecated use {@link #set(IClientConfigKey, Object)} 
      */
-	@Deprecated
-	void setProperty(IClientConfigKey key, Object value);
+    @Deprecated
+    void setProperty(IClientConfigKey key, Object value);
 
     /**
      * @deprecated use {@link #get(IClientConfigKey)}
      */
     @Deprecated
-	Object getProperty(IClientConfigKey key);
+    Object getProperty(IClientConfigKey key);
 
     /**
      * @deprecated use {@link #get(IClientConfigKey, Object)} 
      */
     @Deprecated
-	Object getProperty(IClientConfigKey key, Object defaultVal);
+    Object getProperty(IClientConfigKey key, Object defaultVal);
 
     /**
      * @deprecated use {@link #getIfSet(IClientConfigKey)}
      */
     @Deprecated
-	boolean containsProperty(IClientConfigKey key);
-	
-	/**
-	 * Returns the applicable virtual addresses ("vip") used by this client configuration.
-	 */
-	String resolveDeploymentContextbasedVipAddresses();
+    boolean containsProperty(IClientConfigKey key);
+
+    /**
+     * Returns the applicable virtual addresses ("vip") used by this client configuration.
+     */
+    String resolveDeploymentContextbasedVipAddresses();
 
     @Deprecated
-	int getPropertyAsInteger(IClientConfigKey key, int defaultValue);
+    int getPropertyAsInteger(IClientConfigKey key, int defaultValue);
 
     @Deprecated
     String getPropertyAsString(IClientConfigKey key, String defaultValue);
 
     @Deprecated
     boolean getPropertyAsBoolean(IClientConfigKey key, boolean defaultValue);
-    
+
     /**
      * Returns a typed property. If the property of IClientConfigKey is not set, it returns null.
      * <p>
@@ -168,12 +168,12 @@ public interface IClientConfig {
 
     @Deprecated
     class Builder {
-        
+
         private IClientConfig config;
-        
+
         Builder() {
         }
-        
+
         /**
          * Create a builder with no initial property and value for the configuration to be built.
          */
@@ -182,7 +182,7 @@ public interface IClientConfig {
             builder.config = ClientConfigFactory.findDefaultConfigFactory().newConfig();
             return builder;
         }
-        
+
         /**
          * Create a builder with properties for the specific client loaded. The default 
          * {@link IClientConfig} implementation loads properties from <a href="https://github.com/Netflix/archaius">Archaius</a>
@@ -196,7 +196,7 @@ public interface IClientConfig {
             builder.config.loadProperties(clientName);
             return builder;
         }
-        
+
         /**
          * Create a builder with properties for the specific client loaded. The default 
          * {@link IClientConfig} implementation loads properties from <a href="https://github.com/Netflix/archaius">Archaius</a>
@@ -212,7 +212,7 @@ public interface IClientConfig {
             return builder;
         }
 
-        
+
         /**
          * Create a builder with properties for the specific client loaded.
          * 
@@ -241,13 +241,13 @@ public interface IClientConfig {
             } catch (Exception e) {
                 throw new IllegalArgumentException(e);
             }
-            return builder;        
+            return builder;
         }
-        
+
         public IClientConfig build() {
             return config;
         }
-        
+
         /**
          * Load a set of default values for the configuration
          */
@@ -255,7 +255,7 @@ public interface IClientConfig {
             config.loadDefaultValues();
             return this;
         }
-        
+
         public Builder withDeploymentContextBasedVipAddresses(String vipAddress) {
             config.set(CommonClientConfigKey.DeploymentContextBasedVipAddresses, vipAddress);
             return this;
@@ -285,7 +285,7 @@ public interface IClientConfig {
             config.set(CommonClientConfigKey.RequestSpecificRetryOn, value);
             return this;
         }
-            
+
         public Builder withEnablePrimeConnections(boolean value) {
             config.set(CommonClientConfigKey.EnablePrimeConnections, value);
             return this;
@@ -302,7 +302,7 @@ public interface IClientConfig {
             config.set(CommonClientConfigKey.MaxTotalConnections, value);
             return this;
         }
-        
+
         public Builder withSecure(boolean secure) {
             config.set(CommonClientConfigKey.IsSecure, secure);
             return this;
@@ -322,27 +322,27 @@ public interface IClientConfig {
             config.set(CommonClientConfigKey.ConnectionManagerTimeout, value);
             return this;
         }
-        
+
         public Builder withFollowRedirects(boolean value) {
             config.set(CommonClientConfigKey.FollowRedirects, value);
             return this;
         }
-        
+
         public Builder withConnectionPoolCleanerTaskEnabled(boolean value) {
             config.set(CommonClientConfigKey.ConnectionPoolCleanerTaskEnabled, value);
             return this;
         }
-            
+
         public Builder withConnIdleEvictTimeMilliSeconds(int value) {
             config.set(CommonClientConfigKey.ConnIdleEvictTimeMilliSeconds, value);
             return this;
         }
-        
+
         public Builder withConnectionCleanerRepeatIntervalMills(int value) {
             config.set(CommonClientConfigKey.ConnectionCleanerRepeatInterval, value);
             return this;
         }
-        
+
         public Builder withGZIPContentEncodingFilterEnabled(boolean value) {
             config.set(CommonClientConfigKey.EnableGZIPContentEncodingFilter, value);
             return this;
@@ -367,7 +367,7 @@ public interface IClientConfig {
             config.set(CommonClientConfigKey.KeyStorePassword, value);
             return this;
         }
-        
+
         public Builder withTrustStore(String value) {
             config.set(CommonClientConfigKey.TrustStore, value);
             return this;
@@ -377,17 +377,17 @@ public interface IClientConfig {
             config.set(CommonClientConfigKey.TrustStorePassword, value);
             return this;
         }
-        
+
         public Builder withClientAuthRequired(boolean value) {
             config.set(CommonClientConfigKey.IsClientAuthRequired, value);
             return this;
         }
-        
+
         public Builder withCustomSSLSocketFactoryClassName(String value) {
             config.set(CommonClientConfigKey.CustomSSLSocketFactoryClassName, value);
             return this;
         }
-        
+
         public Builder withHostnameValidationRequired(boolean value) {
             config.set(CommonClientConfigKey.IsHostnameValidationRequired, value);
             return this;
@@ -403,17 +403,17 @@ public interface IClientConfig {
             config.set(CommonClientConfigKey.InitializeNFLoadBalancer, value);
             return this;
         }
-        
+
         public Builder withServerListRefreshIntervalMills(int value) {
             config.set(CommonClientConfigKey.ServerListRefreshInterval, value);
             return this;
         }
-        
+
         public Builder withZoneAffinityEnabled(boolean value) {
             config.set(CommonClientConfigKey.EnableZoneAffinity, value);
             return this;
         }
-        
+
         public Builder withZoneExclusivityEnabled(boolean value) {
             config.set(CommonClientConfigKey.EnableZoneExclusivity, value);
             return this;
@@ -423,7 +423,7 @@ public interface IClientConfig {
             config.set(CommonClientConfigKey.PrioritizeVipAddressBasedServers, value);
             return this;
         }
-        
+
         public Builder withTargetRegion(String value) {
             config.set(CommonClientConfigKey.TargetRegion, value);
             return this;

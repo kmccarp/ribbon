@@ -22,17 +22,17 @@ package com.netflix.ribbon;
  * @param <R> response meta data, e.g. HttpClientResponse
  */
 public abstract class RequestTemplate<T, R> {
-    
+
     public abstract RequestBuilder<T> requestBuilder();
-    
+
     public abstract String name();
-    
+
     public abstract RequestTemplate<T, R> copy(String name);
-        
+
 
     public static abstract class RequestBuilder<T> {
         public abstract RequestBuilder<T> withRequestProperty(String key, Object value);
-        
+
         public abstract RibbonRequest<T> build();
     }
 }

@@ -55,16 +55,16 @@ public class RetryTest {
 
     private RestClient client;
     private BaseLoadBalancer lb;
-    private NFHttpClient httpClient; 
-    private MonitoredConnectionManager connectionPoolManager; 
+    private NFHttpClient httpClient;
+    private MonitoredConnectionManager connectionPoolManager;
     private static Server localServer;
-    
-    @BeforeClass 
+
+    @BeforeClass
     public static void init() throws Exception {
 //        PackagesResourceConfig resourceConfig = new PackagesResourceConfig("com.netflix.niws.client.http");
         localServer = new Server("localhost", server.getServerPort());
     }
-    
+
     @Before
     public void beforeTest() {
         ConfigurationManager.getConfigInstance().setProperty("RetryTest.ribbon.NFLoadBalancerClassName", BaseLoadBalancer.class.getName());
@@ -78,10 +78,10 @@ public class RetryTest {
 
         lb = (BaseLoadBalancer) client.getLoadBalancer();
         lb.setServersList(Lists.newArrayList(localServer));
-        
+
         httpClient = NFHttpClientFactory.getNamedNFHttpClient("RetryTest");
-        connectionPoolManager = (MonitoredConnectionManager) httpClient.getConnectionManager(); 
-        
+        connectionPoolManager = (MonitoredConnectionManager) httpClient.getConnectionManager();
+
         client.setMaxAutoRetries(0);
         client.setMaxAutoRetriesNextServer(0);
         client.setOkToRetryOnAllOperations(false);
@@ -90,7 +90,7 @@ public class RetryTest {
         lb.setRule(new AvailabilityFilteringRule());
         lb.getLoadBalancerStats().getSingleServerStat(localServer).clearSuccessiveConnectionFailureCount();
     }
-    
+
     @Test
     public void testThrottled() throws Exception {
         URI localUrl = new URI("/status?code=503");
@@ -101,25 +101,25 @@ public class RetryTest {
         } catch (ClientException e) {
             assertNotNull(e);
         }
-        assertEquals(1, lb.getLoadBalancerStats().getSingleServerStat(localServer).getSuccessiveConnectionFailureCount());        
+        assertEquals(1, lb.getLoadBalancerStats().getSingleServerStat(localServer).getSuccessiveConnectionFailureCount());
     }
-    
+
     @Test
     public void testThrottledWithRetrySameServer() throws Exception {
         URI localUrl = new URI("/status?code=503");
         HttpRequest request = HttpRequest.newBuilder().uri(localUrl).build();
         try {
-            client.executeWithLoadBalancer(request, 
+            client.executeWithLoadBalancer(request,
                     DefaultClientConfigImpl
-                    .getEmptyConfig()
-                    .set(CommonClientConfigKey.MaxAutoRetries, 1)
-                    .set(CommonClientConfigKey.MaxAutoRetriesNextServer, 0));
+                            .getEmptyConfig()
+                            .set(CommonClientConfigKey.MaxAutoRetries, 1)
+                            .set(CommonClientConfigKey.MaxAutoRetriesNextServer, 0));
             fail("Exception expected");
         } catch (ClientException e) { // NOPMD
         }
-        assertEquals(2, lb.getLoadBalancerStats().getSingleServerStat(localServer).getSuccessiveConnectionFailureCount());        
+        assertEquals(2, lb.getLoadBalancerStats().getSingleServerStat(localServer).getSuccessiveConnectionFailureCount());
     }
-    
+
     @Test
     public void testThrottledWithRetryNextServer() throws Exception {
         int connectionCount = connectionPoolManager.getConnectionsInPool();
@@ -136,7 +136,7 @@ public class RetryTest {
         // should be no connection leak        
         assertTrue(connectionPoolManager.getConnectionsInPool() <= connectionCount + 1);
     }
-      
+
     @Test
     public void testReadTimeout() throws Exception {
         URI localUrl = new URI("/noresponse");
@@ -148,7 +148,7 @@ public class RetryTest {
         }
         assertEquals(3, lb.getLoadBalancerStats().getSingleServerStat(localServer).getSuccessiveConnectionFailureCount());
     }
-    
+
     @Test
     public void testReadTimeoutWithRetriesNextServe() throws Exception {
         URI localUrl = new URI("/noresponse");
@@ -170,11 +170,11 @@ public class RetryTest {
             fail("Exception expected");
         } catch (ClientException e) { // NOPMD
         }
-        ServerStats stats = lb.getLoadBalancerStats().getSingleServerStat(localServer); 
+        ServerStats stats = lb.getLoadBalancerStats().getSingleServerStat(localServer);
         assertEquals(1, stats.getSuccessiveConnectionFailureCount());
     }
-    
-    
+
+
     @Test
     public void testRetriesOnPost() throws Exception {
         URI localUrl = new URI("/noresponse");
@@ -184,10 +184,10 @@ public class RetryTest {
             fail("Exception expected");
         } catch (ClientException e) { // NOPMD
         }
-        ServerStats stats = lb.getLoadBalancerStats().getSingleServerStat(localServer); 
+        ServerStats stats = lb.getLoadBalancerStats().getSingleServerStat(localServer);
         assertEquals(3, stats.getSuccessiveConnectionFailureCount());
     }
-    
+
     @Test
     public void testRetriesOnPostWithConnectException() throws Exception {
         URI localUrl = new URI("/status?code=503");
@@ -198,11 +198,11 @@ public class RetryTest {
             fail("Exception expected");
         } catch (ClientException e) { // NOPMD
         }
-        ServerStats stats = lb.getLoadBalancerStats().getSingleServerStat(localServer); 
+        ServerStats stats = lb.getLoadBalancerStats().getSingleServerStat(localServer);
         assertEquals(3, stats.getSuccessiveConnectionFailureCount());
     }
 
-    
+
     @Test
     public void testSuccessfulRetries() throws Exception {
         lb.setServersList(Lists.newArrayList(new Server("localhost:12987"), new Server("localhost:12987"), localServer));
@@ -211,10 +211,10 @@ public class RetryTest {
         try {
             HttpResponse response = client.executeWithLoadBalancer(request, DefaultClientConfigImpl.getEmptyConfig().set(CommonClientConfigKey.MaxAutoRetriesNextServer, 2));
             assertEquals(200, response.getStatus());
-        } catch (ClientException e) { 
+        } catch (ClientException e) {
             fail("Unexpected exception");
         }
-        ServerStats stats = lb.getLoadBalancerStats().getSingleServerStat(new Server("localhost:12987")); 
+        ServerStats stats = lb.getLoadBalancerStats().getSingleServerStat(new Server("localhost:12987"));
         assertEquals(1, stats.getSuccessiveConnectionFailureCount());
     }
 }

@@ -37,25 +37,25 @@ import com.netflix.client.http.HttpRequest;
 import com.netflix.client.http.HttpResponse;
 
 public class FollowRedirectTest {
-    
+
     private MockWebServer redirectingServer;
     private MockWebServer redirectedServer;
-    
+
     @Before
     public void setup() throws IOException {
         redirectedServer = new MockWebServer();
         redirectedServer.enqueue(new MockResponse()
-            .setResponseCode(200)
-            .setHeader("Content-type", "text/plain")
-            .setBody("OK"));       
-        redirectingServer = new MockWebServer(); 
+                .setResponseCode(200)
+                .setHeader("Content-type", "text/plain")
+                .setBody("OK"));
+        redirectingServer = new MockWebServer();
         redirectedServer.play();
         redirectingServer.enqueue(new MockResponse()
-            .setResponseCode(302)
-            .setHeader("Location", "http://localhost:" + redirectedServer.getPort()));
+                .setResponseCode(302)
+                .setHeader("Location", "http://localhost:" + redirectedServer.getPort()));
         redirectingServer.play();
     }
-    
+
     @After
     public void shutdown() {
         try {
@@ -69,7 +69,7 @@ public class FollowRedirectTest {
             e.printStackTrace();
         }
     }
-    
+
     @Test
     public void testRedirectNotFollowed() throws Exception {
         IClientConfig config = DefaultClientConfigImpl.getClientConfigWithDefaultValues("myclient");
@@ -78,7 +78,7 @@ public class FollowRedirectTest {
         RestClient client = (RestClient) ClientFactory.getNamedClient("myclient");
         HttpRequest request = HttpRequest.newBuilder().uri(new URI("http://localhost:" + redirectingServer.getPort())).build();
         HttpResponse response = client.executeWithLoadBalancer(request);
-        assertEquals(302, response.getStatus());          
+        assertEquals(302, response.getStatus());
     }
 
     @Test
@@ -90,7 +90,7 @@ public class FollowRedirectTest {
         com.netflix.niws.client.http.RestClient client = (com.netflix.niws.client.http.RestClient) ClientFactory.getNamedClient("myclient2");
         HttpRequest request = HttpRequest.newBuilder().uri(new URI("http://localhost:" + redirectingServer.getPort())).build();
         HttpResponse response = client.execute(request);
-        assertEquals(200, response.getStatus());      
+        assertEquals(200, response.getStatus());
     }
 
 }

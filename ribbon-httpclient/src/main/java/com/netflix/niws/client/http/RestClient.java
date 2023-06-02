@@ -90,7 +90,8 @@ import com.sun.jersey.client.apache4.config.DefaultApacheHttpClient4Config;
 public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, HttpResponse> {
 
     private static IClientConfigKey<Integer> CONN_IDLE_EVICT_TIME_MILLIS = new CommonClientConfigKey<Integer>(
-            "%s.nfhttpclient.connIdleEvictTimeMilliSeconds") {};
+            "%s.nfhttpclient.connIdleEvictTimeMilliSeconds") {
+    };
 
 
     private Client restClient;
@@ -116,11 +117,11 @@ public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, Htt
     boolean bFollowRedirects = CommonClientConfigKey.FollowRedirects.defaultValue();
 
     private static final Logger logger = LoggerFactory.getLogger(RestClient.class);
-    
+
     public RestClient() {
         super(null);
     }
-    
+
     public RestClient(ILoadBalancer lb) {
         super(lb);
         restClientName = "default";
@@ -135,7 +136,7 @@ public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, Htt
         super(null, ncc);
         initWithNiwsConfig(ncc);
     }
-    
+
     public RestClient(ILoadBalancer lb, Client jerseyClient) {
         super(lb);
         this.restClient = jerseyClient;
@@ -216,7 +217,7 @@ public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, Htt
             ClientConnectionManager connMgr = httpClient4.getConnectionManager();
             if (connMgr instanceof ThreadSafeClientConnManager) {
                 ((ThreadSafeClientConnManager) connMgr)
-                .setDefaultMaxPerRoute(maxConnectionsperHost);
+                        .setDefaultMaxPerRoute(maxConnectionsperHost);
             }
         } catch (Exception e1) {
             throwInvalidValue(CommonClientConfigKey.MaxHttpConnectionsPerHost, e1);
@@ -227,7 +228,7 @@ public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, Htt
             ClientConnectionManager connMgr = httpClient4.getConnectionManager();
             if (connMgr instanceof ThreadSafeClientConnManager) {
                 ((ThreadSafeClientConnManager) connMgr)
-                .setMaxTotal(maxTotalConnections);
+                        .setMaxTotal(maxTotalConnections);
             }
         } catch (Exception e1) {
             throwInvalidValue(CommonClientConfigKey.MaxTotalHttpConnections, e1);
@@ -265,7 +266,7 @@ public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, Htt
                         bufferSize = sendBufferSize;
                     }
                 } catch (Exception e) {
-                    throwInvalidValue(CommonClientConfigKey.SendBufferSize,e);
+                    throwInvalidValue(CommonClientConfigKey.SendBufferSize, e);
                 }
             }
         }
@@ -297,7 +298,7 @@ public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, Htt
                 proxyPort = ncc.getOrDefault(CommonClientConfigKey.ProxyPort);
                 HttpHost proxy = new HttpHost(proxyHost, proxyPort);
                 httpClient4.getParams()
-                    .setParameter(ConnRouteParams.DEFAULT_PROXY, proxy);
+                        .setParameter(ConnRouteParams.DEFAULT_PROXY, proxy);
             } catch (Exception e) {
                 throwInvalidValue(CommonClientConfigKey.ProxyHost, e);
             }
@@ -307,19 +308,19 @@ public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, Htt
             final URL trustStoreUrl = getResourceForOptionalProperty(CommonClientConfigKey.TrustStore);
             final URL keyStoreUrl = getResourceForOptionalProperty(CommonClientConfigKey.KeyStore);
 
-        	final ClientConnectionManager currentManager = httpClient4.getConnectionManager();
+            final ClientConnectionManager currentManager = httpClient4.getConnectionManager();
 
             AbstractSslContextFactory abstractFactory = null;
 
 
             if (    // if client auth is required, need both a truststore and a keystore to warrant configuring
-            		// if client is not is not required, we only need a keystore OR a truststore to warrant configuring
-            		(isClientAuthRequired && (trustStoreUrl != null && keyStoreUrl != null))
-            		    || (!isClientAuthRequired && (trustStoreUrl != null || keyStoreUrl != null))
-            		) {
+                    // if client is not is not required, we only need a keystore OR a truststore to warrant configuring
+                    (isClientAuthRequired && (trustStoreUrl != null && keyStoreUrl != null))
+                            || (!isClientAuthRequired && (trustStoreUrl != null || keyStoreUrl != null))
+            ) {
 
                 try {
-                	abstractFactory = new URLSslContextFactory(trustStoreUrl,
+                    abstractFactory = new URLSslContextFactory(trustStoreUrl,
                             ncc.get(CommonClientConfigKey.TrustStorePassword),
                             keyStoreUrl,
                             ncc.get(CommonClientConfigKey.KeyStorePassword));
@@ -329,17 +330,17 @@ public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, Htt
                 }
             }
 
-        	KeyStoreAwareSocketFactory awareSocketFactory;
-        	try {
-        		awareSocketFactory = isHostnameValidationRequired ? new KeyStoreAwareSocketFactory(abstractFactory) :
-        		    new KeyStoreAwareSocketFactory(abstractFactory, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+            KeyStoreAwareSocketFactory awareSocketFactory;
+            try {
+                awareSocketFactory = isHostnameValidationRequired ? new KeyStoreAwareSocketFactory(abstractFactory) :
+                        new KeyStoreAwareSocketFactory(abstractFactory, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 
-        		currentManager.getSchemeRegistry().register(new Scheme(
-                        "https",443, awareSocketFactory));
+                currentManager.getSchemeRegistry().register(new Scheme(
+                        "https", 443, awareSocketFactory));
 
-        	} catch (Exception e) {
-        		throw new IllegalArgumentException("Unable to configure custom secure socket factory", e);
-        	}
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Unable to configure custom secure socket factory", e);
+            }
         }
 
         // Warning that if user tokens are used (i.e. ignoreUserToken == false) this may be prevent SSL connections from being
@@ -357,14 +358,14 @@ public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, Htt
         // custom SSL Factory handler
         String customSSLFactoryClassName = ncc.get(CommonClientConfigKey.CustomSSLSocketFactoryClassName);
 
-        if (customSSLFactoryClassName != null){
-            try{
+        if (customSSLFactoryClassName != null) {
+            try {
                 SSLSocketFactory customSocketFactory = (SSLSocketFactory) ClientFactory.instantiateInstanceWithClientConfig(customSSLFactoryClassName, ncc);
 
                 httpClient4.getConnectionManager().getSchemeRegistry().register(new Scheme(
-                        "https",443, customSocketFactory));
+                        "https", 443, customSocketFactory));
 
-            } catch(Exception e){
+            } catch (Exception e) {
                 throwInvalidValue(CommonClientConfigKey.CustomSSLSocketFactoryClassName, e);
             }
         }
@@ -374,35 +375,35 @@ public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, Htt
         return new ApacheHttpClient4(handler, config);
     }
 
-    public void resetSSLSocketFactory(AbstractSslContextFactory abstractContextFactory){
+    public void resetSSLSocketFactory(AbstractSslContextFactory abstractContextFactory) {
 
-    	try {
+        try {
 
-    		KeyStoreAwareSocketFactory awareSocketFactory = isHostnameValidationRequired ? new KeyStoreAwareSocketFactory(abstractContextFactory) :
-                new KeyStoreAwareSocketFactory(abstractContextFactory, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-    		httpClient4.getConnectionManager().getSchemeRegistry().register(new Scheme(
-                    "https",443, awareSocketFactory));
+            KeyStoreAwareSocketFactory awareSocketFactory = isHostnameValidationRequired ? new KeyStoreAwareSocketFactory(abstractContextFactory) :
+                    new KeyStoreAwareSocketFactory(abstractContextFactory, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+            httpClient4.getConnectionManager().getSchemeRegistry().register(new Scheme(
+                    "https", 443, awareSocketFactory));
 
-    	} catch (Exception e) {
-    		throw new IllegalArgumentException("Unable to configure custom secure socket factory", e);
-    	}
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Unable to configure custom secure socket factory", e);
+        }
     }
 
-    public KeyStore getKeyStore(){
+    public KeyStore getKeyStore() {
 
-    	SchemeRegistry registry = httpClient4.getConnectionManager().getSchemeRegistry();
+        SchemeRegistry registry = httpClient4.getConnectionManager().getSchemeRegistry();
 
-    	if(! registry.getSchemeNames().contains("https")){
-    		throw new IllegalStateException("Registry does not include an 'https' entry.");
-    	}
+        if (!registry.getSchemeNames().contains("https")) {
+            throw new IllegalStateException("Registry does not include an 'https' entry.");
+        }
 
-    	SchemeSocketFactory awareSocketFactory = httpClient4.getConnectionManager().getSchemeRegistry().getScheme("https").getSchemeSocketFactory();
+        SchemeSocketFactory awareSocketFactory = httpClient4.getConnectionManager().getSchemeRegistry().getScheme("https").getSchemeSocketFactory();
 
-    	if(awareSocketFactory instanceof KeyStoreAwareSocketFactory){
-    		return ((KeyStoreAwareSocketFactory) awareSocketFactory).getKeyStore();
-    	}else{
-    		throw new IllegalStateException("Cannot extract keystore from scheme socket factory of type: " + awareSocketFactory.getClass().getName());
-    	}
+        if (awareSocketFactory instanceof KeyStoreAwareSocketFactory) {
+            return ((KeyStoreAwareSocketFactory) awareSocketFactory).getKeyStore();
+        } else {
+            throw new IllegalStateException("Cannot extract keystore from scheme socket factory of type: " + awareSocketFactory.getClass().getName());
+        }
     }
 
 
@@ -431,7 +432,7 @@ public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, Htt
                 resourceName = URLDecoder.decode(resourceName, "UTF-8");
                 url = (new File(resourceName)).toURI().toURL();
             } catch (Exception e) {
-            	logger.error("Problem loading resource", e);
+                logger.error("Problem loading resource", e);
             }
         }
         return url;
@@ -459,10 +460,10 @@ public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, Htt
         return result;
     }
 
-    public HttpResponse execute(HttpRequest task) throws Exception  {
+    public HttpResponse execute(HttpRequest task) throws Exception {
         return execute(task, null);
     }
-    
+
     @Override
     public HttpResponse execute(HttpRequest task, IClientConfig requestConfig) throws Exception {
         IClientConfig config = (requestConfig == null) ? task.getOverrideConfig() : requestConfig;
@@ -485,15 +486,15 @@ public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, Htt
         boolean isSecure = ncc.get(CommonClientConfigKey.IsSecure, this.isSecure);
         String scheme = uri.getScheme();
         if (scheme != null) {
-            isSecure = 	scheme.equalsIgnoreCase("https");
+            isSecure = scheme.equalsIgnoreCase("https");
         }
         int port = uri.getPort();
-        if (port < 0 && !isSecure){
+        if (port < 0 && !isSecure) {
             port = 80;
-        } else if (port < 0 && isSecure){
+        } else if (port < 0 && isSecure) {
             port = 443;
         }
-        if (scheme == null){
+        if (scheme == null) {
             if (isSecure) {
                 scheme = "https";
             } else {
@@ -542,34 +543,34 @@ public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, Htt
             }
         }
         Object entity = requestEntity;
-        
+
         switch (verb) {
-        case GET:
-            jerseyResponse = b.get(ClientResponse.class);
-            break;
-        case POST:
-            jerseyResponse = b.post(ClientResponse.class, entity);
-            break;
-        case PUT:
-            jerseyResponse = b.put(ClientResponse.class, entity);
-            break;
-        case DELETE:
-            jerseyResponse = b.delete(ClientResponse.class);
-            break;
-        case HEAD:
-            jerseyResponse = b.head();
-            break;
-        case OPTIONS:
-            jerseyResponse = b.options(ClientResponse.class);
-            break;
-        default:
-            throw new ClientException(
-                    ClientException.ErrorType.GENERAL,
-                    "You have to one of the REST verbs such as GET, POST etc.");
+            case GET:
+                jerseyResponse = b.get(ClientResponse.class);
+                break;
+            case POST:
+                jerseyResponse = b.post(ClientResponse.class, entity);
+                break;
+            case PUT:
+                jerseyResponse = b.put(ClientResponse.class, entity);
+                break;
+            case DELETE:
+                jerseyResponse = b.delete(ClientResponse.class);
+                break;
+            case HEAD:
+                jerseyResponse = b.head();
+                break;
+            case OPTIONS:
+                jerseyResponse = b.options(ClientResponse.class);
+                break;
+            default:
+                throw new ClientException(
+                        ClientException.ErrorType.GENERAL,
+                        "You have to one of the REST verbs such as GET, POST etc.");
         }
 
         thisResponse = new HttpClientResponse(jerseyResponse, uri, overriddenClientConfig);
-        if (thisResponse.getStatus() == 503){
+        if (thisResponse.getStatus() == 503) {
             thisResponse.close();
             throw new ClientException(ClientException.ErrorType.SERVER_THROTTLED);
         }
@@ -579,7 +580,7 @@ public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, Htt
     @Override
     protected boolean isRetriableException(Throwable e) {
         if (e instanceof ClientException
-                && ((ClientException)e).getErrorType() == ClientException.ErrorType.SERVER_THROTTLED){
+                && ((ClientException) e).getErrorType() == ClientException.ErrorType.SERVER_THROTTLED) {
             return false;
         }
         boolean shouldRetry = isConnectException(e) || isSocketException(e);
@@ -615,7 +616,7 @@ public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, Htt
         while (e != null && levelCount < 10) {
             if ((e instanceof SocketException)
                     || ((e instanceof org.apache.http.conn.ConnectTimeoutException)
-                            && !(e instanceof org.apache.http.conn.ConnectionPoolTimeoutException))) {
+                    && !(e instanceof org.apache.http.conn.ConnectionPoolTimeoutException))) {
                 return true;
             }
             e = e.getCause();
@@ -624,14 +625,14 @@ public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, Htt
         return false;
     }
 
-	@Override
-	protected Pair<String, Integer> deriveHostAndPortFromVipAddress(String vipAddress)
-			throws URISyntaxException, ClientException {
-		if (!vipAddress.contains("http")) {
-			vipAddress = "http://" + vipAddress;
-		}
-		return super.deriveHostAndPortFromVipAddress(vipAddress);
-	}
+    @Override
+    protected Pair<String, Integer> deriveHostAndPortFromVipAddress(String vipAddress)
+            throws URISyntaxException, ClientException {
+        if (!vipAddress.contains("http")) {
+            vipAddress = "http://" + vipAddress;
+        }
+        return super.deriveHostAndPortFromVipAddress(vipAddress);
+    }
 
     @Override
     public RequestSpecificRetryHandler getRequestSpecificRetryHandler(
@@ -646,15 +647,15 @@ public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, Htt
             return new RequestSpecificRetryHandler(true, false, this.getRetryHandler(), requestConfig);
         } else {
             return new RequestSpecificRetryHandler(true, true, this.getRetryHandler(), requestConfig);
-        } 
+        }
     }
-	
-	public void shutdown() {
-	    ILoadBalancer lb = this.getLoadBalancer();
-	    if (lb instanceof BaseLoadBalancer) {
-	        ((BaseLoadBalancer) lb).shutdown();
-	    }
-	    NFHttpClientFactory.shutdownNFHttpClient(restClientName);
-	}
+
+    public void shutdown() {
+        ILoadBalancer lb = this.getLoadBalancer();
+        if (lb instanceof BaseLoadBalancer) {
+            ((BaseLoadBalancer) lb).shutdown();
+        }
+        NFHttpClientFactory.shutdownNFHttpClient(restClientName);
+    }
 }
 

@@ -55,37 +55,44 @@ import java.util.concurrent.TimeUnit;
  * 
  */
 public class LoadBalancerStats implements IClientConfigAware {
-    
+
     private static final String PREFIX = "LBStats_";
 
     public static final IClientConfigKey<Integer> ACTIVE_REQUESTS_COUNT_TIMEOUT = new CommonClientConfigKey<Integer>(
-            "niws.loadbalancer.serverStats.activeRequestsCount.effectiveWindowSeconds", 60 * 10) {};
+            "niws.loadbalancer.serverStats.activeRequestsCount.effectiveWindowSeconds", 60 * 10) {
+    };
 
     public static final IClientConfigKey<Integer> CONNECTION_FAILURE_COUNT_THRESHOLD = new CommonClientConfigKey<Integer>(
-            "niws.loadbalancer.%s.connectionFailureCountThreshold", 3) {};
+            "niws.loadbalancer.%s.connectionFailureCountThreshold", 3) {
+    };
 
     public static final IClientConfigKey<Integer> CIRCUIT_TRIP_TIMEOUT_FACTOR_SECONDS = new CommonClientConfigKey<Integer>(
-            "niws.loadbalancer.%s.circuitTripTimeoutFactorSeconds", 10) {};
+            "niws.loadbalancer.%s.circuitTripTimeoutFactorSeconds", 10) {
+    };
 
     public static final IClientConfigKey<Integer> CIRCUIT_TRIP_MAX_TIMEOUT_SECONDS = new CommonClientConfigKey<Integer>(
-            "niws.loadbalancer.%s.circuitTripMaxTimeoutSeconds", 30) {};
+            "niws.loadbalancer.%s.circuitTripMaxTimeoutSeconds", 30) {
+    };
 
     public static final IClientConfigKey<Integer> DEFAULT_CONNECTION_FAILURE_COUNT_THRESHOLD = new CommonClientConfigKey<Integer>(
-            "niws.loadbalancer.default.connectionFailureCountThreshold", 3) {};
+            "niws.loadbalancer.default.connectionFailureCountThreshold", 3) {
+    };
 
     public static final IClientConfigKey<Integer> DEFAULT_CIRCUIT_TRIP_TIMEOUT_FACTOR_SECONDS = new CommonClientConfigKey<Integer>(
-            "niws.loadbalancer.default.circuitTripTimeoutFactorSeconds", 10) {};
+            "niws.loadbalancer.default.circuitTripTimeoutFactorSeconds", 10) {
+    };
 
     public static final IClientConfigKey<Integer> DEFAULT_CIRCUIT_TRIP_MAX_TIMEOUT_SECONDS = new CommonClientConfigKey<Integer>(
-            "niws.loadbalancer.default.circuitTripMaxTimeoutSeconds", 30) {};
+            "niws.loadbalancer.default.circuitTripMaxTimeoutSeconds", 30) {
+    };
 
     private String name;
-    
+
     volatile Map<String, ZoneStats> zoneStatsMap = new ConcurrentHashMap<>();
     volatile Map<String, List<? extends Server>> upServerListZoneMap = new ConcurrentHashMap<>();
-    
+
     private UnboxedIntProperty connectionFailureThreshold = new UnboxedIntProperty(CONNECTION_FAILURE_COUNT_THRESHOLD.defaultValue());
-        
+
     private UnboxedIntProperty circuitTrippedTimeoutFactor = new UnboxedIntProperty(CIRCUIT_TRIP_TIMEOUT_FACTOR_SECONDS.defaultValue());
 
     private UnboxedIntProperty maxCircuitTrippedTimeout = new UnboxedIntProperty(CIRCUIT_TRIP_MAX_TIMEOUT_SECONDS.defaultValue());
@@ -105,9 +112,9 @@ public class LoadBalancerStats implements IClientConfigAware {
         ServerStats ss = new ServerStats(this);
         //configure custom settings
         ss.setBufferSize(1000);
-        ss.setPublishInterval(1000);                    
+        ss.setPublishInterval(1000);
         ss.initialize(server);
-        return ss;        
+        return ss;
     }
 
     public LoadBalancerStats() {
@@ -126,7 +133,7 @@ public class LoadBalancerStats implements IClientConfigAware {
         Preconditions.checkArgument(name != null, "IClientConfig#getCLientName() must not be null");
         this.connectionFailureThreshold = new UnboxedIntProperty(
                 clientConfig.getGlobalProperty(CONNECTION_FAILURE_COUNT_THRESHOLD.format(name))
-                    .fallbackWith(clientConfig.getGlobalProperty(DEFAULT_CONNECTION_FAILURE_COUNT_THRESHOLD))
+                        .fallbackWith(clientConfig.getGlobalProperty(DEFAULT_CONNECTION_FAILURE_COUNT_THRESHOLD))
         );
         this.circuitTrippedTimeoutFactor = new UnboxedIntProperty(
                 clientConfig.getGlobalProperty(CIRCUIT_TRIP_TIMEOUT_FACTOR_SECONDS.format(name))
@@ -171,13 +178,13 @@ public class LoadBalancerStats implements IClientConfigAware {
      * the servers participating in the LoadBalancer changes
      * @param servers
      */
-    public void updateServerList(List<Server> servers){
-        for (Server s: servers){
+    public void updateServerList(List<Server> servers) {
+        for (Server s: servers) {
             addServer(s);
         }
     }
-    
-    
+
+
     public void addServer(Server server) {
         if (server != null) {
             try {
@@ -187,19 +194,19 @@ public class LoadBalancerStats implements IClientConfigAware {
                 serverStatsCache.asMap().putIfAbsent(server, stats);
             }
         }
-    } 
-    
+    }
+
     /**
      * Method that updates the internal stats of Response times maintained on a per Server
      * basis
      * @param server
      * @param msecs
      */
-    public void noteResponseTime(Server server, double msecs){
-        ServerStats ss = getServerStats(server);  
+    public void noteResponseTime(Server server, double msecs) {
+        ServerStats ss = getServerStats(server);
         ss.noteResponseTime(msecs);
     }
-    
+
     protected ServerStats getServerStats(Server server) {
         if (server == null) {
             return null;
@@ -213,45 +220,45 @@ public class LoadBalancerStats implements IClientConfigAware {
             return serverStatsCache.asMap().get(server);
         }
     }
-    
+
     public void incrementActiveRequestsCount(Server server) {
-        ServerStats ss = getServerStats(server); 
+        ServerStats ss = getServerStats(server);
         ss.incrementActiveRequestsCount();
     }
 
     public void decrementActiveRequestsCount(Server server) {
-        ServerStats ss = getServerStats(server); 
+        ServerStats ss = getServerStats(server);
         ss.decrementActiveRequestsCount();
     }
 
     private ZoneStats getZoneStats(String zone) {
         zone = zone.toLowerCase();
         ZoneStats zs = zoneStatsMap.get(zone);
-        if (zs == null){
+        if (zs == null) {
             zoneStatsMap.put(zone, new ZoneStats(this.getName(), zone, this));
             zs = zoneStatsMap.get(zone);
         }
         return zs;
     }
 
-    
+
     public boolean isCircuitBreakerTripped(Server server) {
         ServerStats ss = getServerStats(server);
         return ss.isCircuitBreakerTripped();
     }
-        
+
     public void incrementSuccessiveConnectionFailureCount(Server server) {
         ServerStats ss = getServerStats(server);
         ss.incrementSuccessiveConnectionFailureCount();
     }
-    
+
     public void clearSuccessiveConnectionFailureCount(Server server) {
         ServerStats ss = getServerStats(server);
-        ss.clearSuccessiveConnectionFailureCount();        
+        ss.clearSuccessiveConnectionFailureCount();
     }
 
-    public void incrementNumRequests(Server server){
-        ServerStats ss = getServerStats(server);  
+    public void incrementNumRequests(Server server) {
+        ServerStats ss = getServerStats(server);
         ss.incrementNumRequests();
     }
 
@@ -261,7 +268,7 @@ public class LoadBalancerStats implements IClientConfigAware {
             getZoneStats(zone).incrementCounter();
         }
     }
-    
+
     public void updateZoneServerMapping(Map<String, List<Server>> map) {
         upServerListZoneMap = new ConcurrentHashMap<String, List<? extends Server>>(map);
         // make sure ZoneStats object exist for available zones for monitoring purpose
@@ -281,11 +288,11 @@ public class LoadBalancerStats implements IClientConfigAware {
         }
         return currentList.size();
     }
-    
+
     public int getActiveRequestsCount(String zone) {
         return getZoneSnapshot(zone).getActiveRequestsCount();
     }
-        
+
     public double getActiveRequestsPerServer(String zone) {
         return getZoneSnapshot(zone).getLoadPerServer();
     }
@@ -296,9 +303,9 @@ public class LoadBalancerStats implements IClientConfigAware {
         }
         zone = zone.toLowerCase();
         List<? extends Server> currentList = upServerListZoneMap.get(zone);
-        return getZoneSnapshot(currentList);        
+        return getZoneSnapshot(currentList);
     }
-    
+
     /**
      * This is the core function to get zone stats. All stats are reported to avoid
      * going over the list again for a different stat.
@@ -316,7 +323,7 @@ public class LoadBalancerStats implements IClientConfigAware {
         double loadPerServer = 0;
         long currentTime = System.currentTimeMillis();
         for (Server server: servers) {
-            ServerStats stat = getSingleServerStat(server);   
+            ServerStats stat = getSingleServerStat(server);
             if (stat.isCircuitBreakerTripped(currentTime)) {
                 circuitBreakerTrippedCount++;
             } else {
@@ -334,12 +341,12 @@ public class LoadBalancerStats implements IClientConfigAware {
         }
         return new ZoneSnapshot(instanceCount, circuitBreakerTrippedCount, activeConnectionsCount, loadPerServer);
     }
-    
+
     public int getCircuitBreakerTrippedCount(String zone) {
         return getZoneSnapshot(zone).getCircuitTrippedCount();
     }
 
-    @Monitor(name=PREFIX + "CircuitBreakerTrippedCount", type = DataSourceType.GAUGE)   
+    @Monitor(name = PREFIX + "CircuitBreakerTrippedCount", type = DataSourceType.GAUGE)
     public int getCircuitBreakerTrippedCount() {
         int count = 0;
         for (String zone: upServerListZoneMap.keySet()) {
@@ -347,7 +354,7 @@ public class LoadBalancerStats implements IClientConfigAware {
         }
         return count;
     }
-    
+
     public long getMeasuredZoneHits(String zone) {
         if (zone == null) {
             return 0;
@@ -364,7 +371,7 @@ public class LoadBalancerStats implements IClientConfigAware {
         }
         return count;
     }
-        
+
     public int getCongestionRatePercentage(String zone) {
         if (zone == null) {
             return 0;
@@ -372,26 +379,26 @@ public class LoadBalancerStats implements IClientConfigAware {
         zone = zone.toLowerCase();
         List<? extends Server> currentList = upServerListZoneMap.get(zone);
         if (currentList == null || currentList.size() == 0) {
-            return 0;            
+            return 0;
         }
-        int serverCount = currentList.size(); 
+        int serverCount = currentList.size();
         int activeConnectionsCount = 0;
         int circuitBreakerTrippedCount = 0;
         for (Server server: currentList) {
-            ServerStats stat = getSingleServerStat(server);   
+            ServerStats stat = getSingleServerStat(server);
             activeConnectionsCount += stat.getActiveRequestsCount();
             if (stat.isCircuitBreakerTripped()) {
                 circuitBreakerTrippedCount++;
             }
         }
-        return (int) ((activeConnectionsCount + circuitBreakerTrippedCount) * 100L / serverCount); 
+        return (int) ((activeConnectionsCount + circuitBreakerTrippedCount) * 100L / serverCount);
     }
-    
-    @Monitor(name=PREFIX + "AvailableZones", type = DataSourceType.INFORMATIONAL)   
+
+    @Monitor(name = PREFIX + "AvailableZones", type = DataSourceType.INFORMATIONAL)
     public Set<String> getAvailableZones() {
         return upServerListZoneMap.keySet();
     }
-    
+
     public ServerStats getSingleServerStat(Server server) {
         return getServerStats(server);
     }
@@ -399,20 +406,20 @@ public class LoadBalancerStats implements IClientConfigAware {
     /**
      * returns map of Stats for all servers
      */
-    public Map<Server,ServerStats> getServerStats(){
+    public Map<Server, ServerStats> getServerStats() {
         return serverStatsCache.asMap();
     }
-    
+
     public Map<String, ZoneStats> getZoneStats() {
         return zoneStatsMap;
     }
-    
+
     @Override
     public String toString() {
-        return "Zone stats: " + zoneStatsMap.toString() 
+        return "Zone stats: " + zoneStatsMap.toString()
                 + "," + "Server stats: " + getSortedServerStats(getServerStats().values()).toString();
     }
-    
+
     private static Comparator<ServerStats> serverStatsComparator = new Comparator<ServerStats>() {
         @Override
         public int compare(ServerStats o1, ServerStats o2) {
@@ -424,10 +431,10 @@ public class LoadBalancerStats implements IClientConfigAware {
             if (o2.server != null && o2.server.getZone() != null) {
                 zone2 = o2.server.getZone();
             }
-            return zone1.compareTo(zone2);            
+            return zone1.compareTo(zone2);
         }
     };
-    
+
     private static Collection<ServerStats> getSortedServerStats(Collection<ServerStats> stats) {
         List<ServerStats> list = new ArrayList<ServerStats>(stats);
         Collections.sort(list, serverStatsComparator);

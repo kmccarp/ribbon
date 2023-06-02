@@ -79,6 +79,6 @@ public abstract class ResourceGroup<T extends RequestTemplate<?, ?>> {
     public final String name() {
         return name;
     }
-    
+
     public abstract <S> TemplateBuilder<S, ?, ?> newTemplateBuilder(String name, Class<? extends S> classType);
 }

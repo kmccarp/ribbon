@@ -21,5 +21,5 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class TestObject {
-	public String name;
+    public String name;
 }

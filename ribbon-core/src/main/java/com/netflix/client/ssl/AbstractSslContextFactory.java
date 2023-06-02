@@ -42,53 +42,53 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractSslContextFactory {
 
-	
+
     private final static Logger LOGGER = LoggerFactory.getLogger(AbstractSslContextFactory.class);
-	
+
     /** The secure socket algorithm that is to be used. */
     public static final String SOCKET_ALGORITHM = "SSL";
 
     /** The keystore resulting from loading keystore URL     */
     private KeyStore keyStore;
-    
+
     /** The truststore resulting from loading the truststore URL     */
     private KeyStore trustStore;
-    
+
     /** The password for the keystore     */
     private String keyStorePassword;
-    
+
     private final int trustStorePasswordLength;
-    
+
     private final int keyStorePasswordLength;
-	
-	
-    protected AbstractSslContextFactory(final KeyStore trustStore, final String trustStorePassword, final KeyStore keyStore, final String keyStorePassword){
-    	
-    	this.trustStore = trustStore;
-    	this.keyStorePassword = keyStorePassword;
-    	this.keyStore = keyStore;
-    	
-    	this.keyStorePasswordLength = keyStorePassword != null ? keyStorePassword.length() : -1;
-    	this.trustStorePasswordLength = trustStorePassword != null ? trustStorePassword.length() : -1;
+
+
+    protected AbstractSslContextFactory(final KeyStore trustStore, final String trustStorePassword, final KeyStore keyStore, final String keyStorePassword) {
+
+        this.trustStore = trustStore;
+        this.keyStorePassword = keyStorePassword;
+        this.keyStore = keyStore;
+
+        this.keyStorePasswordLength = keyStorePassword != null ? keyStorePassword.length() : -1;
+        this.trustStorePasswordLength = trustStorePassword != null ? trustStorePassword.length() : -1;
     }
-    
-    public KeyStore getKeyStore(){
-    	return this.keyStore;
+
+    public KeyStore getKeyStore() {
+        return this.keyStore;
     }
-    
-    public KeyStore getTrustStore(){
-    	return this.trustStore;
+
+    public KeyStore getTrustStore() {
+        return this.trustStore;
     }
-    
-    public int getKeyStorePasswordLength(){
-    	return this.keyStorePasswordLength;
+
+    public int getKeyStorePasswordLength() {
+        return this.keyStorePasswordLength;
     }
-    
-    public int getTrustStorePasswordLength(){
-    	return this.trustStorePasswordLength;
+
+    public int getTrustStorePasswordLength() {
+        return this.trustStorePasswordLength;
     }
-    
-    
+
+
     /**
      * Creates the SSL context needed to create the socket factory used by this factory. The key and
      * trust store parameters are optional. If they are null then the JRE defaults will be used.
@@ -113,8 +113,8 @@ public abstract class AbstractSslContextFactory {
             throw new ClientSslSocketFactoryException(String.format("Failed to initialize an SSL context: %s", e.getMessage()), e);
         }
     }
-    
-    
+
+
     /**
      * Creates the key managers to be used by the factory from the associated key store and password.
      *
@@ -133,15 +133,15 @@ public abstract class AbstractSslContextFactory {
                     String.format("Failed to create the key store because the algorithm %s is not supported. ",
                             KeyManagerFactory.getDefaultAlgorithm()), e);
         } catch (UnrecoverableKeyException e) {
-        	throw new ClientSslSocketFactoryException("Unrecoverable Key Exception initializing key manager factory; this is probably fatal", e);
-		} catch (KeyStoreException e) {
-			throw new ClientSslSocketFactoryException("KeyStore exception initializing key manager factory; this is probably fatal", e);
-		}
+            throw new ClientSslSocketFactoryException("Unrecoverable Key Exception initializing key manager factory; this is probably fatal", e);
+        } catch (KeyStoreException e) {
+            throw new ClientSslSocketFactoryException("KeyStore exception initializing key manager factory; this is probably fatal", e);
+        }
 
         KeyManager[] managers = factory.getKeyManagers();
 
         LOGGER.debug("Key managers are initialized. Total {} managers. ", managers.length);
-        
+
         return managers;
     }
 
@@ -154,32 +154,29 @@ public abstract class AbstractSslContextFactory {
      */
     private TrustManager[] createTrustManagers() throws ClientSslSocketFactoryException {
 
-    	final TrustManagerFactory factory;
+        final TrustManagerFactory factory;
 
-    	try {
-    		factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-    		factory.init(this.trustStore);
-    	} catch (NoSuchAlgorithmException e) {
-    		throw new ClientSslSocketFactoryException(String.format("Failed to create the trust store because the algorithm %s is not supported. ",
-    				KeyManagerFactory.getDefaultAlgorithm()), e);
-    	} catch (KeyStoreException e) {
-    		throw new ClientSslSocketFactoryException("KeyStore exception initializing trust manager factory; this is probably fatal", e);
-    	}
+        try {
+            factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            factory.init(this.trustStore);
+        } catch (NoSuchAlgorithmException e) {
+            throw new ClientSslSocketFactoryException(String.format("Failed to create the trust store because the algorithm %s is not supported. ",
+                    KeyManagerFactory.getDefaultAlgorithm()), e);
+        } catch (KeyStoreException e) {
+            throw new ClientSslSocketFactoryException("KeyStore exception initializing trust manager factory; this is probably fatal", e);
+        }
 
-    	final TrustManager[] managers = factory.getTrustManagers();
+        final TrustManager[] managers = factory.getTrustManagers();
 
-    	LOGGER.debug("TrustManagers are initialized. Total {} managers: ", managers.length);
+        LOGGER.debug("TrustManagers are initialized. Total {} managers: ", managers.length);
 
-    	return managers;
+        return managers;
 
     }
 
-    public SSLContext getSSLContext() throws ClientSslSocketFactoryException{
-    	return createSSLContext(); 
+    public SSLContext getSSLContext() throws ClientSslSocketFactoryException {
+        return createSSLContext();
     }
-    
-    
-    
 
-	
+
 }

@@ -18,18 +18,17 @@ public class DefaultResponseToErrorPolicy<O> implements Func2<HttpClientResponse
             return Observable.error(new ClientException(ClientException.ErrorType.GENERAL));
         }
         if (t1.getStatus().equals(HttpResponseStatus.SERVICE_UNAVAILABLE) ||
-            t1.getStatus().equals(HttpResponseStatus.BAD_GATEWAY) ||
-            t1.getStatus().equals(HttpResponseStatus.GATEWAY_TIMEOUT)) {
+                t1.getStatus().equals(HttpResponseStatus.BAD_GATEWAY) ||
+                t1.getStatus().equals(HttpResponseStatus.GATEWAY_TIMEOUT)) {
             if (backoff > 0) {
                 return Observable.timer(backoff, TimeUnit.MILLISECONDS)
-                            .concatMap(new Func1<Long, Observable<HttpClientResponse<O>>>() {
-                                @Override
-                                public Observable<HttpClientResponse<O>> call(Long t1) {
-                                    return Observable.error(new ClientException(ClientException.ErrorType.SERVER_THROTTLED));
-                                }
-                            });
-            }
-            else {
+                        .concatMap(new Func1<Long, Observable<HttpClientResponse<O>>>() {
+                            @Override
+                            public Observable<HttpClientResponse<O>> call(Long t1) {
+                                return Observable.error(new ClientException(ClientException.ErrorType.SERVER_THROTTLED));
+                            }
+                        });
+            }else {
                 return Observable.error(new ClientException(ClientException.ErrorType.SERVER_THROTTLED));
             }
         }

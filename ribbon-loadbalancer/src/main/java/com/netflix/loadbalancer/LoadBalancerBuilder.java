@@ -10,7 +10,7 @@ import com.netflix.client.config.IClientConfigKey;
 import java.util.List;
 
 public class LoadBalancerBuilder<T extends Server> {
-    
+
     private IClientConfig config = ClientConfigFactory.findDefaultConfigFactory().newConfig();
     private ServerListFilter serverListFilter;
     private IRule rule;
@@ -18,10 +18,10 @@ public class LoadBalancerBuilder<T extends Server> {
     private ServerList serverListImpl;
     private ServerListUpdater serverListUpdater;
     private IClientConfigAware.Factory factory = ClientFactory::instantiateInstanceWithClientConfig;
-    
+
     private LoadBalancerBuilder() {
     }
-    
+
     public static <T extends Server> LoadBalancerBuilder<T> newBuilder() {
         return new LoadBalancerBuilder<T>();
     }
@@ -40,17 +40,17 @@ public class LoadBalancerBuilder<T extends Server> {
         this.rule = rule;
         return this;
     }
-    
+
     public LoadBalancerBuilder<T> withPing(IPing ping) {
         this.ping = ping;
         return this;
     }
-    
+
     public LoadBalancerBuilder<T> withDynamicServerList(ServerList<T> serverListImpl) {
         this.serverListImpl = serverListImpl;
         return this;
     }
-    
+
     public LoadBalancerBuilder<T> withServerListFilter(ServerListFilter<T> serverListFilter) {
         this.serverListFilter = serverListFilter;
         return this;
@@ -69,7 +69,7 @@ public class LoadBalancerBuilder<T extends Server> {
         lb.setServersList(servers);
         return lb;
     }
-    
+
     private static IRule createRuleFromConfig(IClientConfig config, IClientConfigAware.Factory factory) {
         String ruleClassName = config.getOrDefault(IClientConfigKey.Keys.NFLoadBalancerRuleClassName);
         if (ruleClassName == null) {
@@ -97,7 +97,7 @@ public class LoadBalancerBuilder<T extends Server> {
         }
         return updater;
     }
-    
+
     private static ServerList<Server> createServerListFromConfig(IClientConfig config, IClientConfigAware.Factory factory) {
         String serverListClassName = config.get(IClientConfigKey.Keys.NIWSServerListClassName);
         if (serverListClassName == null) {
@@ -111,7 +111,7 @@ public class LoadBalancerBuilder<T extends Server> {
         }
         return list;
     }
-    
+
     /**
      * Build a {@link ZoneAwareLoadBalancer} with a dynamic {@link ServerList} and an {@link IRule}. The {@link ServerList} can be
      * either set in the {@link #withDynamicServerList(ServerList)} or in the {@link IClientConfig} using {@link CommonClientConfigKey#NIWSServerListClassName}.

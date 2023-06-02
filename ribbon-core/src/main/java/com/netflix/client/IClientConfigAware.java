@@ -45,5 +45,5 @@ public interface IClientConfigAware {
     default void initWithNiwsConfig(IClientConfig clientConfig, Factory factory) {
         initWithNiwsConfig(clientConfig);
     }
-    
+
 }

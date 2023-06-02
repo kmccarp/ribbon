@@ -27,31 +27,31 @@ import java.util.Map;
  */
 public interface IResponse extends Closeable
 {
-   
-   /**
-    * Returns the raw entity if available from the response 
-    */
-   public Object getPayload() throws ClientException;
-      
-   /**
-    * A "peek" kinda API. Use to check if your service returned a response with an Entity
-    */
-   public boolean hasPayload();
-   
-   /**
-    * @return true if the response is deemed success, for example, 200 response code for http protocol.
-    */
-   public boolean isSuccess();
-   
-      
-   /**
-    * Return the Request URI that generated this response
-    */
-   public URI getRequestedURI();
-   
-   /**
-    * 
-    * @return Headers if any in the response.
-    */
-   public Map<String, ?> getHeaders();   
+
+    /**
+     * Returns the raw entity if available from the response 
+     */
+    public Object getPayload() throws ClientException;
+
+    /**
+     * A "peek" kinda API. Use to check if your service returned a response with an Entity
+     */
+    public boolean hasPayload();
+
+    /**
+     * @return true if the response is deemed success, for example, 200 response code for http protocol.
+     */
+    public boolean isSuccess();
+
+
+    /**
+     * Return the Request URI that generated this response
+     */
+    public URI getRequestedURI();
+
+    /**
+     * 
+     * @return Headers if any in the response.
+     */
+    public Map<String, ?> getHeaders();
 }

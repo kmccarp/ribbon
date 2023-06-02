@@ -39,13 +39,13 @@ import com.google.common.base.Strings;
  * @author Danny Yuan
  * @author Peter D. Stout
  */
-public class URLSslContextFactory extends AbstractSslContextFactory{
+public class URLSslContextFactory extends AbstractSslContextFactory {
     private final static Logger LOGGER = LoggerFactory.getLogger(URLSslContextFactory.class);
 
-    
+
     private final URL keyStoreUrl;
     private final URL trustStoreUrl;
-    
+
 
     /**
      * Creates a {@code ClientSSLSocketFactory} instance. This instance loads only the given trust
@@ -63,15 +63,14 @@ public class URLSslContextFactory extends AbstractSslContextFactory{
      * @throws ClientSslSocketFactoryException thrown if creating this instance fails.
      */
     public URLSslContextFactory(final URL trustStoreUrl, final String trustStorePassword, final URL keyStoreUrl, final String keyStorePassword) throws ClientSslSocketFactoryException {
-    	super(createKeyStore(trustStoreUrl, trustStorePassword), trustStorePassword, createKeyStore(keyStoreUrl, keyStorePassword), keyStorePassword);
+        super(createKeyStore(trustStoreUrl, trustStorePassword), trustStorePassword, createKeyStore(keyStoreUrl, keyStorePassword), keyStorePassword);
 
-    	this.keyStoreUrl = keyStoreUrl;
-    	this.trustStoreUrl = trustStoreUrl;
+        this.keyStoreUrl = keyStoreUrl;
+        this.trustStoreUrl = trustStoreUrl;
 
-    	LOGGER.info("Loaded keyStore from: {}", keyStoreUrl);
-    	LOGGER.info("loaded trustStore from: {}", trustStoreUrl);
+        LOGGER.info("Loaded keyStore from: {}", keyStoreUrl);
+        LOGGER.info("loaded trustStore from: {}", trustStoreUrl);
     }
-
 
 
     /**
@@ -96,43 +95,42 @@ public class URLSslContextFactory extends AbstractSslContextFactory{
      * @throws ClientSslSocketFactoryException a wrapper exception for any problems encountered during keystore creation.
      */
     private static KeyStore createKeyStore(final URL storeFile, final String password) throws ClientSslSocketFactoryException {
-    	
-    	if(storeFile == null){
-    		return null;
-    	}
-    	
-    	Preconditions.checkArgument(StringUtils.isNotEmpty(password), "Null keystore should have empty password, defined keystore must have password");
-    	
-    	KeyStore keyStore = null;
-    	
-    	try{
-    		keyStore = KeyStore.getInstance("jks");
 
-    		InputStream is = storeFile.openStream();
+        if (storeFile == null) {
+            return null;
+        }
 
-    		try {
-    			keyStore.load(is, password.toCharArray());
-    		} catch (NoSuchAlgorithmException e) {
-    			throw new ClientSslSocketFactoryException(String.format("Failed to create a keystore that supports algorithm %s: %s", SOCKET_ALGORITHM, e.getMessage()), e);
-			} catch (CertificateException e) {
-				throw new ClientSslSocketFactoryException(String.format("Failed to create keystore with algorithm %s due to certificate exception: %s", SOCKET_ALGORITHM, e.getMessage()), e);
-			} finally {
-    			try {
-    				is.close();
-    			} catch (IOException ignore) { // NOPMD    				
-    			}
-    		}
-    	}catch(KeyStoreException e){
-    		throw new ClientSslSocketFactoryException(String.format("KeyStore exception creating keystore: %s", e.getMessage()), e);
-    	} catch (IOException e) {
-    		throw new ClientSslSocketFactoryException(String.format("IO exception creating keystore: %s", e.getMessage()), e);
-		}
+        Preconditions.checkArgument(StringUtils.isNotEmpty(password), "Null keystore should have empty password, defined keystore must have password");
+
+        KeyStore keyStore = null;
+
+        try {
+            keyStore = KeyStore.getInstance("jks");
+
+            InputStream is = storeFile.openStream();
+
+            try {
+                keyStore.load(is, password.toCharArray());
+            } catch (NoSuchAlgorithmException e) {
+                throw new ClientSslSocketFactoryException(String.format("Failed to create a keystore that supports algorithm %s: %s", SOCKET_ALGORITHM, e.getMessage()), e);
+            } catch (CertificateException e) {
+                throw new ClientSslSocketFactoryException(String.format("Failed to create keystore with algorithm %s due to certificate exception: %s", SOCKET_ALGORITHM, e.getMessage()), e);
+            } finally {
+                try {
+                    is.close();
+                } catch (IOException ignore) { // NOPMD    				
+                }
+            }
+        } catch (KeyStoreException e) {
+            throw new ClientSslSocketFactoryException(String.format("KeyStore exception creating keystore: %s", e.getMessage()), e);
+        } catch (IOException e) {
+            throw new ClientSslSocketFactoryException(String.format("IO exception creating keystore: %s", e.getMessage()), e);
+        }
 
         return keyStore;
     }
 
 
-    
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
