@@ -2,7 +2,7 @@ dependencies {
     api project(':ribbon-core')
     api project(':ribbon-loadbalancer')
     api 'commons-collections:commons-collections:3.2.2'        
-    api 'org.apache.httpcomponents:httpclient:4.2.1'
+    api 'org.apache.httpcomponents:httpclient:4.2.3'
     api 'com.google.code.findbugs:annotations:2.0.0' 
     api "com.sun.jersey:jersey-client:${jersey_version}"
     api "com.sun.jersey.contribs:jersey-apache-client4:${jersey_version}"
