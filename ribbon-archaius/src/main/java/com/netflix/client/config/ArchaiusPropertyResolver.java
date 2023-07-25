@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
-public class ArchaiusPropertyResolver implements PropertyResolver {
+public final class ArchaiusPropertyResolver implements PropertyResolver {
     private static final Logger LOG = LoggerFactory.getLogger(ArchaiusPropertyResolver.class);
 
     public static final ArchaiusPropertyResolver INSTANCE = new ArchaiusPropertyResolver();

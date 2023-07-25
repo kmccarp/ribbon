@@ -66,7 +66,7 @@ public class DiscoveryEnabledServerListTest extends MockedDiscoveryServerListTes
 
     @Override
     protected List<Server> getMockServerList() {
-        List<Server> servers = new ArrayList<Server>();
+        List<Server> servers = new ArrayList<>();
         servers.add(new Server("localhost", 12345));
         servers.add(new Server("localhost", server.getPort()));
         return servers;

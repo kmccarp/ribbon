@@ -19,8 +19,8 @@ import java.util.List;
 
 public class ParsedTemplate {
 
-    private List<Object> parsed;
-    private String template;
+    private final List<Object> parsed;
+    private final String template;
 
     public ParsedTemplate(List<Object> parsed, String template) {
         super();

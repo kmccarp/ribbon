@@ -53,7 +53,7 @@ public class EVCacheAnnotationProcessor implements AnnotationProcessor<GroupBuil
         }
     }
 
-    private Map<CacheId, EvCacheProvider<?>> evCacheProviderPool = new HashMap<CacheId, EvCacheProvider<?>>();
+    private final Map<CacheId, EvCacheProvider<?>> evCacheProviderPool = new HashMap<>();
 
     @Override
     public void process(String templateName, TemplateBuilder templateBuilder, Method method) {

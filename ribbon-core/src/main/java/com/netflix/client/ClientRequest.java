@@ -31,8 +31,8 @@ import com.netflix.client.config.IClientConfig;
 public class ClientRequest implements Cloneable {
 
     protected URI uri;
-    protected Object loadBalancerKey = null;
-    protected Boolean isRetriable = null;
+    protected Object loadBalancerKey;
+    protected Boolean isRetriable;
     protected IClientConfig overrideConfig;
         
     public ClientRequest() {
@@ -94,7 +94,7 @@ public class ClientRequest implements Cloneable {
     }
 
     public boolean isRetriable() {
-        return (Boolean.TRUE.equals(isRetriable));
+        return Boolean.TRUE.equals(isRetriable);
     }
 
     protected final ClientRequest setRetriable(boolean isRetriable) {

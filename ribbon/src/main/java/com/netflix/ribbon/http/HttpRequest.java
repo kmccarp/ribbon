@@ -77,11 +77,11 @@ class HttpRequest<T> implements RibbonRequest<T> {
         httpRequest = requestBuilder.createClientRequest();
         hystrixCacheKey = requestBuilder.hystrixCacheKey();
         cacheHystrixCacheKey = hystrixCacheKey == null ? null : hystrixCacheKey + HttpRequestTemplate.CACHE_HYSTRIX_COMMAND_SUFFIX;
-        requestProperties = new HashMap<String, Object>(requestBuilder.requestProperties());
+        requestProperties = new HashMap<>(requestBuilder.requestProperties());
         if (requestBuilder.cacheProvider() != null) {
             CacheProvider<T> provider = requestBuilder.cacheProvider().getProvider();
             String key = TemplateParser.toData(this.requestProperties, requestBuilder.cacheProvider().getKeyTemplate());
-            cacheProvider = new CacheProviderWithKey<T>(provider, key);
+            cacheProvider = new CacheProviderWithKey<>(provider, key);
         } else {
             cacheProvider = null;
         }
@@ -92,15 +92,15 @@ class HttpRequest<T> implements RibbonRequest<T> {
     }
 
     HystrixObservableCommandChain<T> createHystrixCommandChain() {
-        List<HystrixObservableCommand<T>> commands = new ArrayList<HystrixObservableCommand<T>>(2);
+        List<HystrixObservableCommand<T>> commands = new ArrayList<>(2);
         if (cacheProvider != null) {
-            commands.add(new CacheObservableCommand<T>(cacheProvider.getCacheProvider(), cacheProvider.getKey(), cacheHystrixCacheKey,
+            commands.add(new CacheObservableCommand<>(cacheProvider.getCacheProvider(), cacheProvider.getKey(), cacheHystrixCacheKey,
                     requestProperties, template.cacheHystrixProperties()));
         }
-        commands.add(new HttpResourceObservableCommand<T>(client, httpRequest, hystrixCacheKey, requestProperties, template.fallbackHandler(),
+        commands.add(new HttpResourceObservableCommand<>(client, httpRequest, hystrixCacheKey, requestProperties, template.fallbackHandler(),
                 template.responseValidator(), template.getClassType(), template.hystrixProperties()));
 
-        return new HystrixObservableCommandChain<T>(commands);
+        return new HystrixObservableCommandChain<>(commands);
     }
 
     @Override
@@ -127,7 +127,7 @@ class HttpRequest<T> implements RibbonRequest<T> {
 
     @Override
     public RequestWithMetaData<T> withMetadata() {
-        return new HttpMetaRequest<T>(this);
+        return new HttpMetaRequest<>(this);
     }
 
     boolean isByteBufResponse() {

@@ -28,7 +28,7 @@ public class HelloUdpServerExternalResource extends ExternalResource {
     
     private UdpServer<DatagramPacket, DatagramPacket> server;
     
-    private int timeout = 0;
+    private int timeout;
     
     public HelloUdpServerExternalResource() {
     }

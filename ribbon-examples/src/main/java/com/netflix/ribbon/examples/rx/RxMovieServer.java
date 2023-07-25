@@ -54,8 +54,8 @@ public class RxMovieServer {
 
     private final int port;
 
-    final Map<String, Movie> movies = new ConcurrentHashMap<String, Movie>();
-    final Map<String, Set<String>> userRecommendations = new ConcurrentHashMap<String, Set<String>>();
+    final Map<String, Movie> movies = new ConcurrentHashMap<>();
+    final Map<String, Set<String>> userRecommendations = new ConcurrentHashMap<>();
 
     public RxMovieServer(int port) {
         this.port = port;
@@ -162,7 +162,7 @@ public class RxMovieServer {
                     if (userRecommendations.containsKey(userId)) {
                         recommendations = userRecommendations.get(userId);
                     } else {
-                        recommendations = new ConcurrentSet<String>();
+                        recommendations = new ConcurrentSet<>();
                         userRecommendations.put(userId, recommendations);
                     }
                     recommendations.add(movieId);
