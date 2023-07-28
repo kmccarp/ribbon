@@ -48,11 +48,11 @@ public class ClientFactoryTest {
 		assertNotNull(client);
 		DynamicServerListLoadBalancer lb = (DynamicServerListLoadBalancer) client.getLoadBalancer();
 		assertTrue(lb.getServerListImpl() instanceof ConfigurationBasedServerList);
-		Set<Server> expected = new HashSet<Server>();
+		Set<Server> expected = new HashSet<>();
 		expected.add(new Server("www.example1.come:80"));
 		expected.add(new Server("www.example2.come:80"));
 		expected.add(new Server("www.example3.come:80"));
-		Set<Server> result = new HashSet<Server>();
+		Set<Server> result = new HashSet<>();
 		for (int i = 0; i <= 10; i++) {
 			Server s = lb.chooseServer();
 			result.add(s);			

@@ -62,7 +62,7 @@ public class EurekaNotificationServerListUpdaterTest {
         );
 
         try {
-            Capture<EurekaEventListener> eventListenerCapture = new Capture<EurekaEventListener>();
+            Capture<EurekaEventListener> eventListenerCapture = new Capture<>();
             eurekaClientMock.registerEventListener(EasyMock.capture(eventListenerCapture));
 
             EasyMock.replay(eurekaClientMock);
@@ -123,10 +123,10 @@ public class EurekaNotificationServerListUpdaterTest {
                 testExecutor
         );
 
-        Capture<EurekaEventListener> eventListenerCapture = new Capture<EurekaEventListener>();
+        Capture<EurekaEventListener> eventListenerCapture = new Capture<>();
         eurekaClientMock.registerEventListener(EasyMock.capture(eventListenerCapture));
 
-        Capture<EurekaEventListener> eventListenerCapture2 = new Capture<EurekaEventListener>();
+        Capture<EurekaEventListener> eventListenerCapture2 = new Capture<>();
         eurekaClientMock2.registerEventListener(EasyMock.capture(eventListenerCapture2));
 
         EasyMock.replay(eurekaClientMock);
@@ -172,7 +172,7 @@ public class EurekaNotificationServerListUpdaterTest {
         );
 
         try {
-            Capture<EurekaEventListener> eventListenerCapture = new Capture<EurekaEventListener>();
+            Capture<EurekaEventListener> eventListenerCapture = new Capture<>();
             eurekaClientMock.registerEventListener(EasyMock.capture(eventListenerCapture));
 
             EasyMock.replay(eurekaClientMock);
@@ -219,7 +219,7 @@ public class EurekaNotificationServerListUpdaterTest {
         );
 
         try {
-            Capture<EurekaEventListener> eventListenerCapture = new Capture<EurekaEventListener>();
+            Capture<EurekaEventListener> eventListenerCapture = new Capture<>();
             eurekaClientMock.registerEventListener(EasyMock.capture(eventListenerCapture));
 
             EasyMock.replay(eurekaClientMock);
@@ -260,7 +260,7 @@ public class EurekaNotificationServerListUpdaterTest {
         );
 
         try {
-            Capture<EurekaEventListener> registeredListener = new Capture<EurekaEventListener>();
+            Capture<EurekaEventListener> registeredListener = new Capture<>();
             eurekaClientMock.registerEventListener(EasyMock.capture(registeredListener));
 
             EasyMock.replay(eurekaClientMock);

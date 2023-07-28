@@ -53,7 +53,7 @@ public class ServerStats {
     private static final double[] PERCENTS = makePercentValues();
     
     private DataDistribution dataDist = new DataDistribution(1, PERCENTS); // in case
-    private DataPublisher publisher = null;
+    private DataPublisher publisher;
     private final Distribution responseTimeDist = new Distribution();
     
     int bufferSize = DEFAULT_BUFFER_SIZE;
@@ -82,7 +82,7 @@ public class ServerStats {
     private volatile long lastActiveRequestsCountChangeTimestamp;
     private AtomicLong totalCircuitBreakerBlackOutPeriod = new AtomicLong(0);
     private volatile long lastAccessedTimestamp;
-    private volatile long firstConnectionTimestamp = 0;
+    private volatile long firstConnectionTimestamp;
 
     public ServerStats() {
         connectionFailureThreshold = new UnboxedIntProperty(Property.of(LoadBalancerStats.CONNECTION_FAILURE_COUNT_THRESHOLD.defaultValue()));
@@ -113,8 +113,9 @@ public class ServerStats {
     }
     
     public void close() {
-        if (publisher != null)
+        if (publisher != null) {
             publisher.stop();
+        }
     }
 
     public Server getServer() {
@@ -142,7 +143,7 @@ public class ServerStats {
      * These correspond to the various Monitor methods defined below.
      * No, this is not pretty, but that's the way it is.
      */
-    private static enum Percent {
+    private enum Percent {
 
         TEN(10), TWENTY_FIVE(25), FIFTY(50), SEVENTY_FIVE(75), NINETY(90),
         NINETY_FIVE(95), NINETY_EIGHT(98), NINETY_NINE(99), NINETY_NINE_POINT_FIVE(99.5);
@@ -486,10 +487,10 @@ public class ServerStats {
     public String toString(){
         StringBuilder sb = new StringBuilder();
         
-        sb.append("[Server:" + server + ";");
-        sb.append("\tZone:" + server.getZone() + ";");
-        sb.append("\tTotal Requests:" + totalRequests + ";");
-        sb.append("\tSuccessive connection failure:" + getSuccessiveConnectionFailureCount() + ";");
+        sb.append("[Server:").append(server).append(";");
+        sb.append("\tZone:").append(server.getZone()).append(";");
+        sb.append("\tTotal Requests:").append(totalRequests).append(";");
+        sb.append("\tSuccessive connection failure:").append(getSuccessiveConnectionFailureCount()).append(";");
         if (isCircuitBreakerTripped()) {
             sb.append("\tBlackout until: " + new Date(getCircuitBreakerTimeout()) + ";");
         }
@@ -499,14 +500,14 @@ public class ServerStats {
             sb.append("\tLast connection failure: " + new Date(lastConnectionFailedTimestamp)  + ";");
         }
         sb.append("\tFirst connection made: " + new Date(firstConnectionTimestamp)  + ";");
-        sb.append("\tActive Connections:" + getMonitoredActiveRequestsCount()  + ";");
-        sb.append("\ttotal failure count in last (" + failureCountSlidingWindowInterval + ") msecs:" + getFailureCount()  + ";");
-        sb.append("\taverage resp time:" + getResponseTimeAvg()  + ";");
-        sb.append("\t90 percentile resp time:" + getResponseTime90thPercentile()  + ";");
-        sb.append("\t95 percentile resp time:" + getResponseTime95thPercentile()  + ";");
-        sb.append("\tmin resp time:" + getResponseTimeMin()  + ";");
-        sb.append("\tmax resp time:" + getResponseTimeMax()  + ";");
-        sb.append("\tstddev resp time:" + getResponseTimeStdDev());
+        sb.append("\tActive Connections:").append(getMonitoredActiveRequestsCount()).append(";");
+        sb.append("\ttotal failure count in last (").append(failureCountSlidingWindowInterval).append(") msecs:").append(getFailureCount()).append(";");
+        sb.append("\taverage resp time:").append(getResponseTimeAvg()).append(";");
+        sb.append("\t90 percentile resp time:").append(getResponseTime90thPercentile()).append(";");
+        sb.append("\t95 percentile resp time:").append(getResponseTime95thPercentile()).append(";");
+        sb.append("\tmin resp time:").append(getResponseTimeMin()).append(";");
+        sb.append("\tmax resp time:").append(getResponseTimeMax()).append(";");
+        sb.append("\tstddev resp time:").append(getResponseTimeStdDev());
         sb.append("]\n");
         
         return sb.toString();

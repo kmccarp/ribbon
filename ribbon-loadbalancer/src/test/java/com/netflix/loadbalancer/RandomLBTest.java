@@ -28,7 +28,7 @@ import org.junit.Test;
 
 
 public class RandomLBTest {
-    static HashMap<String, Boolean> isAliveMap = new HashMap<String, Boolean>();
+    static HashMap<String, Boolean> isAliveMap = new HashMap<>();
     static BaseLoadBalancer lb;
 	
 	@BeforeClass
@@ -59,7 +59,7 @@ public class RandomLBTest {
 	 */
 	@Test
 	public void testRoundRobin(){
-		Set<String> servers = new HashSet<String>(); 
+		Set<String> servers = new HashSet<>(); 
 		for (int i=0; i < 100; i++){
 			Server svc = lb.chooseServer("user1");
 			servers.add(svc.getId());
@@ -70,7 +70,7 @@ public class RandomLBTest {
 	static class PingFake implements IPing {
 		public boolean isAlive(Server server) {
 			Boolean res = isAliveMap.get(server.getId());
-			return ((res != null) && (res.booleanValue()));
+			return (res != null) && (res.booleanValue());
 		}
 	}
 }

@@ -49,9 +49,9 @@ public class PingUrl implements IPing {
     private static final Logger LOGGER = LoggerFactory.getLogger(PingUrl.class);
 
 		String pingAppendString = "";
-		boolean isSecure = false;
+		boolean isSecure;
 		
-		String expectedContent = null;
+		String expectedContent;
 
 		/*
 		 *
@@ -125,7 +125,7 @@ public class PingUrl implements IPing {
 				try {
 					HttpResponse response = httpClient.execute(getRequest);
 					content = EntityUtils.toString(response.getEntity());
-					isAlive = (response.getStatusLine().getStatusCode() == 200);
+					isAlive = response.getStatusLine().getStatusCode() == 200;
 					if (getExpectedContent()!=null){
 						LOGGER.debug("content:" + content);
 						if (content == null){

@@ -53,7 +53,7 @@ public class HttpRequestTemplate<T> extends RequestTemplate<T, HttpClientRespons
     public static final String CACHE_HYSTRIX_COMMAND_SUFFIX = "_cache";
     public static final int DEFAULT_CACHE_TIMEOUT = 20;
 
-    public static class Builder<T> extends TemplateBuilder<T, HttpClientResponse<ByteBuf>, HttpRequestTemplate<T>> {
+    public static final class Builder<T> extends TemplateBuilder<T, HttpClientResponse<ByteBuf>, HttpRequestTemplate<T>> {
         private String name;
         private HttpResourceGroup resourceGroup;
         private Class<? extends T> classType;
@@ -73,7 +73,7 @@ public class HttpRequestTemplate<T> extends RequestTemplate<T, HttpClientRespons
             this.classType = classType;
             headers = new DefaultHttpHeaders();
             headers.add(resourceGroup.getHeaders());
-            parsedTemplates = new HashMap<String, ParsedTemplate>();
+            parsedTemplates = new HashMap<>();
         }
 
         private ParsedTemplate createParsedTemplate(String template) {
@@ -120,7 +120,7 @@ public class HttpRequestTemplate<T> extends RequestTemplate<T, HttpClientRespons
         @Override
         public Builder<T> withCacheProvider(String keyTemplate, CacheProvider<T> cacheProvider) {
             ParsedTemplate template = createParsedTemplate(keyTemplate);
-            this.cacheProvider = new CacheProviderWithKeyTemplate<T>(template, cacheProvider);
+            this.cacheProvider = new CacheProviderWithKeyTemplate<>(template, cacheProvider);
             return this;
         }
 
@@ -137,7 +137,7 @@ public class HttpRequestTemplate<T> extends RequestTemplate<T, HttpClientRespons
         }
 
         public HttpRequestTemplate<T> build() {
-            return new HttpRequestTemplate<T>(name, resourceGroup, classType, setter, method, headers, parsedUriTemplate, fallbackHandler, validator, cacheProvider, cacheKeyTemplate);
+            return new HttpRequestTemplate<>(name, resourceGroup, classType, setter, method, headers, parsedUriTemplate, fallbackHandler, validator, cacheProvider, cacheKeyTemplate);
         }
     }
 
@@ -220,7 +220,7 @@ public class HttpRequestTemplate<T> extends RequestTemplate<T, HttpClientRespons
 
     @Override
     public HttpRequestBuilder<T> requestBuilder() {
-        return new HttpRequestBuilder<T>(this);
+        return new HttpRequestBuilder<>(this);
     }
 
     protected final ParsedTemplate hystrixCacheKeyTemplate() {
@@ -262,8 +262,7 @@ public class HttpRequestTemplate<T> extends RequestTemplate<T, HttpClientRespons
 
     @Override
     public HttpRequestTemplate<T> copy(String name) {
-        HttpRequestTemplate<T> newTemplate = new HttpRequestTemplate<T>(name, group, classType, setter, method, headers, parsedUriTemplate, fallbackHandler, validator, cacheProvider, hystrixCacheKeyTemplate);
-        return newTemplate;
+        return new HttpRequestTemplate<>(name, group, classType, setter, method, headers, parsedUriTemplate, fallbackHandler, validator, cacheProvider, hystrixCacheKeyTemplate);
     }
 
     protected final Setter hystrixProperties() {
