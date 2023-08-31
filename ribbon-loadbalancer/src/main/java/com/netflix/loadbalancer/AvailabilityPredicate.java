@@ -90,11 +90,8 @@ public class AvailabilityPredicate extends  AbstractServerPredicate {
     }
     
     private boolean shouldSkipServer(ServerStats stats) {
-        if ((circuitBreakerFiltering.getOrDefault() && stats.isCircuitBreakerTripped())
-                || stats.getActiveRequestsCount() >= getActiveConnectionsLimit()) {
-            return true;
-        }
-        return false;
+        return (circuitBreakerFiltering.getOrDefault() && stats.isCircuitBreakerTripped())
+        || stats.getActiveRequestsCount() >= getActiveConnectionsLimit();
     }
 
 }

@@ -75,38 +75,38 @@ public final class RibbonTransport {
     }
     
     public static RxClient<ByteBuf, ByteBuf> newTcpClient(ILoadBalancer loadBalancer, IClientConfig config) {
-        return new LoadBalancingTcpClient<ByteBuf, ByteBuf>(loadBalancer, config, getDefaultRetryHandlerWithConfig(config), null, poolCleanerScheduler);
+        return new LoadBalancingTcpClient<>(loadBalancer, config, getDefaultRetryHandlerWithConfig(config), null, poolCleanerScheduler);
     }
     
     public static <I, O> RxClient<I, O> newTcpClient(ILoadBalancer loadBalancer, PipelineConfigurator<O, I> pipelineConfigurator, 
             IClientConfig config, RetryHandler retryHandler) {
-        return new LoadBalancingTcpClient<I, O>(loadBalancer, config, retryHandler, pipelineConfigurator, poolCleanerScheduler);
+        return new LoadBalancingTcpClient<>(loadBalancer, config, retryHandler, pipelineConfigurator, poolCleanerScheduler);
     }
     
     public static <I, O> RxClient<I, O> newTcpClient(PipelineConfigurator<O, I> pipelineConfigurator, 
             IClientConfig config) {
-        return new LoadBalancingTcpClient<I, O>(config, getDefaultRetryHandlerWithConfig(config), pipelineConfigurator, poolCleanerScheduler);    
+        return new LoadBalancingTcpClient<>(config, getDefaultRetryHandlerWithConfig(config), pipelineConfigurator, poolCleanerScheduler);    
     }
 
     public static RxClient<ByteBuf, ByteBuf> newTcpClient(IClientConfig config) {
-        return new LoadBalancingTcpClient<ByteBuf, ByteBuf>(config, getDefaultRetryHandlerWithConfig(config), null, poolCleanerScheduler);    
+        return new LoadBalancingTcpClient<>(config, getDefaultRetryHandlerWithConfig(config), null, poolCleanerScheduler);    
     }
  
     public static RxClient<DatagramPacket, DatagramPacket> newUdpClient(ILoadBalancer loadBalancer, IClientConfig config) {
-        return new LoadBalancingUdpClient<DatagramPacket, DatagramPacket>(loadBalancer, config, getDefaultRetryHandlerWithConfig(config), null);
+        return new LoadBalancingUdpClient<>(loadBalancer, config, getDefaultRetryHandlerWithConfig(config), null);
     }
  
     public static RxClient<DatagramPacket, DatagramPacket> newUdpClient(IClientConfig config) {
-        return new LoadBalancingUdpClient<DatagramPacket, DatagramPacket>(config, getDefaultRetryHandlerWithConfig(config), null);
+        return new LoadBalancingUdpClient<>(config, getDefaultRetryHandlerWithConfig(config), null);
     }
     
     public static <I, O> RxClient<I, O> newUdpClient(ILoadBalancer loadBalancer, PipelineConfigurator<O, I> pipelineConfigurator, 
             IClientConfig config, RetryHandler retryHandler) {
-        return new LoadBalancingUdpClient<I, O>(loadBalancer, config, retryHandler, pipelineConfigurator);
+        return new LoadBalancingUdpClient<>(loadBalancer, config, retryHandler, pipelineConfigurator);
     }
     
     public static <I, O> RxClient<I, O> newUdpClient(PipelineConfigurator<O, I> pipelineConfigurator, IClientConfig config) {
-        return new LoadBalancingUdpClient<I, O>(config, getDefaultRetryHandlerWithConfig(config), pipelineConfigurator);
+        return new LoadBalancingUdpClient<>(config, getDefaultRetryHandlerWithConfig(config), pipelineConfigurator);
     }
 
     public static LoadBalancingHttpClient<ByteBuf, ByteBuf> newHttpClient() {
@@ -164,7 +164,7 @@ public final class RibbonTransport {
     
     public static <I, O> LoadBalancingHttpClient<I, O> newHttpClient(PipelineConfigurator<HttpClientResponse<O>, HttpClientRequest<I>> pipelineConfigurator,
             ILoadBalancer loadBalancer, IClientConfig config) {
-        return LoadBalancingHttpClient.<I, O>builder()
+        return LoadBalancingHttpClient.builder()
                 .withLoadBalancer(loadBalancer)
                 .withClientConfig(config)
                 .withRetryHandler(getDefaultHttpRetryHandlerWithConfig(config))
@@ -175,7 +175,7 @@ public final class RibbonTransport {
     
     public static <I, O> LoadBalancingHttpClient<I, O> newHttpClient(PipelineConfigurator<HttpClientResponse<O>, HttpClientRequest<I>> pipelineConfigurator,
             IClientConfig config) {
-        return LoadBalancingHttpClient.<I, O>builder()
+        return LoadBalancingHttpClient.builder()
                 .withClientConfig(config)
                 .withRetryHandler(getDefaultHttpRetryHandlerWithConfig(config))
                 .withPipelineConfigurator(pipelineConfigurator)
@@ -185,7 +185,7 @@ public final class RibbonTransport {
     
     public static <I, O> LoadBalancingHttpClient<I, O> newHttpClient(PipelineConfigurator<HttpClientResponse<O>, HttpClientRequest<I>> pipelineConfigurator,
             IClientConfig config, RetryHandler retryHandler) {
-        return LoadBalancingHttpClient.<I, O>builder()
+        return LoadBalancingHttpClient.builder()
                 .withClientConfig(config)
                 .withRetryHandler(retryHandler)
                 .withPipelineConfigurator(pipelineConfigurator)
@@ -196,7 +196,7 @@ public final class RibbonTransport {
     public static <I, O> LoadBalancingHttpClient<I, O> newHttpClient(PipelineConfigurator<HttpClientResponse<O>, HttpClientRequest<I>> pipelineConfigurator,
                                                              ILoadBalancer loadBalancer, IClientConfig config, RetryHandler retryHandler,
                                                                   List<ExecutionListener<HttpClientRequest<I>, HttpClientResponse<O>>> listeners) {
-        return LoadBalancingHttpClient.<I, O>builder()
+        return LoadBalancingHttpClient.builder()
                 .withLoadBalancer(loadBalancer)
                 .withClientConfig(config)
                 .withRetryHandler(retryHandler)

@@ -78,7 +78,7 @@ class HttpClientResponse implements HttpResponse {
                 for (Map.Entry<String, List<String>> header: map.entrySet()) {
                     String name = header.getKey();
                     for (String value: header.getValue()) {
-                        result.add(new AbstractMap.SimpleEntry<String, String>(name, value));
+                        result.add(new AbstractMap.SimpleEntry<>(name, value));
                     }
                 }
                 return result;

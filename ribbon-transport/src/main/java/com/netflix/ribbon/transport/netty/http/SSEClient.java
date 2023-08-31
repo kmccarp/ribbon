@@ -28,10 +28,10 @@ import com.netflix.client.config.DefaultClientConfigImpl;
 import com.netflix.client.config.IClientConfigKey;
 import com.netflix.loadbalancer.Server;
 
-public class SSEClient<I> extends LoadBalancingHttpClient<I, ServerSentEvent> {
+public final class SSEClient<I> extends LoadBalancingHttpClient<I, ServerSentEvent> {
     
     public static <I> Builder<I, ServerSentEvent> sseClientBuilder() {
-        return new Builder<I, ServerSentEvent>(new Func1<Builder<I, ServerSentEvent>, LoadBalancingHttpClient<I, ServerSentEvent>>() {
+        return new Builder<>(new Func1<Builder<I, ServerSentEvent>, LoadBalancingHttpClient<I, ServerSentEvent>>() {
             @Override
             public LoadBalancingHttpClient<I, ServerSentEvent> call(Builder<I, ServerSentEvent> t1) {
                 return new SSEClient<I>(t1);
@@ -51,9 +51,8 @@ public class SSEClient<I> extends LoadBalancingHttpClient<I, ServerSentEvent> {
         int requestConnectTimeout = getProperty(IClientConfigKey.Keys.ConnectTimeout, null, DefaultClientConfigImpl.DEFAULT_CONNECT_TIMEOUT);
         RxClient.ClientConfig rxClientConfig = new HttpClientConfig.Builder().build();
         
-        HttpClient<I, ServerSentEvent> client = clientBuilder.channelOption(
+        return clientBuilder.channelOption(
                 ChannelOption.CONNECT_TIMEOUT_MILLIS, requestConnectTimeout).config(rxClientConfig).build();
-        return client;
     }
 
     @Override

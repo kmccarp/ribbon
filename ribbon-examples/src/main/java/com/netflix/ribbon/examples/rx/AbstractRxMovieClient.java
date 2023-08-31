@@ -30,7 +30,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static java.lang.String.*;
+import static java.lang.String.format;
 
 /**
  * Base class for the transport/template and proxy examples. It orchestrates application flow, and
@@ -58,7 +58,7 @@ public abstract class AbstractRxMovieClient {
     }
 
     protected Observable<Void> searchCatalog() {
-        List<String> searches = new ArrayList<String>(2);
+        List<String> searches = new ArrayList<>(2);
         Collections.addAll(searches, "findById", "findRawMovieById", "findMovie(name, category)");
 
         return Observable
