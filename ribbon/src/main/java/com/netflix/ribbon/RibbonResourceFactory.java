@@ -43,8 +43,7 @@ public abstract class RibbonResourceFactory {
     }
 
     public Builder createHttpResourceGroupBuilder(String name) {
-        Builder builder = HttpResourceGroup.Builder.newBuilder(name, clientConfigFactory, transportFactory);
-        return builder;
+        return HttpResourceGroup.Builder.newBuilder(name, clientConfigFactory, transportFactory);
     }
 
     public HttpResourceGroup createHttpResourceGroup(String name) {

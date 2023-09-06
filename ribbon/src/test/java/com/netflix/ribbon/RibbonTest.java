@@ -224,7 +224,7 @@ public class RibbonTest {
                 }).build();
         RibbonRequest<ByteBuf> request = template.requestBuilder().build();
         final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> error = new AtomicReference<>();
         request.toObservable().subscribe(new Action1<ByteBuf>() {
             @Override
             public void call(ByteBuf t1) {
@@ -270,7 +270,7 @@ public class RibbonTest {
                 }).build();
         RibbonRequest<ByteBuf> request = template
                 .requestBuilder().build();
-        final AtomicReference<HystrixInvokableInfo<?>> hystrixInfo = new AtomicReference<HystrixInvokableInfo<?>>();
+        final AtomicReference<HystrixInvokableInfo<?>> hystrixInfo = new AtomicReference<>();
         final AtomicBoolean failed = new AtomicBoolean(false);
         Observable<String> result = request.withMetadata().toObservable().flatMap(new Func1<RibbonResponse<Observable<ByteBuf>>, Observable<String>>(){
             @Override
@@ -347,7 +347,7 @@ public class RibbonTest {
                 .requestBuilder().build();
         Observable<ByteBuf> result = request.observe();
         final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<String> fromCommand = new AtomicReference<String>();
+        final AtomicReference<String> fromCommand = new AtomicReference<>();
         // We need to wait until the response is received and processed by event loop
         // and make sure that subscribing to it again will not cause ByteBuf ref count issue
         result.toBlocking().last();

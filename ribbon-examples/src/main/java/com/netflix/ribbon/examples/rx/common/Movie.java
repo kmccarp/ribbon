@@ -69,18 +69,28 @@ public class Movie {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Movie movie = (Movie) o;
 
-        if (ageGroup != null ? !ageGroup.equals(movie.ageGroup) : movie.ageGroup != null) return false;
-        if (category != null ? !category.equals(movie.category) : movie.category != null) return false;
-        if (contentURI != null ? !contentURI.equals(movie.contentURI) : movie.contentURI != null) return false;
-        if (id != null ? !id.equals(movie.id) : movie.id != null) return false;
-        if (name != null ? !name.equals(movie.name) : movie.name != null) return false;
-
-        return true;
+        if (ageGroup != null ? !ageGroup.equals(movie.ageGroup) : movie.ageGroup != null) {
+            return false;
+        }
+        if (category != null ? !category.equals(movie.category) : movie.category != null) {
+            return false;
+        }
+        if (contentURI != null ? !contentURI.equals(movie.contentURI) : movie.contentURI != null) {
+            return false;
+        }
+        if (id != null ? !id.equals(movie.id) : movie.id != null) {
+            return false;
+        }
+        return !(name != null ? !name.equals(movie.name) : movie.name != null);
     }
 
     @Override
