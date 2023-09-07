@@ -40,8 +40,8 @@ import com.google.common.collect.Lists;
 public class CompositePredicate extends AbstractServerPredicate {
 
     private AbstractServerPredicate delegate;
-    
-    private List<AbstractServerPredicate> fallbacks = Lists.newArrayList();
+
+    private final List<AbstractServerPredicate> fallbacks = Lists.newArrayList();
         
     private int minimalFilteredServers = 1;
     
@@ -64,7 +64,7 @@ public class CompositePredicate extends AbstractServerPredicate {
 
         Builder(AbstractServerPredicate ...primaryPredicates) {
             toBuild = new CompositePredicate();
-            Predicate<PredicateKey> chain = Predicates.<PredicateKey>and(primaryPredicates);
+            Predicate<PredicateKey> chain = Predicates.and(primaryPredicates);
             toBuild.delegate =  AbstractServerPredicate.ofKeyPredicate(chain);                
         }
 

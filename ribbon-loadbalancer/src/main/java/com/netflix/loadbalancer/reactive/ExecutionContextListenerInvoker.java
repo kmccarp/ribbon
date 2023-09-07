@@ -35,7 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ExecutionContextListenerInvoker<I, O> {
 
-    private final static Logger logger = LoggerFactory.getLogger(ExecutionContextListenerInvoker.class);
+    private static final Logger logger = LoggerFactory.getLogger(ExecutionContextListenerInvoker.class);
     private final ExecutionContext<I> context;
     private final List<ExecutionListener<I, O>> listeners;
     private final IClientConfig clientConfig;
@@ -54,7 +54,7 @@ public class ExecutionContextListenerInvoker<I, O> {
         this.context = context;
         this.clientConfig = config;
         if (clientConfig != null) {
-            classConfigKeyMap = new ConcurrentHashMap<String, IClientConfigKey>();
+            classConfigKeyMap = new ConcurrentHashMap<>();
         } else {
             classConfigKeyMap = null;
         }

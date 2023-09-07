@@ -154,8 +154,9 @@ public abstract class AbstractServerPredicate implements Predicate<PredicateKey>
         for (;;) {
             int current = nextIndex.get();
             int next = (current + 1) % modulo;
-            if (nextIndex.compareAndSet(current, next) && current < modulo)
+            if (nextIndex.compareAndSet(current, next) && current < modulo) {
                 return current;
+            }
         }
     }
     
@@ -166,7 +167,7 @@ public abstract class AbstractServerPredicate implements Predicate<PredicateKey>
      */
     public Optional<Server> chooseRandomlyAfterFiltering(List<Server> servers) {
         List<Server> eligible = getEligibleServers(servers);
-        if (eligible.size() == 0) {
+        if (eligible.isEmpty()) {
             return Optional.absent();
         }
         return Optional.of(eligible.get(random.nextInt(eligible.size())));
@@ -178,7 +179,7 @@ public abstract class AbstractServerPredicate implements Predicate<PredicateKey>
      */
     public Optional<Server> chooseRoundRobinAfterFiltering(List<Server> servers) {
         List<Server> eligible = getEligibleServers(servers);
-        if (eligible.size() == 0) {
+        if (eligible.isEmpty()) {
             return Optional.absent();
         }
         return Optional.of(eligible.get(incrementAndGetModulo(eligible.size())));
@@ -191,7 +192,7 @@ public abstract class AbstractServerPredicate implements Predicate<PredicateKey>
      */
     public Optional<Server> chooseRandomlyAfterFiltering(List<Server> servers, Object loadBalancerKey) {
         List<Server> eligible = getEligibleServers(servers, loadBalancerKey);
-        if (eligible.size() == 0) {
+        if (eligible.isEmpty()) {
             return Optional.absent();
         }
         return Optional.of(eligible.get(random.nextInt(eligible.size())));
@@ -202,7 +203,7 @@ public abstract class AbstractServerPredicate implements Predicate<PredicateKey>
      */
     public Optional<Server> chooseRoundRobinAfterFiltering(List<Server> servers, Object loadBalancerKey) {
         List<Server> eligible = getEligibleServers(servers, loadBalancerKey);
-        if (eligible.size() == 0) {
+        if (eligible.isEmpty()) {
             return Optional.absent();
         }
         return Optional.of(eligible.get(incrementAndGetModulo(eligible.size())));

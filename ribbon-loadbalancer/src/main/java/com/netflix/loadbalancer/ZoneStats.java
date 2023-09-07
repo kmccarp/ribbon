@@ -99,11 +99,11 @@ public class ZoneStats<T extends Server> {
     @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();        
-        sb.append("[Zone:" + zone + ";");
-        sb.append("\tInstance count:" + getInstanceCount() + ";");
-        sb.append("\tActive connections count: " + getActiveRequestsCount() + ";");
-        sb.append("\tCircuit breaker tripped count: " + getCircuitBreakerTrippedCount() + ";");
-        sb.append("\tActive connections per server: " + getActiveRequestsPerServer() + ";");        
+        sb.append("[Zone:").append(zone).append(";");
+        sb.append("\tInstance count:").append(getInstanceCount()).append(";");
+        sb.append("\tActive connections count: ").append(getActiveRequestsCount()).append(";");
+        sb.append("\tCircuit breaker tripped count: ").append(getCircuitBreakerTrippedCount()).append(";");
+        sb.append("\tActive connections per server: ").append(getActiveRequestsPerServer()).append(";");        
         sb.append("]\n");        
         return sb.toString();
     }

@@ -67,9 +67,9 @@ public class RestClientTest {
         Server[] servers = new Server[]{new Server("localhost", server.getServerPort())};
         lb.addServers(Arrays.asList(servers));
         client.setLoadBalancer(lb);
-        Set<URI> expected = new HashSet<URI>();
+        Set<URI> expected = new HashSet<>();
         expected.add(new URI(server.getServerPath("/")));
-        Set<URI> result = new HashSet<URI>();
+        Set<URI> result = new HashSet<>();
         HttpRequest request = HttpRequest.newBuilder().uri(new URI("/")).build();
         for (int i = 0; i < 5; i++) {
             HttpResponse response = client.executeWithLoadBalancer(request);

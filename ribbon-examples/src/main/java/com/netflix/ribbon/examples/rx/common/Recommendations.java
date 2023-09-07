@@ -40,14 +40,16 @@ public class Recommendations {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Recommendations that = (Recommendations) o;
 
-        if (movies != null ? !movies.equals(that.movies) : that.movies != null) return false;
-
-        return true;
+        return !(movies != null ? !movies.equals(that.movies) : that.movies != null);
     }
 
     @Override
@@ -65,7 +67,7 @@ public class Recommendations {
         if (!matcher.matches()) {
             throw new IllegalArgumentException("Syntax error in recommendations string: " + formatted);
         }
-        List<Movie> movies = new ArrayList<Movie>();
+        List<Movie> movies = new ArrayList<>();
         for (int i = 1; i <= matcher.groupCount(); i++) {
             String movie = matcher.group(i);
             if (movie.startsWith(",")) {

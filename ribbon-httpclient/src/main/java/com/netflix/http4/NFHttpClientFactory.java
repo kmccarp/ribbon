@@ -33,13 +33,13 @@ import com.netflix.servo.monitor.Monitors;
  */
 public class NFHttpClientFactory {
 
-	private static Map<MultiKey,NFHttpClient> clientMap = new ConcurrentHashMap<MultiKey,NFHttpClient>();
+    private static final Map<MultiKey, NFHttpClient> clientMap = new ConcurrentHashMap<>();
+
+    private static final Map<String, NFHttpClient> namedClientMap = new ConcurrentHashMap<>();
 	
-	private static Map<String,NFHttpClient> namedClientMap = new ConcurrentHashMap<String,NFHttpClient>();
-	
-	private static NFHttpClient defaultClient = new NFHttpClient();	
-	
-	private static Object lock = new Object();
+	private static NFHttpClient defaultClient = new NFHttpClient();
+
+    private static final Object lock = new Object();
 	
 	public static NFHttpClient getNFHttpClient(String host, int port){
 		MultiKey mk = new MultiKey(host,port);
