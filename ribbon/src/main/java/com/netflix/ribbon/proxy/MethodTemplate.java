@@ -102,7 +102,7 @@ class MethodTemplate {
     }
 
     public static <T> MethodTemplate[] from(Class<T> clientInterface) {
-        List<MethodTemplate> list = new ArrayList<MethodTemplate>(clientInterface.getMethods().length);
+        List<MethodTemplate> list = new ArrayList<>(clientInterface.getMethods().length);
         for (Method m : clientInterface.getMethods()) {
             list.add(new MethodTemplate(m));
         }
@@ -127,7 +127,7 @@ class MethodTemplate {
         }
     }
 
-    private static class MethodAnnotationValues {
+    private static final class MethodAnnotationValues {
 
         private final Method method;
         private String templateName;
@@ -148,8 +148,8 @@ class MethodTemplate {
         }
 
         private void extractParamNamesWithIndexes() {
-            List<String> nameList = new ArrayList<String>();
-            List<Integer> idxList = new ArrayList<Integer>();
+            List<String> nameList = new ArrayList<>();
+            List<Integer> idxList = new ArrayList<>();
             Annotation[][] params = method.getParameterAnnotations();
             for (int i = 0; i < params.length; i++) {
                 for (Annotation a : params[i]) {

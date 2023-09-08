@@ -71,7 +71,7 @@ public class RandomRule extends AbstractLoadBalancerRule {
             }
 
             if (server.isAlive()) {
-                return (server);
+                return server;
             }
 
             // Shouldn't actually happen.. but must be transient or a bug.

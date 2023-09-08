@@ -124,7 +124,7 @@ public class Server {
         setId(hostPort);
     }
 
-    static public String normalizeId(String id) {
+    public static String normalizeId(String id) {
         Pair<String, Integer> hostPort = getHostPort(id);
         if (hostPort == null) {
             return null;
@@ -158,23 +158,19 @@ public class Server {
             }
 
             if (id.contains("/")) {
-                int slash_idx = id.indexOf("/");
-                id = id.substring(0, slash_idx);
+                int slashIdx = id.indexOf("/");
+                id = id.substring(0, slashIdx);
             }
 
-            int colon_idx = id.indexOf(':');
+            int colonIdx = id.indexOf(':');
 
-            if (colon_idx == -1) {
+            if (colonIdx == -1) {
                 host = id; // default
             } else {
-                host = id.substring(0, colon_idx);
-                try {
-                    port = Integer.parseInt(id.substring(colon_idx + 1));
-                } catch (NumberFormatException e) {
-                    throw e;
-                }
+                host = id.substring(0, colonIdx);
+                port = Integer.parseInt(id.substring(colonIdx + 1));
             }
-            return new Pair<String, Integer>(host, port);
+            return new Pair<>(host, port);
         } else {
             return null;
         }
@@ -241,10 +237,12 @@ public class Server {
     }
 
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (!(obj instanceof Server))
+        }
+        if (!(obj instanceof Server)) {
             return false;
+        }
         Server svc = (Server) obj;
         return svc.getId().equals(this.getId());
 

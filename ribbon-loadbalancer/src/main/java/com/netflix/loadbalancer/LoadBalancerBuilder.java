@@ -9,7 +9,7 @@ import com.netflix.client.config.IClientConfigKey;
 
 import java.util.List;
 
-public class LoadBalancerBuilder<T extends Server> {
+public final class LoadBalancerBuilder<T extends Server> {
     
     private IClientConfig config = ClientConfigFactory.findDefaultConfigFactory().newConfig();
     private ServerListFilter serverListFilter;
@@ -23,7 +23,7 @@ public class LoadBalancerBuilder<T extends Server> {
     }
     
     public static <T extends Server> LoadBalancerBuilder<T> newBuilder() {
-        return new LoadBalancerBuilder<T>();
+        return new LoadBalancerBuilder<>();
     }
 
     public LoadBalancerBuilder<T> withFactory(IClientConfigAware.Factory factory) {
@@ -125,7 +125,7 @@ public class LoadBalancerBuilder<T extends Server> {
         if (rule == null) {
             rule = createRuleFromConfig(config, factory);
         }
-        return new ZoneAwareLoadBalancer<T>(config, rule, ping, serverListImpl, serverListFilter);
+        return new ZoneAwareLoadBalancer<>(config, rule, ping, serverListImpl, serverListFilter);
     }
 
     /**
@@ -148,7 +148,7 @@ public class LoadBalancerBuilder<T extends Server> {
         if (serverListUpdater == null) {
             serverListUpdater = createServerListUpdaterFromConfig(config, factory);
         }
-        return new ZoneAwareLoadBalancer<T>(config, rule, ping, serverListImpl, serverListFilter, serverListUpdater);
+        return new ZoneAwareLoadBalancer<>(config, rule, ping, serverListImpl, serverListFilter, serverListUpdater);
     }
 
     /**

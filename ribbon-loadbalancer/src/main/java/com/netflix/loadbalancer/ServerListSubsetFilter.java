@@ -199,7 +199,7 @@ public class ServerListSubsetFilter<T extends Server> extends ZoneAffinityServer
         if (failuresDiff != 0) {
             return failuresDiff;
         } else {
-            return (stats2.getActiveRequestsCount() - stats1.getActiveRequestsCount());
+            return stats2.getActiveRequestsCount() - stats1.getActiveRequestsCount();
         }
     }
 }

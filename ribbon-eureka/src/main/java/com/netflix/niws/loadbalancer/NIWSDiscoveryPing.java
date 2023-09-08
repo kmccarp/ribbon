@@ -35,7 +35,7 @@ import com.netflix.loadbalancer.Server;
  */
 public class NIWSDiscoveryPing extends AbstractLoadBalancerPing {
 	        
-		BaseLoadBalancer lb = null; 
+		BaseLoadBalancer lb; 
 		
 
 		public NIWSDiscoveryPing() {

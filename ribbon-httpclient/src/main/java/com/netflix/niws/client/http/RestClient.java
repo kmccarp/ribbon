@@ -89,7 +89,7 @@ import com.sun.jersey.client.apache4.config.DefaultApacheHttpClient4Config;
 @Deprecated
 public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, HttpResponse> {
 
-    private static IClientConfigKey<Integer> CONN_IDLE_EVICT_TIME_MILLIS = new CommonClientConfigKey<Integer>(
+    private static IClientConfigKey<Integer> connIdleEvictTimeMillis = new CommonClientConfigKey<Integer>(
             "%s.nfhttpclient.connIdleEvictTimeMilliSeconds") {};
 
 
@@ -98,7 +98,7 @@ public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, Htt
     private IClientConfig ncc;
     private String restClientName;
 
-    private boolean enableConnectionPoolCleanerTask = false;
+    private boolean enableConnectionPoolCleanerTask;
     private Property<Integer> connIdleEvictTimeMilliSeconds;
     private int connectionCleanerRepeatInterval;
     private int maxConnectionsperHost;
@@ -485,7 +485,7 @@ public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, Htt
         boolean isSecure = ncc.get(CommonClientConfigKey.IsSecure, this.isSecure);
         String scheme = uri.getScheme();
         if (scheme != null) {
-            isSecure = 	scheme.equalsIgnoreCase("https");
+            isSecure = 	"https".equalsIgnoreCase(scheme);
         }
         int port = uri.getPort();
         if (port < 0 && !isSecure){
@@ -582,8 +582,7 @@ public class RestClient extends AbstractLoadBalancerAwareClient<HttpRequest, Htt
                 && ((ClientException)e).getErrorType() == ClientException.ErrorType.SERVER_THROTTLED){
             return false;
         }
-        boolean shouldRetry = isConnectException(e) || isSocketException(e);
-        return shouldRetry;
+        return isConnectException(e) || isSocketException(e);
     }
 
     @Override

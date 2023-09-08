@@ -89,14 +89,14 @@ public abstract class LoadBalancingRxClient<I, O, T extends RxClient<I, O>> impl
     }
     
     public LoadBalancingRxClient(ILoadBalancer lb, IClientConfig config, RetryHandler defaultRetryHandler, PipelineConfigurator<O, I> pipelineConfigurator) {
-        this.rxClientCache = new ConcurrentHashMap<Server, T>();
+        this.rxClientCache = new ConcurrentHashMap<>();
         this.lbContext = new LoadBalancerContext(lb, config, defaultRetryHandler);
         this.defaultRetryHandler = defaultRetryHandler;
         this.pipelineConfigurator = pipelineConfigurator;
         this.clientConfig = config;
         this.listener = createListener(config.getClientName());
         
-        eventSubject = new MetricEventsSubject<ClientMetricsEvent<?>>();
+        eventSubject = new MetricEventsSubject<>();
         boolean isSecure = getProperty(IClientConfigKey.Keys.IsSecure, null, false); 
         if (isSecure) {
             final URL trustStoreUrl = getResourceForOptionalProperty(CommonClientConfigKey.TrustStore);
@@ -196,7 +196,7 @@ public abstract class LoadBalancingRxClient<I, O, T extends RxClient<I, O>> impl
         ((BaseLoadBalancer) lbContext.getLoadBalancer()).addServerListChangeListener(new ServerListChangeListener() {
             @Override
             public void serverListChanged(List<Server> oldList, List<Server> newList) {
-                Set<Server> removedServers = new HashSet<Server>(oldList);
+                Set<Server> removedServers = new HashSet<>(oldList);
                 removedServers.removeAll(newList);
                 for (Server server: rxClientCache.keySet()) {
                     if (removedServers.contains(server)) {

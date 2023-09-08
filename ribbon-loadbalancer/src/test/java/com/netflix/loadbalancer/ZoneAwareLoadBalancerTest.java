@@ -57,13 +57,13 @@ public class ZoneAwareLoadBalancerTest {
     }
     
     private void testChooseServer(ZoneAwareLoadBalancer<Server> balancer, String... expectedZones) {
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
         for (int i = 0; i < 100; i++) {
             Server server = balancer.chooseServer(null);
             String zone = server.getZone().toLowerCase();
             result.add(zone);
         }
-        Set<String> expected = new HashSet<String>();
+        Set<String> expected = new HashSet<>();
         expected.addAll(Arrays.asList(expectedZones));
         assertEquals(expected, result);
     }
@@ -75,14 +75,14 @@ public class ZoneAwareLoadBalancerTest {
 
         DefaultClientConfigImpl config = new DefaultClientConfigImpl();
         config.loadProperties("testChooseZone");
-        ZoneAwareLoadBalancer<Server> balancer = new ZoneAwareLoadBalancer<Server>();
+        ZoneAwareLoadBalancer<Server> balancer = new ZoneAwareLoadBalancer<>();
         balancer.init();
         IRule globalRule = new RoundRobinRule();
         balancer.setRule(globalRule);        
         LoadBalancerStats loadBalancerStats = balancer.getLoadBalancerStats();
         loadBalancerStats.initWithNiwsConfig(config);
         assertNotNull(loadBalancerStats);
-        List<Server> servers = new ArrayList<Server>();
+        List<Server> servers = new ArrayList<>();
         
         servers.add(createServer(1, "a"));
         servers.add(createServer(2, "a"));
@@ -149,7 +149,7 @@ public class ZoneAwareLoadBalancerTest {
         testChooseServer(balancer, "us-east-1a", "us-east-1b", "us-east-1c");
         
         List<Server> emptyList = Collections.emptyList();
-        Map<String, List<Server>> map = new HashMap<String, List<Server>>();
+        Map<String, List<Server>> map = new HashMap<>();
         map.put("us-east-1a", emptyList);
         map.put("us-east-1b", emptyList);
         balancer.setServerListForZones(map);
@@ -159,11 +159,11 @@ public class ZoneAwareLoadBalancerTest {
     @Test
     public void testZoneOutage() throws Exception {
         ConfigurationManager.getConfigInstance().clearProperty("niws.loadbalancer.serverStats.activeRequestsCount.effectiveWindowSeconds");
-        ZoneAwareLoadBalancer<Server> balancer = new ZoneAwareLoadBalancer<Server>();
+        ZoneAwareLoadBalancer<Server> balancer = new ZoneAwareLoadBalancer<>();
         balancer.init();
         LoadBalancerStats loadBalancerStats = balancer.getLoadBalancerStats();
         assertNotNull(loadBalancerStats);
-        List<Server> servers = new ArrayList<Server>();
+        List<Server> servers = new ArrayList<>();
         
         servers.add(createServer(1, "a"));
         servers.add(createServer(2, "a"));
@@ -191,11 +191,11 @@ public class ZoneAwareLoadBalancerTest {
     
     @Test
     public void testNonZoneOverride() {
-        ZoneAwareLoadBalancer<Server> balancer = new ZoneAwareLoadBalancer<Server>();
+        ZoneAwareLoadBalancer<Server> balancer = new ZoneAwareLoadBalancer<>();
         balancer.init();
         LoadBalancerStats loadBalancerStats = balancer.getLoadBalancerStats();
         assertNotNull(loadBalancerStats);
-        List<Server> servers = new ArrayList<Server>();
+        List<Server> servers = new ArrayList<>();
         
         for (int i = 1; i <= 11; i++) {
             servers.add(createServer(i, "a"));
@@ -231,7 +231,7 @@ public class ZoneAwareLoadBalancerTest {
         balancer.setRule(new AvailabilityFilteringRule());
         LoadBalancerStats loadBalancerStats = balancer.getLoadBalancerStats();
         assertNotNull(loadBalancerStats);
-        List<Server> servers = new ArrayList<Server>();        
+        List<Server> servers = new ArrayList<>();        
         servers.add(createServer(1, "a"));
         servers.add(createServer(2, "a"));
         servers.add(createServer(1, "b"));
@@ -247,10 +247,10 @@ public class ZoneAwareLoadBalancerTest {
                 loadBalancerStats.getSingleServerStat(server).incrementSuccessiveConnectionFailureCount();
             }
         }
-        Set<Server> expected = new HashSet<Server>();
+        Set<Server> expected = new HashSet<>();
         expected.add(createServer(1, "c"));
         expected.add(createServer(2, "c"));
-        Set<Server> result = new HashSet<Server>();
+        Set<Server> result = new HashSet<>();
         for (int i = 0; i < 20; i++) {
             Server server = balancer.chooseServer(null);
             result.add(server);
@@ -269,8 +269,8 @@ public class ZoneAwareLoadBalancerTest {
         for (int i = 0; i < 3; i++) {
             loadBalancerStats.getSingleServerStat(servers.get(5)).incrementSuccessiveConnectionFailureCount();
         }
-        expected = new HashSet<Server>(servers);
-        result = new HashSet<Server>();
+        expected = new HashSet<>(servers);
+        result = new HashSet<>();
         for (int i = 0; i < 20; i++) {
             Server server = balancer.chooseServer(null);
             if (server == null) {
@@ -279,7 +279,7 @@ public class ZoneAwareLoadBalancerTest {
             result.add(server);
         }
         assertEquals(expected, result);
-        servers = new ArrayList<Server>();        
+        servers = new ArrayList<>();        
         servers.add(createServer(1, "a"));
         servers.add(createServer(2, "a"));
         servers.add(createServer(1, "b"));
@@ -305,7 +305,7 @@ public class ZoneAwareLoadBalancerTest {
     	ZoneAwareLoadBalancer balancer = (ZoneAwareLoadBalancer) ClientFactory.getNamedLoadBalancer("testlb");
         LoadBalancerStats loadBalancerStats = balancer.getLoadBalancerStats();
         assertNotNull(loadBalancerStats);
-        List<Server> servers = new ArrayList<Server>();        
+        List<Server> servers = new ArrayList<>();        
         servers.add(createServer(1, "a"));
         servers.add(createServer(2, "a"));
         servers.add(createServer(3, "a"));
@@ -333,7 +333,7 @@ public class ZoneAwareLoadBalancerTest {
             loadBalancerStats.getSingleServerStat(server).incrementSuccessiveConnectionFailureCount();
         }
 
-        Set<Server> expected = new HashSet<Server>();
+        Set<Server> expected = new HashSet<>();
         expected.add(createServer(2, "a"));
         expected.add(createServer(3, "a"));
         expected.add(createServer(4, "a"));
@@ -352,7 +352,7 @@ public class ZoneAwareLoadBalancerTest {
         AvailabilityFilteringRule rule2 = (AvailabilityFilteringRule) balancer.getLoadBalancer("us-east-1b").getRule();
         assertEquals(6, rule2.getAvailableServersCount());
         
-        Set<Server> result = new HashSet<Server>();
+        Set<Server> result = new HashSet<>();
         for (int i = 0; i < 100; i++) {            
             result.add(balancer.chooseServer(null));
         }
