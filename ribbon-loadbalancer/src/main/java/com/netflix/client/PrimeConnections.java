@@ -103,13 +103,13 @@ public class PrimeConnections {
 
     private String name = "default";
 
-    private float primeRatio = 1.0f;
+    private float primeRatio = 1.0F;
 
     int maxRetries = 9;
 
     long maxTotalTimeToPrimeConnections = 30 * 1000; // default time
 
-    long totalTimeTaken = 0; // Total time taken
+    long totalTimeTaken; // Total time taken
 
     private boolean aSync = true;
         
@@ -196,7 +196,7 @@ public class PrimeConnections {
      * 
      */
     public void primeConnections(List<Server> servers) {
-        if (servers == null || servers.size() == 0) {
+        if (servers == null || servers.isEmpty()) {
             logger.debug("No server to prime");
             return;
         }
@@ -279,16 +279,16 @@ public class PrimeConnections {
         if (servers == null) {
             return Collections.emptyList();
         }
-        List<Server> allServers = new ArrayList<Server>();
+        List<Server> allServers = new ArrayList<>();
         allServers.addAll(servers);
-        if (allServers.size() == 0){
+        if (allServers.isEmpty()){
             logger.debug("RestClient:" + name + ". No nodes/servers to prime connections");
             return Collections.emptyList();
         }        
 
         logger.info("Priming Connections for RestClient:" + name
                 + ", numServers:" + allServers.size());
-        List<Future<Boolean>> ftList = new ArrayList<Future<Boolean>>();
+        List<Future<Boolean>> ftList = new ArrayList<>();
         for (Server s : allServers) {
             // prevent the server to be used by load balancer
             // will be set to true when priming is done
@@ -386,7 +386,7 @@ public class PrimeConnections {
 
         ASyncPrimeConnectionsThreadFactory(String name) {
             SecurityManager s = System.getSecurityManager();
-            group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup(); // NOPMD
+            group = s != null ? s.getThreadGroup() : Thread.currentThread().getThreadGroup(); // NOPMD
             namePrefix = "ASyncPrimeConnectionsThreadFactory-" + name + "-"
                     + groupNumber.getAndIncrement() + "-thread-";
         }
@@ -394,10 +394,12 @@ public class PrimeConnections {
         public Thread newThread(Runnable r) {
             Thread t = new Thread(group, r, namePrefix
                     + threadNumber.getAndIncrement(), 0);
-            if (!t.isDaemon())
+            if (!t.isDaemon()) {
                 t.setDaemon(true);
-            if (t.getPriority() != Thread.NORM_PRIORITY)
+            }
+            if (t.getPriority() != Thread.NORM_PRIORITY) {
                 t.setPriority(Thread.NORM_PRIORITY);
+            }
             return t;
         }
     }

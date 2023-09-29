@@ -94,12 +94,12 @@ public class WeightedResponseTimeRule extends RoundRobinRule {
     
     // holds the accumulated weight from index 0 to current index
     // for example, element at index 2 holds the sum of weight of servers from 0 to 2
-    private volatile List<Double> accumulatedWeights = new ArrayList<Double>();
+    private volatile List<Double> accumulatedWeights = new ArrayList<>();
     
 
     private final Random random = new Random();
 
-    protected Timer serverWeightTimer = null;
+    protected Timer serverWeightTimer;
 
     protected AtomicBoolean serverWeightAssignmentInProgress = new AtomicBoolean(false);
 
@@ -180,7 +180,7 @@ public class WeightedResponseTimeRule extends RoundRobinRule {
             int serverIndex = 0;
 
             // last one in the list is the sum of all weights
-            double maxTotalWeight = currentWeights.size() == 0 ? 0 : currentWeights.get(currentWeights.size() - 1); 
+            double maxTotalWeight = currentWeights.isEmpty() ? 0 : currentWeights.get(currentWeights.size() - 1); 
             // No server has been hit yet and total weight is not initialized
             // fallback to use round robin
             if (maxTotalWeight < 0.001d || serverCount != currentWeights.size()) {
@@ -212,7 +212,7 @@ public class WeightedResponseTimeRule extends RoundRobinRule {
             }
 
             if (server.isAlive()) {
-                return (server);
+                return server;
             }
 
             // Next.
@@ -264,7 +264,7 @@ public class WeightedResponseTimeRule extends RoundRobinRule {
                 Double weightSoFar = 0.0;
                 
                 // create new list and hot swap the reference
-                List<Double> finalWeights = new ArrayList<Double>();
+                List<Double> finalWeights = new ArrayList<>();
                 for (Server server : nlb.getAllServers()) {
                     ServerStats ss = stats.getSingleServerStat(server);
                     double weight = totalResponseTime - ss.getResponseTimeAvg();

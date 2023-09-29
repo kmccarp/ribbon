@@ -29,7 +29,7 @@ import java.util.HashMap;
 public class SimpleRoundRobinWithRetryLBTest {
 
 	static ServerComparator serverComparator = new ServerComparator();
-	static HashMap<String, Boolean> isAliveMap = new HashMap<String, Boolean>();
+	static HashMap<String, Boolean> isAliveMap = new HashMap<>();
 	
 	static BaseLoadBalancer lb;
 	
@@ -74,14 +74,14 @@ public class SimpleRoundRobinWithRetryLBTest {
 		}
 		for (int i=0; i < 20; i++){
 			Server svc = lb.chooseServer("user1");
-			assertFalse(svc.getId().equals("dummyservice2.netflix.com:8080"));
+			assertFalse("dummyservice2.netflix.com:8080".equals(svc.getId()));
 		}
 	}
 	
 	static class PingFake implements IPing {
 		public boolean isAlive(Server server) {
 			Boolean res = isAliveMap.get(server.getId());
-			return ((res != null) && (res.booleanValue()));
+			return (res != null) && (res.booleanValue());
 		}
 	}
 	

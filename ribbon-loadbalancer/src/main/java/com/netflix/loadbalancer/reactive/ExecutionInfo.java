@@ -25,7 +25,7 @@ import com.netflix.loadbalancer.Server;
  *
  * @author Allen Wang
  */
-public class ExecutionInfo {
+public final class ExecutionInfo {
 
     private final Server server;
     private final int numberOfPastAttemptsOnServer;

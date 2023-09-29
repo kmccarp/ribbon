@@ -41,7 +41,7 @@ public class HttpRequestBuilder<T> extends RequestBuilder<T> {
     private final ParsedTemplate parsedUriTemplate;
     private Observable rawContentSource;
     private ContentTransformer contentTransformer;
-    private Map<String, String> extraHeaders = new HashMap<String, String>();
+    private final Map<String, String> extraHeaders = new HashMap<>();
     
     private static final ContentTransformer<ByteBuf> passThroughContentTransformer = new ContentTransformer<ByteBuf>() {
         @Override
@@ -54,7 +54,7 @@ public class HttpRequestBuilder<T> extends RequestBuilder<T> {
     HttpRequestBuilder(HttpRequestTemplate<T> requestTemplate) {
         this.requestTemplate = requestTemplate;
         this.parsedUriTemplate = requestTemplate.uriTemplate();
-        vars = new ConcurrentHashMap<String, Object>();
+        vars = new ConcurrentHashMap<>();
     }
     
     @Override
@@ -91,7 +91,7 @@ public class HttpRequestBuilder<T> extends RequestBuilder<T> {
             throw new IllegalArgumentException("HTTP method is not defined");
         }
         try {
-            return new HttpRequest<T>(this);
+            return new HttpRequest<>(this);
         } catch (TemplateParsingException e) {
             throw new IllegalArgumentException(e);
         }
