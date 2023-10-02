@@ -82,7 +82,7 @@ public class ExecutionContext<T> {
         }
         ChildContext<T> subContext = subContexts.get(obj);
         if (subContext == null) {
-            subContext = new ChildContext<T>(this);
+            subContext = new ChildContext<>(this);
             ChildContext<T> old = subContexts.putIfAbsent(obj, subContext);
             if (old != null) {
                 subContext = old;

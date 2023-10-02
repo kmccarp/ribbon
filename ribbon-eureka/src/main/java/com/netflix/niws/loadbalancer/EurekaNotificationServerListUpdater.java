@@ -32,10 +32,10 @@ public class EurekaNotificationServerListUpdater implements ServerListUpdater {
 
     private static final Logger logger = LoggerFactory.getLogger(EurekaNotificationServerListUpdater.class);
 
-    private static class LazyHolder {
-        private final static String CORE_THREAD = "EurekaNotificationServerListUpdater.ThreadPoolSize";
-        private final static String QUEUE_SIZE = "EurekaNotificationServerListUpdater.queueSize";
-        private final static LazyHolder SINGLETON = new LazyHolder();
+    private static final class LazyHolder {
+        private static final String CORE_THREAD = "EurekaNotificationServerListUpdater.ThreadPoolSize";
+        private static final String QUEUE_SIZE = "EurekaNotificationServerListUpdater.queueSize";
+        private static final LazyHolder SINGLETON = new LazyHolder();
 
         private final DynamicIntProperty poolSizeProp = new DynamicIntProperty(CORE_THREAD, 2);
         private final DynamicIntProperty queueSizeProp = new DynamicIntProperty(QUEUE_SIZE, 1000);

@@ -34,7 +34,7 @@ public class InMemoryCacheProviderFactory implements CacheProviderFactory<Movie>
     }
 
     public static class InMemoryCacheProvider implements CacheProvider<Movie> {
-        private final Map<String, Object> cacheMap = new ConcurrentHashMap<String, Object>();
+        private final Map<String, Object> cacheMap = new ConcurrentHashMap<>();
 
         @Override
         public Observable<Movie> get(String key, Map<String, Object> requestProperties) {

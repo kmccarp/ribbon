@@ -38,7 +38,7 @@ public class JacksonCodec<T extends Object> implements Serializer<T>, Deserializ
         }
     }
     
-    public static final <T> JacksonCodec<T> getInstance() {
+    public static <T> JacksonCodec<T> getInstance() {
         return instance;
     }
 }

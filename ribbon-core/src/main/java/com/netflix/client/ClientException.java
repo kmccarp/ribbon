@@ -84,7 +84,7 @@ public class ClientException extends Exception{
     }
 
     public ClientException(int errorCode, String message, Throwable chainedException) {
-        super((message == null && errorCode != 0) ? ", code=" + errorCode + "->" + ErrorType.getName(errorCode): message,
+        super(message == null && errorCode != 0 ? ", code=" + errorCode + "->" + ErrorType.getName(errorCode): message,
               chainedException);
         this.errorCode = errorCode;
         this.message = message;
@@ -101,7 +101,7 @@ public class ClientException extends Exception{
     }
     
     public ClientException( ErrorType error, String message, Throwable chainedException) {
-        super((message == null && error.ordinal() != 0) ? ", code=" + error.ordinal() + "->" + error.name() : message,
+        super(message == null && error.ordinal() != 0 ? ", code=" + error.ordinal() + "->" + error.name() : message,
               chainedException);
         this.errorCode = error.ordinal();
         this.message = message;
@@ -154,14 +154,14 @@ public class ClientException extends Exception{
      * @param clazz  a class that is a subclass of us.
      * @return a hashmap of int error codes mapped to the string names.
      */
-    static public HashMap getErrorCodes ( Class clazz ) {
+    public static HashMap getErrorCodes ( Class clazz ) {
 
         HashMap map = new HashMap(23);
 
         // Use reflection to populte the erroCodeMap to have the reverse mapping
         // of error codes to symbolic names.
 
-        Field flds[] = clazz.getDeclaredFields();
+        Field[] flds = clazz.getDeclaredFields();
 
         for (int i = 0; i < flds.length; i++) {
             int mods = flds[i].getModifiers();
