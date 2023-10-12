@@ -27,7 +27,7 @@ public class HystrixObservableCommandChain<T> {
     }
 
     public HystrixObservableCommandChain(HystrixObservableCommand<T>... commands) {
-        hystrixCommands = new ArrayList<HystrixObservableCommand<T>>(commands.length);
+        hystrixCommands = new ArrayList<>(commands.length);
         Collections.addAll(hystrixCommands, commands);
     }
 
@@ -37,7 +37,7 @@ public class HystrixObservableCommandChain<T> {
             Observable<ResultCommandPair<T>> observable = command.toObservable().map(new Func1<T, ResultCommandPair<T>>() {
                 @Override
                 public ResultCommandPair<T> call(T result) {
-                    return new ResultCommandPair<T>(result, command);
+                    return new ResultCommandPair<>(result, command);
                 }
             });
             rootObservable = rootObservable == null ? observable : rootObservable.onErrorResumeNext(observable);

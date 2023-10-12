@@ -50,7 +50,7 @@ public class DiscoveryEnabledNIWSServerList extends AbstractServerList<Discovery
 
     String clientName;
     String vipAddresses;
-    boolean isSecure = false;
+    boolean isSecure;
 
     boolean prioritizeVipAddressBasedServers = true;
 
@@ -58,8 +58,8 @@ public class DiscoveryEnabledNIWSServerList extends AbstractServerList<Discovery
     String targetRegion;
 
     int overridePort = CommonClientConfigKey.Port.defaultValue();
-    boolean shouldUseOverridePort = false;
-    boolean shouldUseIpAddr = false;
+    boolean shouldUseOverridePort;
+    boolean shouldUseIpAddr;
 
     private final Provider<EurekaClient> eurekaClientProvider;
 
@@ -149,11 +149,11 @@ public class DiscoveryEnabledNIWSServerList extends AbstractServerList<Discovery
     }
 
     private List<DiscoveryEnabledServer> obtainServersViaDiscovery() {
-        List<DiscoveryEnabledServer> serverList = new ArrayList<DiscoveryEnabledServer>();
+        List<DiscoveryEnabledServer> serverList = new ArrayList<>();
 
         if (eurekaClientProvider == null || eurekaClientProvider.get() == null) {
             logger.warn("EurekaClient has not been initialized yet, returning an empty list");
-            return new ArrayList<DiscoveryEnabledServer>();
+            return new ArrayList<>();
         }
 
         EurekaClient eurekaClient = eurekaClientProvider.get();
@@ -185,7 +185,7 @@ public class DiscoveryEnabledNIWSServerList extends AbstractServerList<Discovery
                         serverList.add(des);
                     }
                 }
-                if (serverList.size()>0 && prioritizeVipAddressBasedServers){
+                if (!serverList.isEmpty() && prioritizeVipAddressBasedServers){
                     break; // if the current vipAddress has servers, we dont use subsequent vipAddress based servers
                 }
             }

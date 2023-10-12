@@ -122,7 +122,7 @@ public class DiscoveryEnabledLoadBalancerSupportsUseIpAddrTest {
         List<DiscoveryEnabledServer> serverList = deList.getInitialListOfServers();
 
         Assert.assertEquals(2, serverList.size());
-        List<Server> servers = new ArrayList<Server>();
+        List<Server> servers = new ArrayList<>();
         for (DiscoveryEnabledServer server : serverList) {
         	servers.add((Server)server);
         }

@@ -263,7 +263,7 @@ public class LoadBalancerStats implements IClientConfigAware {
     }
     
     public void updateZoneServerMapping(Map<String, List<Server>> map) {
-        upServerListZoneMap = new ConcurrentHashMap<String, List<? extends Server>>(map);
+        upServerListZoneMap = new ConcurrentHashMap<>(map);
         // make sure ZoneStats object exist for available zones for monitoring purpose
         for (String zone: map.keySet()) {
             getZoneStats(zone);
@@ -306,7 +306,7 @@ public class LoadBalancerStats implements IClientConfigAware {
      * @param servers
      */
     public ZoneSnapshot getZoneSnapshot(List<? extends Server> servers) {
-        if (servers == null || servers.size() == 0) {
+        if (servers == null || servers.isEmpty()) {
             return new ZoneSnapshot();
         }
         int instanceCount = servers.size();
@@ -371,7 +371,7 @@ public class LoadBalancerStats implements IClientConfigAware {
         }
         zone = zone.toLowerCase();
         List<? extends Server> currentList = upServerListZoneMap.get(zone);
-        if (currentList == null || currentList.size() == 0) {
+        if (currentList == null || currentList.isEmpty()) {
             return 0;            
         }
         int serverCount = currentList.size(); 
@@ -429,7 +429,7 @@ public class LoadBalancerStats implements IClientConfigAware {
     };
     
     private static Collection<ServerStats> getSortedServerStats(Collection<ServerStats> stats) {
-        List<ServerStats> list = new ArrayList<ServerStats>(stats);
+        List<ServerStats> list = new ArrayList<>(stats);
         Collections.sort(list, serverStatsComparator);
         return list;
     }

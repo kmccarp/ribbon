@@ -25,7 +25,7 @@ import org.junit.Before;
  * @author Tomasz Bak
  */
 public class RxMovieClientTestBase {
-    protected int port = 0;
+    protected int port;
 
     private RxMovieServer movieServer;
 

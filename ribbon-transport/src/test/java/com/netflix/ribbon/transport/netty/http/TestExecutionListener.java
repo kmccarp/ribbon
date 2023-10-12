@@ -27,15 +27,15 @@ public class TestExecutionListener<I, O> implements ExecutionListener<HttpClient
     public AtomicInteger executionFailedCounter = new AtomicInteger(0);
     public AtomicInteger executionSuccessCounter = new AtomicInteger(0);
 
-    private HttpClientRequest<ByteBuf> expectedRequest;
-    private IClientConfig requestConfig;
+    private final HttpClientRequest<ByteBuf> expectedRequest;
+    private final IClientConfig requestConfig;
     private volatile boolean checkContext = true;
     private volatile boolean checkExecutionInfo = true;
     private volatile Throwable finalThrowable;
     private HttpClientResponse<O> response;
-    private List<Throwable> errors = new CopyOnWriteArrayList<Throwable>();
-    private AtomicInteger numAttemptsOnServer = new AtomicInteger();
-    private AtomicInteger numServers = new AtomicInteger();
+    private final List<Throwable> errors = new CopyOnWriteArrayList<>();
+    private final AtomicInteger numAttemptsOnServer = new AtomicInteger();
+    private final AtomicInteger numServers = new AtomicInteger();
     private volatile Server lastServer;
     private static final Integer MY_OBJECT = Integer.valueOf(9);
     private volatile ExecutionContext<HttpClientRequest<I>> context;

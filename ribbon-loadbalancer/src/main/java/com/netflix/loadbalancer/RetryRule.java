@@ -34,16 +34,16 @@ public class RetryRule extends AbstractLoadBalancerRule {
 	}
 
 	public RetryRule(IRule subRule) {
-		this.subRule = (subRule != null) ? subRule : new RoundRobinRule();
+		this.subRule = subRule != null ? subRule : new RoundRobinRule();
 	}
 
 	public RetryRule(IRule subRule, long maxRetryMillis) {
-		this.subRule = (subRule != null) ? subRule : new RoundRobinRule();
-		this.maxRetryMillis = (maxRetryMillis > 0) ? maxRetryMillis : 500;
+		this.subRule = subRule != null ? subRule : new RoundRobinRule();
+		this.maxRetryMillis = maxRetryMillis > 0 ? maxRetryMillis : 500;
 	}
 
 	public void setRule(IRule subRule) {
-		this.subRule = (subRule != null) ? subRule : new RoundRobinRule();
+		this.subRule = subRule != null ? subRule : new RoundRobinRule();
 	}
 
 	public IRule getRule() {

@@ -45,8 +45,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class DynamicServerListLoadBalancer<T extends Server> extends BaseLoadBalancer {
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamicServerListLoadBalancer.class);
 
-    boolean isSecure = false;
-    boolean useTunnel = false;
+    boolean isSecure;
+    boolean useTunnel;
 
     // to keep track of modification of server lists
     protected AtomicBoolean serverListUpdateInProgress = new AtomicBoolean(false);
@@ -154,7 +154,7 @@ public class DynamicServerListLoadBalancer<T extends Server> extends BaseLoadBal
     public void setServersList(List lsrv) {
         super.setServersList(lsrv);
         List<T> serverList = (List<T>) lsrv;
-        Map<String, List<Server>> serversInZones = new HashMap<String, List<Server>>();
+        Map<String, List<Server>> serversInZones = new HashMap<>();
         for (Server server : serverList) {
             // make sure ServerStats is created to avoid creating them on hot
             // path
@@ -164,7 +164,7 @@ public class DynamicServerListLoadBalancer<T extends Server> extends BaseLoadBal
                 zone = zone.toLowerCase();
                 List<Server> servers = serversInZones.get(zone);
                 if (servers == null) {
-                    servers = new ArrayList<Server>();
+                    servers = new ArrayList<>();
                     serversInZones.put(zone, servers);
                 }
                 servers.add(server);
@@ -234,7 +234,7 @@ public class DynamicServerListLoadBalancer<T extends Server> extends BaseLoadBal
 
     @VisibleForTesting
     public void updateListOfServers() {
-        List<T> servers = new ArrayList<T>();
+        List<T> servers = new ArrayList<>();
         if (serverListImpl != null) {
             servers = serverListImpl.getUpdatedListOfServers();
             LOGGER.debug("List of Servers for {} obtained from Discovery client: {}",
@@ -275,7 +275,7 @@ public class DynamicServerListLoadBalancer<T extends Server> extends BaseLoadBal
     public String toString() {
         StringBuilder sb = new StringBuilder("DynamicServerListLoadBalancer:");
         sb.append(super.toString());
-        sb.append("ServerList:" + String.valueOf(serverListImpl));
+        sb.append("ServerList:").append(String.valueOf(serverListImpl));
         return sb.toString();
     }
     
