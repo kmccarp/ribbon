@@ -23,15 +23,15 @@ public class PollingServerListUpdater implements ServerListUpdater {
 
     private static final Logger logger = LoggerFactory.getLogger(PollingServerListUpdater.class);
 
-    private static long LISTOFSERVERS_CACHE_UPDATE_DELAY = 1000; // msecs;
-    private static int LISTOFSERVERS_CACHE_REPEAT_INTERVAL = 30 * 1000; // msecs;
-    private static int POOL_SIZE = 2;
+    private static long listofserversCacheUpdateDelay = 1000; // msecs;
+    private static int listofserversCacheRepeatInterval = 30 * 1000; // msecs;
+    private static int poolSize = 2;
 
     private static class LazyHolder {
-        static ScheduledExecutorService _serverListRefreshExecutor = null;
+        static ScheduledExecutorService _serverListRefreshExecutor;
 
         static {
-            _serverListRefreshExecutor = Executors.newScheduledThreadPool(POOL_SIZE, new ThreadFactoryBuilder()
+            _serverListRefreshExecutor = Executors.newScheduledThreadPool(poolSize, new ThreadFactoryBuilder()
                     .setNameFormat("PollingServerListUpdater-%d")
                     .setDaemon(true)
                     .build());
@@ -50,11 +50,11 @@ public class PollingServerListUpdater implements ServerListUpdater {
     private volatile ScheduledFuture<?> scheduledFuture;
 
     public PollingServerListUpdater() {
-        this(LISTOFSERVERS_CACHE_UPDATE_DELAY, LISTOFSERVERS_CACHE_REPEAT_INTERVAL);
+        this(listofserversCacheUpdateDelay, listofserversCacheRepeatInterval);
     }
 
     public PollingServerListUpdater(IClientConfig clientConfig) {
-        this(LISTOFSERVERS_CACHE_UPDATE_DELAY, getRefreshIntervalMs(clientConfig));
+        this(listofserversCacheUpdateDelay, getRefreshIntervalMs(clientConfig));
     }
 
     public PollingServerListUpdater(final long initialDelayMs, final long refreshIntervalMs) {
@@ -122,10 +122,10 @@ public class PollingServerListUpdater implements ServerListUpdater {
 
     @Override
     public int getCoreThreads() {
-        return POOL_SIZE;
+        return poolSize;
     }
 
     private static long getRefreshIntervalMs(IClientConfig clientConfig) {
-        return clientConfig.get(CommonClientConfigKey.ServerListRefreshInterval, LISTOFSERVERS_CACHE_REPEAT_INTERVAL);
+        return clientConfig.get(CommonClientConfigKey.ServerListRefreshInterval, listofserversCacheRepeatInterval);
     }
 }

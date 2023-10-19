@@ -46,9 +46,9 @@ public class RxMovieServerTest {
 
     private static final Random RANDOM = new Random();
 
-    private int port = RANDOM.nextInt(1000) + 8000;
+    private final int port = RANDOM.nextInt(1000) + 8000;
 
-    private String baseURL = "http://localhost:" + port;
+    private final String baseURL = "http://localhost:" + port;
 
     private RxMovieServer movieServer;
 
@@ -100,7 +100,7 @@ public class RxMovieServerTest {
     public void testRecommendationsByUserId() throws Exception {
         movieServer.movies.put(ORANGE_IS_THE_NEW_BLACK.getId(), ORANGE_IS_THE_NEW_BLACK);
         movieServer.movies.put(BREAKING_BAD.getId(), BREAKING_BAD);
-        Set<String> userRecom = new ConcurrentSet<String>();
+        Set<String> userRecom = new ConcurrentSet<>();
         userRecom.add(ORANGE_IS_THE_NEW_BLACK.getId());
         userRecom.add(BREAKING_BAD.getId());
         movieServer.userRecommendations.put(TEST_USER_ID, userRecom);

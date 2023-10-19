@@ -30,7 +30,7 @@ public class LoadBalancerCommandTest {
         RetryHandler handler = new RetryHandler() {
             @Override
             public boolean isRetriableException(Throwable e, boolean sameServer) {
-                return (e instanceof IllegalArgumentException);
+                return e instanceof IllegalArgumentException;
             }
             @Override
             public boolean isCircuitTrippingException(Throwable e) {
@@ -81,7 +81,7 @@ public class LoadBalancerCommandTest {
         RetryHandler handler = new RetryHandler() {
             @Override
             public boolean isRetriableException(Throwable e, boolean sameServer) {
-                return (e instanceof IllegalArgumentException);
+                return e instanceof IllegalArgumentException;
             }
             @Override
             public boolean isCircuitTrippingException(Throwable e) {
