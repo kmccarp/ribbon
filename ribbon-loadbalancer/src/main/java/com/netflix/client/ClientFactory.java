@@ -39,12 +39,12 @@ import java.util.function.Supplier;
  *
  */
 public class ClientFactory {
-    
-    private static Map<String, IClient<?,?>> simpleClientMap = new ConcurrentHashMap<String, IClient<?,?>>();
-    private static Map<String, ILoadBalancer> namedLBMap = new ConcurrentHashMap<String, ILoadBalancer>();
-    private static ConcurrentHashMap<String, IClientConfig> namedConfig = new ConcurrentHashMap<String, IClientConfig>();
-    
-    private static Logger logger = LoggerFactory.getLogger(ClientFactory.class);
+
+    private static final Map<String, IClient<?, ?>> simpleClientMap = new ConcurrentHashMap<>();
+    private static final Map<String, ILoadBalancer> namedLBMap = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, IClientConfig> namedConfig = new ConcurrentHashMap<>();
+
+    private static final Logger logger = LoggerFactory.getLogger(ClientFactory.class);
 
     /**
      * Utility method to create client and load balancer (if enabled in client config) given the name and client config.

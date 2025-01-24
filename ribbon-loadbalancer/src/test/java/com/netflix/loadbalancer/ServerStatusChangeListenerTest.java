@@ -57,7 +57,7 @@ public class ServerStatusChangeListenerTest {
     public void setupLoadbalancerAndListener() {
         lb = new NoPingTaskLoadBalancer();
         lb.setServersList(asList(server1, server2));
-        serversReceivedByListener = new AtomicReference<List<Server>>();
+        serversReceivedByListener = new AtomicReference<>();
         lb.addServerStatusChangeListener(new ServerStatusChangeListener() {
             @Override
             public void serverStatusChanged(final Collection<Server> servers) {

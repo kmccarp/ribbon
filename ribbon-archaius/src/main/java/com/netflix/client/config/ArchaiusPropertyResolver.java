@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
-public class ArchaiusPropertyResolver implements PropertyResolver {
+public final class ArchaiusPropertyResolver implements PropertyResolver {
     private static final Logger LOG = LoggerFactory.getLogger(ArchaiusPropertyResolver.class);
 
     public static final ArchaiusPropertyResolver INSTANCE = new ArchaiusPropertyResolver();
@@ -74,12 +74,11 @@ public class ArchaiusPropertyResolver implements PropertyResolver {
     @Override
     public void forEach(String prefix, BiConsumer<String, String> consumer) {
         Optional.ofNullable(config.subset(prefix))
-                .ifPresent(subconfig -> {
+                .ifPresent(subconfig ->
                     subconfig.getKeys().forEachRemaining(key -> {
                         String value = config.getString(prefix + "." + key);
                         consumer.accept(key, value);
-                    });
-                });
+                    }));
     }
 
     @Override

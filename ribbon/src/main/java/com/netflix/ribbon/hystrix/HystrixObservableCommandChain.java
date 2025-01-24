@@ -27,7 +27,7 @@ public class HystrixObservableCommandChain<T> {
     }
 
     public HystrixObservableCommandChain(HystrixObservableCommand<T>... commands) {
-        hystrixCommands = new ArrayList<HystrixObservableCommand<T>>(commands.length);
+        hystrixCommands = new ArrayList<>(commands.length);
         Collections.addAll(hystrixCommands, commands);
     }
 

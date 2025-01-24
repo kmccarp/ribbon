@@ -76,7 +76,7 @@ public class EvCacheProviderTest {
         replayAll();
 
         EvCacheOptions options = new EvCacheOptions("testApp", "test-cache", true, 100, null, "test{id}");
-        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<Object>(options);
+        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<>(options);
         Observable<Object> cacheValue = cacheProvider.get("test1", null);
 
         assertEquals("value1", cacheValue.toBlocking().first());
@@ -92,7 +92,7 @@ public class EvCacheProviderTest {
         replayAll();
 
         EvCacheOptions options = new EvCacheOptions("testApp", "test-cache", true, 100, transcoderMock, "test{id}");
-        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<Object>(options);
+        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<>(options);
         Observable<Object> cacheValue = cacheProvider.get("test1", null);
 
         assertEquals("value1", cacheValue.toBlocking().first());
@@ -108,7 +108,7 @@ public class EvCacheProviderTest {
         replayAll();
 
         EvCacheOptions options = new EvCacheOptions("testApp", "test-cache", true, 100, null, "test{id}");
-        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<Object>(options);
+        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<>(options);
         Observable<Object> cacheValue = cacheProvider.get("test1", null);
 
         assertTrue(cacheValue.materialize().toBlocking().first().getThrowable() instanceof CacheMissException);
@@ -121,7 +121,7 @@ public class EvCacheProviderTest {
         replayAll();
 
         EvCacheOptions options = new EvCacheOptions("testApp", "test-cache", true, 100, null, "test{id}");
-        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<Object>(options);
+        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<>(options);
         Observable<Object> cacheValue = cacheProvider.get("test1", null);
 
         Notification<Object> notification = cacheValue.materialize().toBlocking().first();
@@ -137,7 +137,7 @@ public class EvCacheProviderTest {
         replayAll();
 
         EvCacheOptions options = new EvCacheOptions("testApp", "test-cache", true, 100, transcoderMock, "test{id}");
-        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<Object>(options);
+        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<>(options);
         Observable<Object> cacheValue = cacheProvider.get("test1", null);
 
         assertTrue(cacheValue.materialize().toBlocking().first().getThrowable() instanceof CacheFaultException);
@@ -153,7 +153,7 @@ public class EvCacheProviderTest {
         replayAll();
 
         EvCacheOptions options = new EvCacheOptions("testApp", "test-cache", true, 100, transcoderMock, "test{id}");
-        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<Object>(options);
+        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<>(options);
         Observable<Object> cacheValue = cacheProvider.get("test1", null);
 
         assertTrue(cacheValue.materialize().toBlocking().first().getThrowable() instanceof RuntimeException);
@@ -166,7 +166,7 @@ public class EvCacheProviderTest {
         replayAll();
 
         EvCacheOptions options = new EvCacheOptions("testApp", "test-cache", true, 100, transcoderMock, "test{id}");
-        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<Object>(options);
+        EvCacheProvider<Object> cacheProvider = new EvCacheProvider<>(options);
         Observable<Object> cacheValue = cacheProvider.get("test1", null);
 
         Subscription subscription = cacheValue.subscribe();

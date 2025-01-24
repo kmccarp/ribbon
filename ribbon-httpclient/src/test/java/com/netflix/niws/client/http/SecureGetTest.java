@@ -241,17 +241,17 @@ public class SecureGetTest {
 
 
 
-	private static String SERVICE_URI1;
-	private static String SERVICE_URI2;
+	private static String serviceUri1;
+	private static String serviceUri2;
 
 	private static SimpleSSLTestServer testServer1;
 	private static SimpleSSLTestServer testServer2;
 
-	private static File FILE_TS1;
-	private static File FILE_KS1;
+	private static File fileTs1;
+	private static File fileKs1;
 
-	private static File FILE_TS2;
-	private static File FILE_KS2;
+	private static File fileTs2;
+	private static File fileKs2;
 
 	public static final String PASSWORD = "changeit";
 
@@ -265,17 +265,17 @@ public class SecureGetTest {
 		byte[] sampleTruststore1 = Base64.decode(TEST_TS1);
 		byte[] sampleKeystore1 = Base64.decode(TEST_KS1);
 
-		FILE_KS1 = File.createTempFile("SecureGetTest1", ".keystore");
-		FILE_TS1 = File.createTempFile("SecureGetTest1", ".truststore");
+		fileKs1 = File.createTempFile("SecureGetTest1", ".keystore");
+		fileTs1 = File.createTempFile("SecureGetTest1", ".truststore");
 
-		FileOutputStream keystoreFileOut = new FileOutputStream(FILE_KS1);
+		FileOutputStream keystoreFileOut = new FileOutputStream(fileKs1);
         try {
             keystoreFileOut.write(sampleKeystore1);
         } finally {
             keystoreFileOut.close();
         }
 
-		FileOutputStream truststoreFileOut = new FileOutputStream(FILE_TS1);
+		FileOutputStream truststoreFileOut = new FileOutputStream(fileTs1);
         try {
             truststoreFileOut.write(sampleTruststore1);
         } finally {
@@ -283,13 +283,13 @@ public class SecureGetTest {
         }
 
 		try{
-			testServer1 = new SimpleSSLTestServer(FILE_TS1, PASSWORD, FILE_KS1, PASSWORD, true);
+			testServer1 = new SimpleSSLTestServer(fileTs1, PASSWORD, fileKs1, PASSWORD, true);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
 
-		SERVICE_URI1 = "https://127.0.0.1:" + testServer1.getPort() + "/";
+		serviceUri1 = "https://127.0.0.1:" + testServer1.getPort() + "/";
 
 		// setup server 2, will use second keystore truststore without client auth
 
@@ -297,17 +297,17 @@ public class SecureGetTest {
 		byte[] sampleTruststore2 = Base64.decode(TEST_TS2);
 		byte[] sampleKeystore2 = Base64.decode(TEST_KS2);
 
-		FILE_KS2 = File.createTempFile("SecureGetTest2", ".keystore");
-		FILE_TS2 = File.createTempFile("SecureGetTest2", ".truststore");
+		fileKs2 = File.createTempFile("SecureGetTest2", ".keystore");
+		fileTs2 = File.createTempFile("SecureGetTest2", ".truststore");
 
-		keystoreFileOut = new FileOutputStream(FILE_KS2);
+		keystoreFileOut = new FileOutputStream(fileKs2);
         try {
             keystoreFileOut.write(sampleKeystore2);
         } finally {
             keystoreFileOut.close();
         }
 
-		truststoreFileOut = new FileOutputStream(FILE_TS2);
+		truststoreFileOut = new FileOutputStream(fileTs2);
         try {
             truststoreFileOut.write(sampleTruststore2);
         } finally {
@@ -315,13 +315,13 @@ public class SecureGetTest {
         }
 
 		try{
-			testServer2 = new SimpleSSLTestServer(FILE_TS2, PASSWORD, FILE_KS2, PASSWORD, false);
+			testServer2 = new SimpleSSLTestServer(fileTs2, PASSWORD, fileKs2, PASSWORD, false);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
 
-		SERVICE_URI2 = "https://127.0.0.1:" + testServer2.getPort() + "/";
+		serviceUri2 = "https://127.0.0.1:" + testServer2.getPort() + "/";
 	}
 
 	@AfterClass
@@ -354,16 +354,16 @@ public class SecureGetTest {
 		cm.setProperty(configPrefix + "." + CommonClientConfigKey.SecurePort, Integer.toString(testServer1.getPort()));
 		cm.setProperty(configPrefix + "." + CommonClientConfigKey.IsHostnameValidationRequired, "false");
 		cm.setProperty(configPrefix + "." + CommonClientConfigKey.IsClientAuthRequired, "true");
-		cm.setProperty(configPrefix + "." + CommonClientConfigKey.KeyStore, FILE_KS1.getAbsolutePath());
+		cm.setProperty(configPrefix + "." + CommonClientConfigKey.KeyStore, fileKs1.getAbsolutePath());
 		cm.setProperty(configPrefix + "." + CommonClientConfigKey.KeyStorePassword, PASSWORD);
-		cm.setProperty(configPrefix + "." + CommonClientConfigKey.TrustStore, FILE_TS1.getAbsolutePath());
+		cm.setProperty(configPrefix + "." + CommonClientConfigKey.TrustStore, fileTs1.getAbsolutePath());
 		cm.setProperty(configPrefix + "." + CommonClientConfigKey.TrustStorePassword, PASSWORD);
 
 		RestClient rc = (RestClient) ClientFactory.getNamedClient(name);
 
 		testServer1.accept();
 
-		URI getUri = new URI(SERVICE_URI1 + "test/");
+		URI getUri = new URI(serviceUri1 + "test/");
         HttpRequest request = HttpRequest.newBuilder().uri(getUri).queryParams("name", "test").build();
 		HttpResponse response = rc.execute(request);
 		assertEquals(200, response.getStatus());
@@ -382,14 +382,14 @@ public class SecureGetTest {
 		cm.setProperty(configPrefix + "." + CommonClientConfigKey.IsSecure, "true");
 		cm.setProperty(configPrefix + "." + CommonClientConfigKey.SecurePort, Integer.toString(testServer2.getPort()));
 		cm.setProperty(configPrefix + "." + CommonClientConfigKey.IsHostnameValidationRequired, "false");
-		cm.setProperty(configPrefix + "." + CommonClientConfigKey.TrustStore, FILE_TS2.getAbsolutePath());
+		cm.setProperty(configPrefix + "." + CommonClientConfigKey.TrustStore, fileTs2.getAbsolutePath());
 		cm.setProperty(configPrefix + "." + CommonClientConfigKey.TrustStorePassword, PASSWORD);
 
 		RestClient rc = (RestClient) ClientFactory.getNamedClient(name);
 
 		testServer2.accept();
 
-		URI getUri = new URI(SERVICE_URI2 + "test/");
+		URI getUri = new URI(serviceUri2 + "test/");
         HttpRequest request = HttpRequest.newBuilder().uri(getUri).queryParams("name", "test").build();
 		HttpResponse response = rc.execute(request);
 		assertEquals(200, response.getStatus());
@@ -409,16 +409,16 @@ public class SecureGetTest {
 		cm.setProperty(configPrefix + "." + CommonClientConfigKey.SecurePort, Integer.toString(testServer2.getPort()));
 		cm.setProperty(configPrefix + "." + CommonClientConfigKey.IsHostnameValidationRequired, "true"); // <--
 		cm.setProperty(configPrefix + "." + CommonClientConfigKey.IsClientAuthRequired, "true");
-		cm.setProperty(configPrefix + "." + CommonClientConfigKey.KeyStore, FILE_KS1.getAbsolutePath());
+		cm.setProperty(configPrefix + "." + CommonClientConfigKey.KeyStore, fileKs1.getAbsolutePath());
 		cm.setProperty(configPrefix + "." + CommonClientConfigKey.KeyStorePassword, PASSWORD);
-		cm.setProperty(configPrefix + "." + CommonClientConfigKey.TrustStore, FILE_TS1.getAbsolutePath());
+		cm.setProperty(configPrefix + "." + CommonClientConfigKey.TrustStore, fileTs1.getAbsolutePath());
 		cm.setProperty(configPrefix + "." + CommonClientConfigKey.TrustStorePassword, PASSWORD);
 
 		RestClient rc = (RestClient) ClientFactory.getNamedClient(name);
 
 		testServer1.accept();
 
-		URI getUri = new URI(SERVICE_URI1 + "test/");
+		URI getUri = new URI(serviceUri1 + "test/");
 		MultivaluedMapImpl params = new MultivaluedMapImpl();
 		params.add("name", "test");
         HttpRequest request = HttpRequest.newBuilder().uri(getUri).queryParams("name", "test").build();
@@ -428,7 +428,7 @@ public class SecureGetTest {
 
 			fail("expecting ssl hostname validation error");
 		}catch(ClientHandlerException che){
-			assertTrue(che.getMessage().indexOf("hostname in certificate didn't match") > -1);
+			assertTrue(che.getMessage().contains("hostname in certificate didn't match"));
 		}
 	}
 
@@ -444,14 +444,14 @@ public class SecureGetTest {
 		cm.setProperty(configPrefix + "." + CommonClientConfigKey.IsSecure, "true");
 		cm.setProperty(configPrefix + "." + CommonClientConfigKey.SecurePort, Integer.toString(testServer2.getPort()));
 		cm.setProperty(configPrefix + "." + CommonClientConfigKey.IsHostnameValidationRequired, "false");
-		cm.setProperty(configPrefix + "." + CommonClientConfigKey.TrustStore, FILE_TS1.getAbsolutePath()); // <--
+		cm.setProperty(configPrefix + "." + CommonClientConfigKey.TrustStore, fileTs1.getAbsolutePath()); // <--
 		cm.setProperty(configPrefix + "." + CommonClientConfigKey.TrustStorePassword, PASSWORD);
 
 		RestClient rc = (RestClient) ClientFactory.getNamedClient(name);
 
 		testServer2.accept();
 
-		URI getUri = new URI(SERVICE_URI2 + "test/");
+		URI getUri = new URI(serviceUri2 + "test/");
 		HttpRequest request = HttpRequest.newBuilder().uri(getUri).queryParams("name", "test").build();
 		try{
 			rc.execute(request);
@@ -459,7 +459,7 @@ public class SecureGetTest {
 			fail("expecting ssl hostname validation error");
 
 		}catch(ClientHandlerException che){
-			assertTrue(che.getMessage().indexOf("peer not authenticated") > -1);
+			assertTrue(che.getMessage().contains("peer not authenticated"));
 		}
 	}
 

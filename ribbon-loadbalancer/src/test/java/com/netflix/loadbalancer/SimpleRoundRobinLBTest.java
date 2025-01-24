@@ -35,7 +35,7 @@ import org.junit.Test;
 
 public class SimpleRoundRobinLBTest {
 	static BaseLoadBalancer lb;
-    static Map<String, Boolean> isAliveMap = new ConcurrentHashMap<String, Boolean>();
+    static Map<String, Boolean> isAliveMap = new ConcurrentHashMap<>();
 	
 	@BeforeClass
 	public static void setup(){
@@ -52,7 +52,7 @@ public class SimpleRoundRobinLBTest {
 		lb.setMaxTotalPingTime(2);
 		
 		// the setting of servers is done by a call to DiscoveryService
-		List<Server> servers = new ArrayList<Server>();
+		List<Server> servers = new ArrayList<>();
 		for (String svc: isAliveMap.keySet()){
 			servers.add(new Server(svc));	
 		}
@@ -73,7 +73,7 @@ public class SimpleRoundRobinLBTest {
 	@Test
 	public void testAddingServers() {
 		BaseLoadBalancer baseLb = new BaseLoadBalancer(new PingFake(), new RoundRobinRule());
-		List<Server> servers = new ArrayList<Server>();
+		List<Server> servers = new ArrayList<>();
 		servers.add(new Server("dummyservice0.netflix.com:8080"));
 		baseLb.addServers(servers);
 		servers.clear();
@@ -89,7 +89,7 @@ public class SimpleRoundRobinLBTest {
 	 */
 	@Test
 	public void testRoundRobin(){
-		Set<String> servers = new HashSet<String>();
+		Set<String> servers = new HashSet<>();
 		System.out.println("Simple Round Robin Test");
 		for (int i=0; i < 9; i++){
 			Server svc = lb.chooseServer("user1");
@@ -107,14 +107,14 @@ public class SimpleRoundRobinLBTest {
 			Server svc = lb.chooseServer("user1");
 			assertNotNull(svc);
 			System.out.println("server: " + svc.getHost());
-			assertFalse(svc.getId().equals("dummyservice2.netflix.com:8080"));
+			assertFalse("dummyservice2.netflix.com:8080".equals(svc.getId()));
 		}
 	}	
 	
 	static class PingFake implements IPing {
 		public boolean isAlive(Server server) {
 			Boolean res = isAliveMap.get(server.getId());
-			return ((res != null) && (res.booleanValue()));
+			return (res != null) && (res.booleanValue());
 		}
 	}
 	

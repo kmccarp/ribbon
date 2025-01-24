@@ -24,7 +24,7 @@ public class InterruptTask extends TimerTask {
 		
 		static Timer timer = new Timer("InterruptTimer", true); 
 		
-		protected Thread target = null;
+		protected Thread target;
 
 		public InterruptTask(long millis) {
 				target = Thread.currentThread();

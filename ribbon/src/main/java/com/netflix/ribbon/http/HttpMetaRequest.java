@@ -97,7 +97,7 @@ class HttpMetaRequest<T> implements RequestWithMetaData<T> {
             public RibbonResponse<T> get() throws InterruptedException,
                     ExecutionException {
                 final ResultCommandPair<T> pair = f.get();
-                return new HttpMetaResponse<T>(pair.getResult(), pair.getCommand());
+                return new HttpMetaResponse<>(pair.getResult(), pair.getCommand());
             }
 
             @Override
@@ -105,7 +105,7 @@ class HttpMetaRequest<T> implements RequestWithMetaData<T> {
                     throws InterruptedException, ExecutionException,
                     TimeoutException {
                 final ResultCommandPair<T> pair = f.get(timeout, timeUnit);
-                return new HttpMetaResponse<T>(pair.getResult(), pair.getCommand());
+                return new HttpMetaResponse<>(pair.getResult(), pair.getCommand());
             }
 
             @Override
@@ -123,7 +123,7 @@ class HttpMetaRequest<T> implements RequestWithMetaData<T> {
     @Override
     public RibbonResponse<T> execute() {
         RibbonResponse<Observable<T>> response = observe().toBlocking().last();
-        return new HttpMetaResponse<T>(response.content().toBlocking().last(), response.getHystrixInfo());
+        return new HttpMetaResponse<>(response.content().toBlocking().last(), response.getHystrixInfo());
     }
 
     private Observable<ResultCommandPair<T>> retainBufferIfNeeded(Observable<ResultCommandPair<T>> resultObservable) {

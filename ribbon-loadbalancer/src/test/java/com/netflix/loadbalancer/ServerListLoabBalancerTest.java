@@ -71,12 +71,12 @@ public class ServerListLoabBalancerTest {
     @Test
     public void testChooseServer() {
     	assertNotNull(lb);
-    	Set<Server> result = new HashSet<Server>();
+    	Set<Server> result = new HashSet<>();
     	for (int i = 0; i < 100; i++) {
     		Server s = lb.chooseServer(null);
     		result.add(s);
     	}
-    	Set<Server> expected = new HashSet<Server>();
+    	Set<Server> expected = new HashSet<>();
     	expected.addAll(serverList);
     	assertEquals(expected, result);
     }

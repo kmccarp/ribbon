@@ -20,8 +20,8 @@ import com.netflix.ribbon.RibbonResponse;
 
 class HttpMetaResponse<O> extends RibbonResponse<O> {
 
-    private O content;
-    private HystrixInvokableInfo<?> hystrixInfo;
+    private final O content;
+    private final HystrixInvokableInfo<?> hystrixInfo;
 
     public HttpMetaResponse(O content, HystrixInvokableInfo<?> hystrixInfo) {
         this.content = content;
